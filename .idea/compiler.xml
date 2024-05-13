@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="1_19_2" target="17" />
+      <module name="dev.slne.surf.surf-essentials" target="17" />
+      <module name="nms" target="17" />
+      <module name="surfEssentials" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="surf-essentials" options="-sourcepath C:\Users\Deniz\IdeaProjects\surf-essentials/src/main/java;C:\Users\Deniz\IdeaProjects\surf-essentials/target/generated-sources/annotations;/" />
+    </option>
+  </component>
+</project>
