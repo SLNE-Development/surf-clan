@@ -8,6 +8,9 @@
       <module name="1_19_2" target="17" />
       <module name="dev.slne.surf.surf-essentials" target="17" />
       <module name="nms" target="17" />
+      <module name="surf-essentials" target="21" />
+      <module name="surf-essentials.main" target="21" />
+      <module name="surf-essentials.test" target="21" />
       <module name="surfEssentials" target="17" />
     </bytecodeTargetLevel>
   </component>

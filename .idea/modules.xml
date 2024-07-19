@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dev.slne.surf.surf-essentials.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dev.slne.surf.surf-essentials.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/surf-essentials.iml" filepath="$PROJECT_DIR$/.idea/modules/surf-essentials.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/surf-essentials.main.iml" filepath="$PROJECT_DIR$/.idea/modules/surf-essentials.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/surf-essentials.test.iml" filepath="$PROJECT_DIR$/.idea/modules/surf-essentials.test.iml" />
     </modules>
   </component>
 </project>

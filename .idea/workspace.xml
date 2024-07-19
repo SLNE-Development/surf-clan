@@ -8,202 +8,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="394cb977-9f28-451b-a928-d6a6d78c6a5f" name="Changes" comment="Update dependencies and adjust code for compatibility&#10;&#10;The codebase has been updated to use new versions of dependencies, including a switch from 'commandapi-bukkit-core' to 'commandapi-bukkit-shade' and from 'net.kyori', 'adventure-nbt' to 'com.saicone.rtag', 'rtag' and 'rtag-entity'. Accordingly, parts of the code dealing with these dependencies, especially nbt-related operations in commands, have been adjusted for compatibility with the new libraries. In addition, the list of server dependencies in 'paper-plugin.yml' has been expanded.">
-      <change afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/SurfEssentials.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.paper-nms/mappings_1.20.1.tiny" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.paper-nms/mappings_1.20.2.tiny" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.space.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/SurfEssentials.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/SurfEssentialsBootstrap.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/SurfEssentialsLoader.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/annontations/DoNotUse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/annontations/FieldsAreNonnullByDefault.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/annontations/MethodsReturnNonnullByDefault.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/annontations/ParametersAreNonnullByDefault.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/annontations/UpdateRequired.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/BrigadierCommands.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/EssentialsCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/FillStackCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/FlyCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/FoodCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/GodmodeCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/HatCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/HealCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/HurtCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/InfinityCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/LatestDeathCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/LightningCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/RepairCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/SpeedCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/SuicideCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/TrashCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/UnhatCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/AnvilCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/CartographyTableCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/GrindstoneCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/GuiCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/GuiCommands.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/LoomCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/SmithingTableCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/StonecutterCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/cheat/gui/WorkbenchCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/AlertCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/BookCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/BroadcastWorldCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/ChangeSlotCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/ChatClearCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/ClearItemCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/GetPosCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/InfoCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/NearCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/PlayerHeadCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/RuleCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/ScreamCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/SetItemLoreCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/SetItemNameCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/SpawnerChangeCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/ActionbarBroadcastCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/TimerCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/TitlebroadcastCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/help/HelpCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/poll/Poll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/poll/PollCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/poll/VoteCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/Troll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/TrollEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/TrollManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/TrollSubcommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/gui/Boarders.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/gui/TrollGuiItems.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/AnvilTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/BellTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/BoomTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/CageTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/CrashTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/DemoTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/FakeBlockRainTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/FollowingBlockTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/HerobrineTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/IllusionerTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/MlgTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/VillagerAnnoyTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/troll/trolls/WaterTroll.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/world/WorldCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/general/other/world/WorldItems.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/AdvancementCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/AttributeCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/BossbarCommand2_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/BossbarCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ClearInventoryCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DamageCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DataPackCommand2_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DataPackCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DefaultGamemodeCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DeopCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/DifficultyCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/EffectCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/EnchantCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ExecuteCommandAddon.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ExperienceCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/FillBiomeCommand2_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/FillBiomeCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/FillCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ForceloadCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/FunctionCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/GamemodeCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/GameruleCommand2_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/GameruleCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/GiveCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/KillCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ListCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/OpCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ParticleCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/PlaySoundCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/ReloadCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/RideCommand_NOT_POSSIBLE_WITHOUT_NMS.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SeedCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SetBlockCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SetPlayerIdleTimeoutCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SetWorldSpawnCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SpectateCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/SummonCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/TimeCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/WeatherCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/minecraft/WhitelistCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/package-info.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/RandomTeleportCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/SpawnCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/TeleportBackCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/TeleportCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/TeleportOffline.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/commands/tp/TeleportToTopCommand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/exceptions/InvalidStringTimeException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/exceptions/UnsupportedServerVersionException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/ListenerManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/AdvancementListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/CommandRegisterListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/DeathListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/FlyListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/InfinityListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/JoinListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/listener/listeners/TeleportListener.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/ChainableBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/EssentialsUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/ParticleWrapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/SafeLocationFinder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/CommandUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/LoggingUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/MessageUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/OfflineUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/PacketUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/PluginUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/PropertiesUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/RandomUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/SuggestionUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/abtract/VanishUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/DatapackArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/DifficultyArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/GameModeArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/LookAnchorArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/PollArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/WeatherTypeArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/WorldEnvironmentArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/arguments/WorldTypeArgument.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/blocks/BlockStatePos.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/brigadier/BrigadierMessage.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/brigadier/CommandFunction.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/brigadier/Exceptions.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/brigadier/RecodedCommands.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/brigadier/Suggestion.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/color/Colors.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/copy/Mth.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/gui/GuiUtils.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/pdc/UUIDDataType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/essentials/utils/permission/Permissions.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/paper-plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/paper-plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/dev/slne/surf/essentials/SurfEssentialsTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/dev/slne/surf/essentials/utils/arguments/LookAnchorArgumentTest.java" beforeDir="false" />
+    <list default="true" id="394cb977-9f28-451b-a928-d6a6d78c6a5f" name="Changes" comment="init">
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/commands/EssentialsCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/commands/EssentialsCommandRegistry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/commands/Permissions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/commands/qualityoflive/FillStackCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/message/Colors.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/message/MessageLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/message/Messages.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/messages/defaults/Bundle_de_DE.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/SurfEssentials.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/SurfEssentials.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/SurfEssentialsBootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dev/slne/surf/surfessentials/SurfEssentialsBootstrap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,11 +32,6 @@
   </component>
   <component name="ComposerSettings">
     <execution />
-  </component>
-  <component name="DatabaseLocalColorSettings">
-    <colors>
-      <entry key="42c16106-9fb8-439a-b32b-d5e8d47547d8" value="Green" />
-    </colors>
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -236,6 +47,9 @@
         <task path="C:\Users\Deniz\IdeaProjects\surf-essentials\surf-essentials-">
           <activation />
         </task>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
@@ -246,7 +60,7 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="surf-essentials" type="f1a62948:ProjectNode" />
-                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
             </expand>
             <select />
@@ -258,11 +72,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="package-info" />
         <option value="AnnotationType" />
         <option value="Enum" />
         <option value="JUnit5 Test Class" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -349,46 +163,50 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.surf-essentials- [wrapper].executor&quot;: &quot;Run&quot;,
-    &quot;JavaClassFindUsagesOptions.isSearchForTextOccurrences&quot;: &quot;false&quot;,
-    &quot;Maven.surf-essentials [clean,install,package].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.laravel-idea.search-composer-json&quot;: &quot;true&quot;,
-    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/rewrite-2.0&quot;,
-    &quot;jdk.selected.com.intellij.ui.dsl.builder.impl.RowImpl.sdk&quot;: &quot;17&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Deniz/IdeaProjects/surf-essentials/build.gradle.kts&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.21&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
-    &quot;vcs.patch.path&quot;: &quot;C:/Users/Deniz/IdeaProjects/surf-essentials/src/main/java/dev/slne/surf/essentials/patches&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.surf-essentials- [wrapper].executor": "Run",
+    "JavaClassFindUsagesOptions.isSearchForTextOccurrences": "false",
+    "Maven.surf-essentials [clean,install,package].executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.laravel-idea.search-composer-json": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
+    "TODO_SCOPE": "All Places",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "feat/rewrite-2.0",
+    "jdk.selected.com.intellij.ui.dsl.builder.impl.RowImpl.sdk": "17",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Deniz/IdeaProjects/surf-essentials/build.gradle.kts",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.21",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.sourceCode.Kotlin",
+    "vcs.patch.path": "C:/Users/Deniz/IdeaProjects/surf-essentials/src/main/java/dev/slne/surf/essentials/patches",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ],
-    &quot;jdk.preference.com.intellij.ui.dsl.builder.impl.RowImpl.sdk&quot;: [
-      &quot;17=C:/Program Files/Eclipse Adoptium/jdk-17.0.7.7-hotspot&quot;
+    "jdk.preference.com.intellij.ui.dsl.builder.impl.RowImpl.sdk": [
+      "17=C:/Program Files/Eclipse Adoptium/jdk-17.0.7.7-hotspot"
     ],
-    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: []
+    "kotlin-gradle-user-dirs": [
+      "C:\\Users\\Deniz\\.gradle"
+    ],
+    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
   }
-}</component>
+}]]></component>
   <component name="ReaderModeSettings">
     <option name="enabled" value="false" />
   </component>
@@ -986,6 +804,7 @@
       <workItem from="1710020351764" duration="499000" />
       <workItem from="1715449407096" duration="3898000" />
       <workItem from="1715601391378" duration="1347000" />
+      <workItem from="1715602788044" duration="6395000" />
     </task>
     <task id="LOCAL-00086" summary="added infinity command">
       <created>1675199576961</created>
@@ -1330,7 +1149,7 @@
       <option name="project" value="LOCAL" />
       <updated>1686333406323</updated>
     </task>
-    <option name="localTasksCounter" value="151" />
+    <option name="localTasksCounter" value="152" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1374,7 +1193,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/CommandAPI" />
     </ignored-roots>
-    <MESSAGE value="fixed console gamemode command" />
     <MESSAGE value="removed useless things" />
     <MESSAGE value="enchant command now supports custom enchantments" />
     <MESSAGE value="Fixed plugin not compatible with eco for certain reasons" />
@@ -1399,7 +1217,8 @@
     <MESSAGE value="Updated packetevents dependency to version 2.3.0&#10;&#10;The version of &quot;com.github.retrooper.packetevents&quot; dependency has been updated from 2.2.1 to 2.3.0. Also, an additional repository &quot;codemc-releases&quot; has been added in the SurfEssentialsLoader class" />
     <MESSAGE value="Updated packetevents dependency to version 2.3.0&#10;&#10;The version of &quot;com.github.retrooper.packetevents&quot; dependency has been updated from 2.2.1 to 2.3.0. Also, an additional repository &quot;codemc-releases&quot; has been added in the SurfEssentialsLoader class." />
     <MESSAGE value="Update dependencies and adjust code for compatibility&#10;&#10;The codebase has been updated to use new versions of dependencies, including a switch from 'commandapi-bukkit-core' to 'commandapi-bukkit-shade' and from 'net.kyori', 'adventure-nbt' to 'com.saicone.rtag', 'rtag' and 'rtag-entity'. Accordingly, parts of the code dealing with these dependencies, especially nbt-related operations in commands, have been adjusted for compatibility with the new libraries. In addition, the list of server dependencies in 'paper-plugin.yml' has been expanded." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update dependencies and adjust code for compatibility&#10;&#10;The codebase has been updated to use new versions of dependencies, including a switch from 'commandapi-bukkit-core' to 'commandapi-bukkit-shade' and from 'net.kyori', 'adventure-nbt' to 'com.saicone.rtag', 'rtag' and 'rtag-entity'. Accordingly, parts of the code dealing with these dependencies, especially nbt-related operations in commands, have been adjusted for compatibility with the new libraries. In addition, the list of server dependencies in 'paper-plugin.yml' has been expanded." />
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">

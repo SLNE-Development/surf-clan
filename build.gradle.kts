@@ -19,11 +19,15 @@ repositories {
 
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.codemc.io/repository/maven-releases/")
+    maven("https://repo.codemc.org/repository/maven-public/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
     implementation("com.github.retrooper.packetevents:spigot:2.3.0")
+
+    paperLibrary("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.4.1")
+    paperLibrary("de.tr7zw:item-nbt-api:2.12.4")
 }
 
 paper {
