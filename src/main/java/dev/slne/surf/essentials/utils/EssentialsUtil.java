@@ -698,13 +698,13 @@ public class EssentialsUtil extends PropertiesUtil {
     public <Sender extends Audience> Location getSenderLocation(Sender sender) {
         return (sender instanceof NativeProxyCommandSender proxyCommandSender) ? proxyCommandSender.getLocation() :
                 (sender instanceof org.bukkit.entity.Entity entity) ? entity.getLocation() :
-                        new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+                        new Location(Bukkit.getWorlds().getFirst(), 0, 0, 0);
     }
 
     public World getSenderWorld(CommandSender sender) {
         return (sender instanceof NativeProxyCommandSender proxyCommandSender) ? proxyCommandSender.getWorld() :
                 (sender instanceof org.bukkit.entity.Entity entity) ? entity.getWorld() :
-                        Bukkit.getWorlds().get(0);
+                        Bukkit.getWorlds().getFirst();
     }
 
 
@@ -779,7 +779,7 @@ public class EssentialsUtil extends PropertiesUtil {
      */
     @Deprecated
     public List<org.bukkit.block.Block> getBlocksFromBoundingBox(org.bukkit.util.BoundingBox boundingBox) {
-        return getBlocksFromBoundingBox(Bukkit.getWorlds().get(0), boundingBox);
+        return getBlocksFromBoundingBox(Bukkit.getWorlds().getFirst(), boundingBox);
     }
 
     /**
@@ -894,12 +894,12 @@ public class EssentialsUtil extends PropertiesUtil {
     @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static CompletableFuture<Boolean> teleportLazy(org.bukkit.entity.Entity entity, Location destination, PlayerTeleportEvent.TeleportCause cause, TeleportFlag... flags) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        destination.getWorld().getChunkAtAsync(destination).thenAccept((chunk) -> future.complete(entity.teleport(destination, cause, flags))).exceptionally(ex -> {
-            future.completeExceptionally(ex);
-            return null;
+        return destination.getWorld().getChunkAtAsync(destination)
+            .thenComposeAsync((chunk) -> entity.teleportAsync(destination, cause, flags))
+            .exceptionally(ex -> {
+                ex.printStackTrace();
+            return false;
         });
-        return future;
     }
 
     /**
@@ -952,12 +952,13 @@ public class EssentialsUtil extends PropertiesUtil {
     @SuppressWarnings("UnstableApiUsage")
     @ApiStatus.Experimental
     public static <E extends org.bukkit.entity.Entity> CompletableFuture<E> teleportAsync(E entity, Location destination, PlayerTeleportEvent.TeleportCause cause, TeleportFlag... flags) {
-        CompletableFuture<E> future = new CompletableFuture<>();
-        destination.getWorld().getChunkAtAsyncUrgently(destination).thenAccept(chunk -> future.complete(entity.teleport(destination, cause, flags) ? entity : null)).exceptionally(ex -> {
-            future.completeExceptionally(ex);
-            return null;
-        });
-        return future;
+        return destination.getWorld().getChunkAtAsyncUrgently(destination)
+            .thenComposeAsync(chunk -> entity.teleportAsync(destination, cause, flags))
+            .exceptionally(ex -> {
+                ex.printStackTrace();
+                return false;
+            })
+            .thenApplyAsync(unused -> entity);
     }
 
 

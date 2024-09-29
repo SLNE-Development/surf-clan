@@ -15,26 +15,6 @@ repositories {
 
     maven("https://repo.slne.dev/repository/maven-proxy") { name = "maven-proxy" }
     maven("https://repo.slne.dev/repository/maven-public") { name = "maven-public" }
-
-//    maven {
-//        url = uri("https://repo.papermc.io/repository/maven-public/")
-//    }
-//    maven("https://repo.papermc.io/repository/maven-public/")
-//
-//    maven {
-//        url = uri(" ")
-//    }
-//    maven("https://maven.playpro.com")
-//
-//    maven {
-//        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
-//    }
-//    maven("https://repo.codemc.io/repository/maven-snapshots/")
-//
-//    maven {
-//        url = uri("https://repo.codemc.io/repository/maven-releases/")
-//    }
-
 }
 
 dependencies {
@@ -44,7 +24,7 @@ dependencies {
 
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.17")
     implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.3")
-    implementation("com.github.retrooper:packetevents-spigot:2.4.1-SNAPSHOT")
+    implementation("com.github.retrooper:packetevents-spigot:2.5.0")
 
     paperLibrary("org.apache.commons:commons-lang3:3.14.0")
     paperLibrary("net.kyori:adventure-nbt:4.17.0")
