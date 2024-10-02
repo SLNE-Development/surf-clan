@@ -180,67 +180,90 @@ public class WorldCommand extends EssentialsCommand {
         return 1;
     }
 
-    private int unload(CommandSender source, World world) throws WrapperCommandSyntaxException {
-        val overworld = Bukkit.getWorlds().get(0);
-        val overworldSpawn = overworld.getSpawnLocation();
+    private int unload(CommandSender source, World world) throws WrapperCommandSyntaxException { // TODO: Not working on Shredded
 
-        EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
+        Bukkit.getGlobalRegionScheduler().run(SurfEssentials.getInstance(), (scheduledTask) -> {
+            val overworld = Bukkit.getWorlds().get(0);
+            val overworldSpawn = overworld.getSpawnLocation();
 
-        for (Player player : world.getPlayers()) {
-            player.teleportAsync(overworldSpawn);
-        }
+            EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
 
-        EssentialsUtil.sendInfo(source, "Entlade Welt...");
-        if (!Bukkit.unloadWorld(world, true)) throw Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world);
+            for (Player player : world.getPlayers()) {
+                player.teleportAsync(overworldSpawn);
+            }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+            EssentialsUtil.sendInfo(source, "Entlade Welt...");
+
+            if (!Bukkit.unloadWorld(world, false)) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world));
+                return;
+            }
+
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
                 .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" wurde erfolgreich entladen.", Colors.SUCCESS)));
+        });
 
         return 1;
     }
 
     private int remove(CommandSender source, String levelName) throws WrapperCommandSyntaxException {
-        val world = Bukkit.getWorld(levelName);
-        val file = new File(Bukkit.getServer().getWorldContainer(), levelName);
 
-        if (!worlds().contains(levelName)) throw Exceptions.ERROR_FILE_NOT_EXISTS.create(levelName);
+        Bukkit.getGlobalRegionScheduler().run(SurfEssentials.getInstance(), (scheduledTask) -> {
+            val world = Bukkit.getWorld(levelName);
+            val file = new File(Bukkit.getServer().getWorldContainer(), levelName);
 
-        if (world != null) {
-            EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
-            world.getPlayers().forEach(player -> player.teleportAsync(world.getSpawnLocation()));
+            if (!worlds().contains(levelName)) EssentialsUtil.sendException(source, Exceptions.ERROR_INVALID_DIMENSION.create(levelName));
 
-            EssentialsUtil.sendInfo(source, "Entlade Welt...");
-            if (!Bukkit.unloadWorld(world, false)) throw Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world);
-        }
+            if (world != null) {
+                EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
+                world.getPlayers().forEach(player -> player.teleportAsync(world.getSpawnLocation()));
 
-        EssentialsUtil.sendInfo(source, "Lösche Dateien...");
-        Bukkit.getScheduler().runTaskAsynchronously(SurfEssentials.getInstance(), __ -> {
+                EssentialsUtil.sendInfo(source, "Entlade Welt...");
+
+                if (!Bukkit.unloadWorld(world, false)) {
+                    EssentialsUtil.sendException(source, Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world));
+                    return;
+                }
+            }
+
+            EssentialsUtil.sendInfo(source, "Lösche Dateien...");
+
             try {
                 FileUtils.deleteDirectory(file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
 
-        EssentialsUtil.sendSuccess(source, "Die Welt wurde erfolgreich gelöscht.");
+            EssentialsUtil.sendSuccess(source, "Die Welt wurde erfolgreich gelöscht.");
+        });
 
         return 1;
     }
 
     private int load(CommandSender source, String worldName) throws WrapperCommandSyntaxException {
-        val file = new File(Bukkit.getWorldContainer(), worldName);
-        if (!file.exists()) throw Exceptions.ERROR_INVALID_DIMENSION.create(file.getName());
 
-        val world = Bukkit.getWorld(file.getName());
-        if (world != null) throw Exceptions.ERROR_WORLD_ALREADY_LOADED.create(world);
+        Bukkit.getGlobalRegionScheduler().run(SurfEssentials.getInstance(), (scheduledTask) -> {
+            val file = new File(Bukkit.getWorldContainer(), worldName);
+            if (!file.exists()) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_INVALID_DIMENSION.create(file.getName()));
+                return;
+            }
 
-        EssentialsUtil.sendInfo(source, "Lade Welt...");
-        Bukkit.createWorld(WorldCreator.name(file.getName()));
+            val world = Bukkit.getWorld(file.getName());
+            if (world != null) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_WORLD_ALREADY_LOADED.create(world));
+                return;
+            }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
-                .append(Component.text(file.getName(), Colors.TERTIARY))
-                .append(Component.text(" wurde erfolgreich geladen.", Colors.SUCCESS)));
+            EssentialsUtil.sendInfo(source, "Lade Welt...");
+            Bukkit.createWorld(WorldCreator.name(file.getName()));
+
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+                    .append(Component.text(file.getName(), Colors.TERTIARY))
+                    .append(Component.text(" wurde erfolgreich geladen.", Colors.SUCCESS)));
+        });
+
         return 1;
     }
 
@@ -268,25 +291,29 @@ public class WorldCommand extends EssentialsCommand {
     private int create(CommandSender source, String worldName, Optional<World.Environment> environment, Optional<WorldType> worldType,
                        Optional<Boolean> generateStructures, Optional<Boolean> hardcore, Optional<Long> seed) throws WrapperCommandSyntaxException {
 
-        for (String world : worlds()) {
-            if (world.equals(worldName)) throw Exceptions.ERROR_WORLD_ALREADY_CREATED.create(worldName);
-        }
+        Bukkit.getGlobalRegionScheduler().run(SurfEssentials.getInstance(), (scheduledTask) -> {
+            val file = new File(Bukkit.getWorldContainer(), worldName);
+            if (file.exists()) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_WORLD_ALREADY_CREATED.create(worldName));
+                return;
+            }
 
-        val worldCreator = new WorldCreator(worldName);
+            val worldCreator = new WorldCreator(worldName);
 
-        environment.ifPresent(worldCreator::environment);
-        worldType.ifPresent(worldCreator::type);
-        generateStructures.ifPresent(worldCreator::generateStructures);
-        seed.ifPresent(worldCreator::seed);
-        hardcore.ifPresent(worldCreator::hardcore);
-        worldCreator.keepSpawnLoaded(TriState.TRUE);
+            environment.ifPresent(worldCreator::environment);
+            worldType.ifPresent(worldCreator::type);
+            generateStructures.ifPresent(worldCreator::generateStructures);
+            seed.ifPresent(worldCreator::seed);
+            hardcore.ifPresent(worldCreator::hardcore);
+            worldCreator.keepSpawnLoaded(TriState.TRUE);
 
-        EssentialsUtil.sendInfo(source, "Erstelle Welt...");
-        val world = worldCreator.createWorld();
+            EssentialsUtil.sendInfo(source, "Erstelle Welt...");
+            val world = worldCreator.createWorld();
 
-        EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
-                .append(Component.text(world != null ? world.getKey().asString() : worldName, Colors.TERTIARY))
-                .append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS)));
+            EssentialsUtil.sendSuccess(source, Component.text("Die Welt ", Colors.SUCCESS)
+                    .append(Component.text(world != null ? world.getKey().asString() : worldName, Colors.TERTIARY))
+                    .append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS)));
+        });
 
         return 1;
     }
