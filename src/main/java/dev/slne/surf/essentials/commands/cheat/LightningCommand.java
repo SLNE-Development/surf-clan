@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LightningCommand extends EssentialsCommand { // TODO
+public class LightningCommand extends EssentialsCommand {
     public LightningCommand() {
         super("lighting", "lighting <players> [<amount>] [<realLighting>]", "Strike lightning at a player");
 

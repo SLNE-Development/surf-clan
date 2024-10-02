@@ -3,6 +3,7 @@ package dev.slne.surf.essentials.utils;
 import dev.jorel.commandapi.wrappers.NativeProxyCommandSender;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.annontations.UpdateRequired;
+import dev.slne.surf.essentials.utils.abtract.FoliaUtil;
 import dev.slne.surf.essentials.utils.abtract.PropertiesUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
@@ -58,7 +59,7 @@ import java.util.function.Predicate;
  * The final util class wich contains miscellaneous methods
  */
 @UtilityClass
-public class EssentialsUtil extends PropertiesUtil {
+public class EssentialsUtil extends FoliaUtil {
 
     private Component prefix; // plugins prefix
     private final YamlConfiguration paperGlobalConfiguration; // the paper global configuration

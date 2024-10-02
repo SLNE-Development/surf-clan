@@ -1,7 +1,9 @@
 package dev.slne.surf.essentials.listener.listeners;
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.cheat.FlyCommand;
+import dev.slne.surf.essentials.utils.EssentialsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,22 +17,22 @@ import org.bukkit.persistence.PersistentDataType;
 public class FlyListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        updateFlyMode(event.getPlayer());
+        EssentialsUtil.runOnEntity(event.getPlayer(), () -> updateFlyMode(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> updateFlyMode(event.getPlayer()), 5L);
-    } // TODO
+        EssentialsUtil.runOnEntityDelayed(event.getPlayer(), 5L, () -> updateFlyMode(event.getPlayer()));
+    }
 
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> updateFlyMode(event.getPlayer()), 5L);
+    public void onPlayerRespawn(PlayerPostRespawnEvent event) {
+        EssentialsUtil.runOnEntity(event.getPlayer(), () -> updateFlyMode(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> updateFlyMode(event.getPlayer()), 5L);
+        EssentialsUtil.runOnEntityDelayed(event.getPlayer(), 5L, () -> updateFlyMode(event.getPlayer()));
     }
 
     private void updateFlyMode(Player player) {

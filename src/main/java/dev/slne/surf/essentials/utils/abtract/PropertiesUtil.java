@@ -6,6 +6,7 @@ import dev.slne.surf.essentials.annontations.UpdateRequired;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import org.bukkit.Bukkit;
 
 /**
  * This class is used to read the {@code server.properties} file.
@@ -14,7 +15,7 @@ import java.util.Properties;
  * class will <b>not</b> be removed in the future, but it is
  * recommended to not use it anyway.
  */
-@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
+@SuppressWarnings({"DeprecatedIsStillUsed"})
 @DoNotUse("Use the built-in Bukkit methods instead")
 @UpdateRequired(updateReason = "Look if paper has implemented the missing methods")
 @Deprecated(forRemoval = true, since = "2.0.0")

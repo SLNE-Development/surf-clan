@@ -32,7 +32,7 @@ public class ClearInventoryCommand extends EssentialsCommand {
         int successfulClears = 0;
 
         for (HumanEntity target : targets) {
-            target.getInventory().clear();
+            EssentialsUtil.runOnEntity(target, () -> target.getInventory().clear());
             successfulClears++;
         }
 

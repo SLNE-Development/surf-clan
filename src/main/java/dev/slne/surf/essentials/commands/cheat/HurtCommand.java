@@ -2,6 +2,7 @@ package dev.slne.surf.essentials.commands.cheat;
 
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.NativeResultingCommandExecutor;
+import dev.slne.surf.essentials.SurfEssentials;
 import dev.slne.surf.essentials.commands.EssentialsCommand;
 import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.color.Colors;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-public class HurtCommand extends EssentialsCommand {
+public class HurtCommand extends EssentialsCommand { // TODO: broken
     public HurtCommand() {
         super("hurt", "hurt [<player>]", "Hurt other players");
 
@@ -31,7 +32,7 @@ public class HurtCommand extends EssentialsCommand {
 
         for (Player target : targets) {
             if (target.isInvulnerable()) continue;
-            target.damage(amount, ((source instanceof Player player) ? player : null));
+            EssentialsUtil.damage(target, amount, (source instanceof Player player) ? player : null);
             successfulHurted++;
         }
 

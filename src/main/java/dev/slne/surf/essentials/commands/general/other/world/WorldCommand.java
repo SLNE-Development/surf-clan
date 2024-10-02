@@ -187,7 +187,7 @@ public class WorldCommand extends EssentialsCommand {
         EssentialsUtil.sendInfo(source, "Teleportiere Spieler in overworld...");
 
         for (Player player : world.getPlayers()) {
-            player.teleport(overworldSpawn);
+            player.teleportAsync(overworldSpawn);
         }
 
         EssentialsUtil.sendInfo(source, "Entlade Welt...");
@@ -208,7 +208,7 @@ public class WorldCommand extends EssentialsCommand {
 
         if (world != null) {
             EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
-            world.getPlayers().forEach(player -> player.teleport(world.getSpawnLocation()));
+            world.getPlayers().forEach(player -> player.teleportAsync(world.getSpawnLocation()));
 
             EssentialsUtil.sendInfo(source, "Entlade Welt...");
             if (!Bukkit.unloadWorld(world, false)) throw Exceptions.ERROR_WHILE_UNLOADING_WORLD.create(world);

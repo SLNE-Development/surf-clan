@@ -46,7 +46,7 @@ public class ClearItemCommand extends EssentialsCommand {
 
         if (successfullyRemoved == 1) {
             EssentialsUtil.sendSuccess(source, Component.text("Die Items ", Colors.SUCCESS)
-                    .append(Component.text(" wurde erfolgreich aus dem Inventar von ", Colors.SUCCESS))
+                    .append(Component.text("wurde erfolgreich aus dem Inventar von ", Colors.SUCCESS))
                     .append(EssentialsUtil.getDisplayName(targets.iterator().next()))
                     .append(Component.text(" entfernt!", Colors.SUCCESS)));
         } else {

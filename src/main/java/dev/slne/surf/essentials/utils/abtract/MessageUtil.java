@@ -58,6 +58,10 @@ public abstract class MessageUtil extends PacketUtil {
         sendError(audience, Component.text(error));
     }
 
+    public static <Audience extends net.kyori.adventure.audience.Audience> void sendException(Audience audience, WrapperCommandSyntaxException exception) {
+        sendError(audience, MessageComponentSerializer.message().deserialize(exception.getRawMessage()));
+    }
+
 
     // success
     //---------------------------------------------------------------------------------

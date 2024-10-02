@@ -9,6 +9,7 @@ import dev.slne.surf.essentials.utils.blocks.BlockStatePos;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.val;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
 
 public class SetBlockCommand extends EssentialsCommand { // TODO test filter
 
-    private static final Map<UUID, BlockStatePos> BLOCK = new HashMap<>();
+    private static final Map<UUID, BlockStatePos> BLOCK = new ConcurrentHashMap<>();
 
     public SetBlockCommand() {
         super("setblock", "setblock <undo | location <block> [destroy | keep | replace]>", "Change the block at the given location");
@@ -120,46 +121,52 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
 
         if (condition.isPresent() && !condition.get().test(blockPos.getBlock())) throw Exceptions.ERROR_BLOCK_NOT_SET;
 
-        boolean success;
-        val oldBlock = world.getBlockAt(blockPos);
-        val oldBlockState = oldBlock.getState();
-        val oldBlockMaterial = oldBlock.getType();
+        EssentialsUtil.runAtLocation(blockPos, () -> {
+          boolean success;
+          val oldBlock = world.getBlockAt(blockPos);
+          val oldBlockState = oldBlock.getState();
+          val oldBlockMaterial = oldBlock.getType();
 
-        if (mode == Mode.DESTROY) {
+          if (mode == Mode.DESTROY) {
             oldBlock.breakNaturally();
             success = !newBlockState.getType().isAir() || !world.getBlockState(blockPos).getType().isAir();
-        } else {
+          } else {
             if (oldBlock instanceof BlockInventoryHolder blockInventoryHolder) { // TODO: Check if this works
-                blockInventoryHolder.getInventory().clear();
+              blockInventoryHolder.getInventory().clear();
             }
             success = true;
-        }
+          }
 
-        if (!success) throw Exceptions.ERROR_BLOCK_NOT_SET;
+          if (!success) {
+            EssentialsUtil.sendException(source, Exceptions.ERROR_BLOCK_NOT_SET);
+            return;
+          }
 
 
-        oldBlock.setBlockData(blockInput);
-        EssentialsUtil.logBlockChange(
-                source,
-                world,
-                blockPos,
-                newBlockState
-        );
+          oldBlock.setBlockData(blockInput);
+          EssentialsUtil.logBlockChange(
+              source,
+              world,
+              blockPos,
+              newBlockState
+          );
 
-        // TODO: maybe update block state?
+          // TODO: maybe update block state?
 
-        if (source instanceof Player player) {
+          if (source instanceof Player player) {
 
             BLOCK.put(player.getUniqueId(), new BlockStatePos(oldBlockState, blockPos.toBlock(), world));
-        }
+          }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Der Block ", Colors.SUCCESS)
-                .append(EssentialsUtil.getDisplayName(oldBlockMaterial))
-                .append(Component.text(" bei ", Colors.SUCCESS))
-                .append(Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
-                .append(Component.text(" wurde zu ", Colors.SUCCESS))
-                .append(EssentialsUtil.getDisplayName(newBlockState.getType()))
-                .append(Component.text(" geändert.", Colors.SUCCESS)));
+          EssentialsUtil.sendSuccess(source, Component.text("Der Block ", Colors.SUCCESS)
+              .append(EssentialsUtil.getDisplayName(oldBlockMaterial))
+              .append(Component.text(" bei ", Colors.SUCCESS))
+              .append(Component.text("%s %s %s".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ())))
+              .append(Component.text(" wurde zu ", Colors.SUCCESS))
+              .append(EssentialsUtil.getDisplayName(newBlockState.getType()))
+              .append(Component.text(" geändert.", Colors.SUCCESS)));
+        });
+
         return 1;
     }
 
@@ -172,19 +179,23 @@ public class SetBlockCommand extends EssentialsCommand { // TODO test filter
 
         val level = blockStatePos.world();
         val pos = blockStatePos.blockPos().toLocation(level);
-        val blockState = level.getBlockState(pos);
-        val newBlockState = blockStatePos.blockState();
 
-        BLOCK.put(uuid, new BlockStatePos(blockState, pos.toBlock(), level));
-        pos.getBlock().setBlockData(newBlockState.getBlockData());
-        EssentialsUtil.logBlockChange(
-                player,
-                level,
-                pos,
-                newBlockState
-        );
+        EssentialsUtil.runAtLocation(pos, () -> {
+          val blockState = level.getBlockState(pos);
+          val newBlockState = blockStatePos.blockState();
 
-        EssentialsUtil.sendSuccess(player, "Der Block wurde rückgängig gemacht");
+          BLOCK.put(uuid, new BlockStatePos(blockState, pos.toBlock(), level));
+          pos.getBlock().setBlockData(newBlockState.getBlockData());
+          EssentialsUtil.logBlockChange(
+              player,
+              level,
+              pos,
+              newBlockState
+          );
+
+          EssentialsUtil.sendSuccess(player, "Der Block wurde rückgängig gemacht");
+        });
+
         return 1;
     }
 

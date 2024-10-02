@@ -54,10 +54,17 @@ public class SummonCommand extends EssentialsCommand {
         );
     }
 
-    private int summon(CommandSender source, EntityType entityType, Location pos, @Nullable Object nbt, boolean initialize) throws WrapperCommandSyntaxException {
-        val entity = createEntity(entityType, pos, nbt, initialize);
-        EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
+    private int summon(CommandSender source, EntityType entityType, Location pos, @Nullable Object nbt, boolean initialize) {
+        EssentialsUtil.runAtLocation(pos, () -> {
+          try {
+            val entity = createEntity(entityType, pos, nbt, initialize);
+            EssentialsUtil.sendSuccess(source, EssentialsUtil.getDisplayName(entity)
                 .append(Component.text(" wurde gespawnt.", Colors.SUCCESS)));
+          } catch (WrapperCommandSyntaxException e) {
+            EssentialsUtil.sendException(source, e);
+          }
+        });
+
         return 1;
     }
 

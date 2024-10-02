@@ -104,9 +104,8 @@ public class EffectCommand extends EssentialsCommand {
 
         for (Entity entity : targets) {
             if (entity instanceof LivingEntity livingEntity) {
-                if (livingEntity.addPotionEffect(potionEffect)) {
-                    ++successfulApplies;
-                }
+              EssentialsUtil.addPotionEffect(livingEntity, potionEffect);
+              ++successfulApplies;
             }
         }
 
@@ -127,8 +126,8 @@ public class EffectCommand extends EssentialsCommand {
 
         for (Entity entity : targets) {
             if (entity instanceof LivingEntity livingEntity && livingEntity.hasPotionEffect(effectType)) {
-                livingEntity.removePotionEffect(effectType);
-                ++successfullyRemoves;
+              EssentialsUtil.removePotionEffect(livingEntity, effectType);
+              ++successfullyRemoves;
             }
         }
 
@@ -148,8 +147,9 @@ public class EffectCommand extends EssentialsCommand {
         int successfullyRemoves = 0;
 
         for (Entity entity : targets) {
-            if (entity instanceof LivingEntity livingEntity && livingEntity.clearActivePotionEffects()) {
-                ++successfullyRemoves;
+            if (entity instanceof LivingEntity livingEntity) {
+              EssentialsUtil.clearActivePotionEffects(livingEntity);
+              ++successfullyRemoves;
             }
         }
 

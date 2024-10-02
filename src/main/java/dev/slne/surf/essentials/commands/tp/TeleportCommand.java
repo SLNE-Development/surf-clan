@@ -131,9 +131,12 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
     private int teleportToEntity(CommandSender sender, Collection<Entity> targets, Entity destination) throws WrapperCommandSyntaxException {
         val destinationLocation = destination.getLocation();
 
-        if (!isLoaded(destinationLocation)) {
-            EssentialsUtil.sendInfo(sender, "Teleportiere...");
-        }
+        EssentialsUtil.runAtLocation(destinationLocation, () -> {
+            if (!isLoaded(destinationLocation)) {
+                EssentialsUtil.sendInfo(sender, "Teleportiere...");
+            }
+        });
+
 
         performTeleport(targets, destinationLocation, Optional.empty(), Optional.empty()).thenAccept(entities -> {
             boolean single = entities.size() == 1;
@@ -157,9 +160,11 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
             destination.setPitch(r.getNormalizedPitch());
         });
 
-        if (!isLoaded(destination)) {
-            EssentialsUtil.sendInfo(sender, "Teleportiere...");
-        }
+        EssentialsUtil.runAtLocation(destination, () -> {
+            if (!isLoaded(destination)) {
+                EssentialsUtil.sendInfo(sender, "Teleportiere...");
+            }
+        });
 
         performTeleport(
                 targets,
@@ -231,7 +236,7 @@ public class TeleportCommand extends EssentialsCommand { // TODO test
     private void lookAt(Entity target, Optional<Location> location, Optional<LookAnchor> lookAnchor) {
         if (location.isPresent()) {
             if (target instanceof Player player) {
-                Bukkit.getScheduler().runTask(SurfEssentials.getInstance(), () -> {
+                EssentialsUtil.runOnEntity(player, () -> {
                     Location location1 = location.get();
                     player.lookAt(location1.x(), location1.y(), location1.z(), lookAnchor.orElse(LookAnchor.EYES));
                 });

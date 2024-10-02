@@ -42,6 +42,7 @@ paper {
     bootstrapper = "dev.slne.surf.essentials.SurfEssentialsBootstrap"
     loader = "dev.slne.surf.essentials.SurfEssentialsLoader"
     generateLibrariesJson = true
+    foliaSupported = true
 
     apiVersion = "1.21"
     authors = listOf("twisti")

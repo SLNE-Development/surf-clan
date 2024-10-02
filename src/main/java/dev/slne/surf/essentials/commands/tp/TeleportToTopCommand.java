@@ -7,6 +7,7 @@ import dev.slne.surf.essentials.utils.EssentialsUtil;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import lombok.val;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -33,15 +34,18 @@ public class TeleportToTopCommand extends EssentialsCommand {
     private int tptop(CommandSender source, OfflinePlayer offlinePlayer) throws WrapperCommandSyntaxException {
         val uuid = offlinePlayer.getUniqueId();
         @Nullable val onlinePlayer = offlinePlayer.getPlayer();
-        final Location location;
 
         if (onlinePlayer != null) {
-            location = onlinePlayer.getLocation().clone();
-            location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
-            location.setX(location.getBlockX() + 0.5);
-            location.setZ(location.getBlockZ() + 0.5);
+            EssentialsUtil.runOnEntity(onlinePlayer, () -> {
+                val location = onlinePlayer.getLocation();
+                location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
+                location.setX(location.getBlockX() + 0.5);
+                location.setZ(location.getBlockZ() + 0.5);
 
-            onlinePlayer.teleportAsync(location);
+                onlinePlayer.teleportAsync(location).thenRunAsync(() -> {
+                    sendSuccess(source, offlinePlayer, location);
+                });
+            });
         } else {
 
             if (!offlinePlayer.hasPlayedBefore()) {
@@ -51,7 +55,7 @@ public class TeleportToTopCommand extends EssentialsCommand {
             EssentialsUtil.sendInfo(source, "Teleportiere Spieler...");
 
 
-            location = EssentialsUtil.getLocation(offlinePlayer);
+            val location = EssentialsUtil.getLocation(offlinePlayer);
 
             location.setY((location.getWorld().getHighestBlockYAt(location.getBlockX(), location.getBlockZ())) + 2);
             location.setX(location.getBlockX() + 0.5);
@@ -62,11 +66,16 @@ public class TeleportToTopCommand extends EssentialsCommand {
             } catch (IOException e) {
                 throw Exceptions.FAILED_TO_WRITE_TO_FILE_IO.create(e);
             }
+
+            sendSuccess(source, offlinePlayer, location);
         }
 
-        EssentialsUtil.sendSuccess(source, EssentialsUtil.getOfflineDisplayName(offlinePlayer)
-                .append(Component.text(" wurde zum höchsten Block teleportiert.", Colors.SUCCESS)
-                        .hoverEvent(HoverEvent.showText(EssentialsUtil.formatLocation(Colors.INFO, location, true)))));
         return 1;
+    }
+
+    private static void sendSuccess(CommandSender source, OfflinePlayer offlinePlayer, Location location) {
+        EssentialsUtil.sendSuccess(source, EssentialsUtil.getOfflineDisplayName(offlinePlayer)
+            .append(Component.text(" wurde zum höchsten Block teleportiert.", Colors.SUCCESS)
+                .hoverEvent(HoverEvent.showText(EssentialsUtil.formatLocation(Colors.INFO, location, true)))));
     }
 }

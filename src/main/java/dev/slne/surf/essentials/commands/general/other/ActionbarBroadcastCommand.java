@@ -43,7 +43,7 @@ public class ActionbarBroadcastCommand extends EssentialsCommand {
                                 .append(actionBarText))))
                 .append(Component.text(" wurde ", Colors.SUCCESS))
                 .append((successfullyShowed == 1) ? EssentialsUtil.getDisplayName(targets.iterator().next()) : Component.text(successfullyShowed, Colors.TERTIARY).append(Component.text(" Spielern ", Colors.SUCCESS)))
-                .append(Component.text(" gezeigt!", Colors.SUCCESS)));
+                .append(Component.text("gezeigt!", Colors.SUCCESS)));
         return successfullyShowed;
     }
 }

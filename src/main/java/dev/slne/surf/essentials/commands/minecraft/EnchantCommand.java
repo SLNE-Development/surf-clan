@@ -10,10 +10,13 @@ import dev.slne.surf.essentials.utils.brigadier.BrigadierMessage;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.permission.Permissions;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import lombok.val;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -51,7 +54,7 @@ public class EnchantCommand extends EssentialsCommand {
 
     private static int enchant(CommandSender source, Collection<Entity> targetsUnchecked, NamespacedKey enchantmentKey, Integer level) throws WrapperCommandSyntaxException {
         val targets = EssentialsUtil.checkEntitySuggestion(source, targetsUnchecked);
-        val enchantment = Enchantment.getByKey(enchantmentKey);
+        val enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(enchantmentKey);
         int successfullEnchantment = 0;
 
         if (enchantment == null) throw Exceptions.ERROR_UNKNOWN_ENCHANTMENT.create(enchantmentKey.asString());
@@ -60,22 +63,31 @@ public class EnchantCommand extends EssentialsCommand {
 
 
         for (Entity entity : targets) {
-            if (!(entity instanceof LivingEntity livingEntity))
-                throw Exceptions.ERROR_NOT_VALID_ENTITY_FOR_COMMAND.create(entity);
+            if (!(entity instanceof LivingEntity livingEntity)){
+                EssentialsUtil.sendException(source, Exceptions.ERROR_NOT_VALID_ENTITY_FOR_COMMAND.create(entity));
+                continue;
+            }
 
             val equipment = livingEntity.getEquipment();
-            if (equipment == null) throw Exceptions.ERROR_NOT_HOLDING_ITEM.create(livingEntity);
+            if (equipment == null){
+                EssentialsUtil.sendException(source, Exceptions.ERROR_NOT_HOLDING_ITEM.create(livingEntity));
+                continue;
+            }
 
             val itemStack = equipment.getItemInMainHand();
 
-            if (itemStack.getType() == Material.AIR) throw Exceptions.ERROR_NOT_HOLDING_ITEM.create(livingEntity);
+            if (itemStack.getType() == Material.AIR){
+                EssentialsUtil.sendException(source, Exceptions.ERROR_NOT_HOLDING_ITEM.create(livingEntity));
+                continue;
+            }
 
             if (EssentialsUtil.isEnchantmentCompatible(enchantment, itemStack)) {
-                itemStack.addEnchantment(enchantment, level);
+                EssentialsUtil.addEnchantment(livingEntity, itemStack, enchantment, level);
                 ++successfullEnchantment;
 
-            } else if (targets.size() == 1)
-                throw Exceptions.ERROR_ENCHANTMENT_INCOMPATIBLE.create(itemStack);
+            } else if (targets.size() == 1) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_ENCHANTMENT_INCOMPATIBLE.create(itemStack));
+            }
         }
 
 
@@ -101,7 +113,7 @@ public class EnchantCommand extends EssentialsCommand {
     private static final ArgumentSuggestions<CommandSender> SUGGEST_ENCHANTMENTS = (info, builder) -> {
         val currentArg = info.currentArg().toLowerCase();
 
-        Arrays.stream(Enchantment.values())
+        RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
                 .filter(enchantment -> currentArg.isEmpty() || currentArg.isBlank() ||
                         enchantment.getKey().asString().toLowerCase().startsWith(currentArg) || enchantment.getKey().value().startsWith(currentArg))
                 .forEach(enchantment -> builder.suggest(enchantment.getKey().asString(), new BrigadierMessage(EssentialsUtil.getDisplayName(enchantment, 1))));

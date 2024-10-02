@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.List;
 
-public class GodmodeCommand extends EssentialsCommand { // TODO
+public class GodmodeCommand extends EssentialsCommand {
     public GodmodeCommand() {
         super("godmode", "god [<enable | disable> <players>]", "Change the godmode of players", "god");
 

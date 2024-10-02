@@ -12,7 +12,7 @@ import lombok.val;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class RandomTeleportCommand extends EssentialsCommand { // TODO test
+public class RandomTeleportCommand extends EssentialsCommand {
 
     public RandomTeleportCommand() {
         super("wild", "wild [<maxRadius>]", "Teleports you to a random location", "rtp", "tpr", "teleportrandom");

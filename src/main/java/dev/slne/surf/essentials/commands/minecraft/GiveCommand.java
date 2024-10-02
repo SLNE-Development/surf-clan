@@ -62,13 +62,15 @@ public class GiveCommand extends EssentialsCommand {
                 remainingAmount -= stackSize;
                 stack.setAmount(stackSize);
 
-                target.getInventory().addItem(stack).forEach((integer, remaining) -> world.dropItem(target.getLocation(), remaining, item1 -> item1.setPickupDelay(0)));
+                EssentialsUtil.runOnEntity(target, () -> target.getInventory().addItem(stack).forEach((integer, remaining) -> world.dropItem(target.getLocation(), remaining, item1 -> item1.setPickupDelay(0))));
                 stack.setAmount(1);
 
-                world.dropItem(target.getLocation(), stack, item1 -> {
-                    item1.setCanPlayerPickup(false);
-                    item1.setCanMobPickup(false);
-                    Bukkit.getScheduler().runTaskLater(SurfEssentials.getInstance(), () -> item1.setHealth(-1), 2L);
+                EssentialsUtil.runOnEntity(target, () -> {
+                    world.dropItem(target.getLocation(), stack, item1 -> {
+                        item1.setCanPlayerPickup(false);
+                        item1.setCanMobPickup(false);
+                        EssentialsUtil.runOnEntityDelayed(item1, 2L, () -> item1.setHealth(-1));
+                    });
                 });
 
                 world.playSound(target, Sound.ENTITY_ITEM_PICKUP, SoundCategory.MASTER, 0.2f, ((EssentialsUtil.random().nextFloat() - EssentialsUtil.random().nextFloat()) * 0.7F + 1.0F) * 2.0F);

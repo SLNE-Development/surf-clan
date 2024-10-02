@@ -15,9 +15,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-// TODO: all error are blue instead of red
 @UtilityClass
-public class Exceptions { // TODO: Add more java docs
+public class Exceptions {
     /**
      * The exception thrown when a player is required but the sender is not a player
      */

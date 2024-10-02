@@ -11,8 +11,10 @@ import dev.slne.surf.essentials.utils.color.Colors;
 import dev.slne.surf.essentials.utils.brigadier.Exceptions;
 import dev.slne.surf.essentials.utils.permission.Permissions;
 import lombok.val;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
@@ -91,43 +93,57 @@ public class SpawnerChangeCommand extends EssentialsCommand {
         );
     }
 
-
     private static int giveSpawner(HumanEntity source) throws WrapperCommandSyntaxException {
-        if (!source.getInventory().addItem(new ItemStack(Material.SPAWNER)).isEmpty())
+        val stack = new ItemStack(Material.SPAWNER);
+        val inv = source.getInventory();
+
+        if (inv.firstEmpty() == -1)
             throw Exceptions.NO_SPACE_IN_INVENTORY.create(source);
 
-        EssentialsUtil.sendSuccess(source, "Dir wurde ein spawner gegeben!");
+        EssentialsUtil.runOnEntity(source, () -> {
+            inv.addItem(stack);
+            EssentialsUtil.sendSuccess(source, "Dir wurde ein spawner gegeben!");
+        });
+
         return 1;
     }
 
-    private static int querySpawner(CommandSender sender, Location location) throws WrapperCommandSyntaxException {
-        if (!(location.getBlock().getState(true) instanceof CreatureSpawner spawner)) throw Exceptions.ERROR_NO_SPAWNER_AT_LOCATION;
+    private static int querySpawner(CommandSender sender, Location location) {
+        EssentialsUtil.doWithBlock(location, block -> {
+            val state = block.getState(true);
 
+            if (!(state instanceof CreatureSpawner spawner)) {
+                EssentialsUtil.sendException(sender, Exceptions.ERROR_NO_SPAWNER_AT_LOCATION);
+                return;
+            }
 
-        val entityType = spawner.getSpawnedType();
-        val entityName = (entityType != null) ? entityType.getKey().asString() : "__unknown__";
-        val minSpawnDelay = spawner.getMinSpawnDelay();
-        val maxSpawnDelay = spawner.getMaxSpawnDelay();
-        val spawnRange = spawner.getSpawnRange();
-        val requiredPlayerRange = spawner.getRequiredPlayerRange();
+            val entityType = spawner.getSpawnedType();
+            val entityName = (entityType != null) ? entityType.getKey().asString() : "__unknown__";
+            val minSpawnDelay = spawner.getMinSpawnDelay();
+            val maxSpawnDelay = spawner.getMaxSpawnDelay();
+            val spawnRange = spawner.getSpawnRange();
+            val requiredPlayerRange = spawner.getRequiredPlayerRange();
 
-        EssentialsUtil.sendSuccess(sender, Component.text("Spawner", Colors.TERTIARY)
+            EssentialsUtil.sendSuccess(sender, Component.text("Spawner", Colors.TERTIARY)
                 .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
-                        .append(Component.text(entityName, Colors.TERTIARY))
-                        .append(Component.newline())
-                        .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
-                        .append(Component.newline())
-                        .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
-                        .append(Component.newline())
-                        .append(Component.text("spawnRange: ", Colors.INFO)
-                                .append(Component.text(spawnRange, Colors.TERTIARY)))
-                        .append(Component.newline())
-                        .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                .append(Component.text(requiredPlayerRange, Colors.TERTIARY)))))
+                    .append(Component.text(entityName, Colors.TERTIARY))
+                    .append(Component.newline())
+                    .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                        .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
+                    .append(Component.newline())
+                    .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                        .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
+                    .append(Component.newline())
+                    .append(Component.text("spawnRange: ", Colors.INFO)
+                        .append(Component.text(spawnRange, Colors.TERTIARY)))
+                    .append(Component.newline())
+                    .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                        .append(Component.text(requiredPlayerRange, Colors.TERTIARY)))))
                 .append(Component.text(" bei ", Colors.INFO)
-                        .append(EssentialsUtil.formatLocationWithoutSpacer(location))));
+                    .append(EssentialsUtil.formatLocationWithoutSpacer(location))));
+        });
+
+
         return 1;
 
     }
@@ -141,43 +157,58 @@ public class SpawnerChangeCommand extends EssentialsCommand {
             Optional<Integer> optionalMaxSpawnDelay,
             Optional<Integer> optionalSpawnRange,
             Optional<Integer> optionalRequiredPlayerRange
-    ) throws WrapperCommandSyntaxException {
-        if (!(location.getBlock().getState(true) instanceof CreatureSpawner spawner)) throw Exceptions.ERROR_NO_SPAWNER_AT_LOCATION;
+    ) {
+        EssentialsUtil.doWithBlock(location, block -> {
+            val state = block.getState(true);
 
-        val type = optionalEntityType.orElse(spawner.getSpawnedType());
-        final int minSpawnDelay = optionalMinSpawnDelay.orElse(spawner.getMinSpawnDelay());
-        final int maxSpawnDelay = optionalMaxSpawnDelay.orElse(spawner.getMaxSpawnDelay());
-        final int spawnRange = optionalSpawnRange.orElse(spawner.getSpawnRange());
-        final int requiredPlayerRange = optionalRequiredPlayerRange.orElse(spawner.getRequiredPlayerRange());
+            if (!(state instanceof CreatureSpawner spawner)) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_NO_SPAWNER_AT_LOCATION);
+                return;
+            }
+
+            val type = optionalEntityType.orElse(spawner.getSpawnedType());
+            final int minSpawnDelay = optionalMinSpawnDelay.orElse(spawner.getMinSpawnDelay());
+            final int maxSpawnDelay = optionalMaxSpawnDelay.orElse(spawner.getMaxSpawnDelay());
+            final int spawnRange = optionalSpawnRange.orElse(spawner.getSpawnRange());
+            final int requiredPlayerRange = optionalRequiredPlayerRange.orElse(spawner.getRequiredPlayerRange());
 
 
-        if (minSpawnDelay < maxSpawnDelay) throw Exceptions.MIN_SPAWN_DELAY_MUST_BE_LESS_THAN_MAX_SPAWN_DELAY;
-        if (minSpawnDelay > maxSpawnDelay) throw Exceptions.MAX_SPAWN_DELAY_MUST_BE_GREATER_THAN_MIN_SPAWN_DELAY;
+            if (minSpawnDelay < maxSpawnDelay) {
+                EssentialsUtil.sendException(source, Exceptions.MIN_SPAWN_DELAY_MUST_BE_LESS_THAN_MAX_SPAWN_DELAY);
+                return;
+            }
+            if (minSpawnDelay > maxSpawnDelay) {
+                EssentialsUtil.sendException(source, Exceptions.MAX_SPAWN_DELAY_MUST_BE_GREATER_THAN_MIN_SPAWN_DELAY);
+                return;
+            }
 
-        spawner.setSpawnedType(type);
-        spawner.setMinSpawnDelay(minSpawnDelay);
-        spawner.setMaxSpawnDelay(maxSpawnDelay);
-        spawner.setSpawnRange(spawnRange);
-        spawner.setRequiredPlayerRange(requiredPlayerRange);
-        spawner.update(true, true);
+            spawner.setSpawnedType(type);
+            spawner.setMinSpawnDelay(minSpawnDelay);
+            spawner.setMaxSpawnDelay(maxSpawnDelay);
+            spawner.setSpawnRange(spawnRange);
+            spawner.setRequiredPlayerRange(requiredPlayerRange);
+            spawner.update(true, true);
 
-        EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
+            EssentialsUtil.sendSuccess(source, Component.text("Der ", Colors.SUCCESS)
                 .append(Component.text("Spawner", Colors.TERTIARY)
-                        .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
-                                .append(Component.text((type != null) ? type.getKey().asString() : "__unknown__", Colors.TERTIARY))
-                                .append(Component.newline())
-                                .append(Component.text("minSpawnDelay: ", Colors.INFO)
-                                        .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
-                                .append(Component.newline())
-                                .append(Component.text("maxSpawnDelay: ", Colors.INFO)
-                                        .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
-                                .append(Component.newline())
-                                .append(Component.text("spawnRange: ", Colors.INFO)
-                                        .append(Component.text(spawnRange, Colors.TERTIARY)))
-                                .append(Component.newline())
-                                .append(Component.text("requiredPlayerRange: ", Colors.INFO)
-                                        .append(Component.text(requiredPlayerRange, Colors.TERTIARY))))))
+                    .hoverEvent(HoverEvent.showText(Component.text("Entity: ", Colors.INFO)
+                        .append(Component.text((type != null) ? type.getKey().asString() : "__unknown__", Colors.TERTIARY))
+                        .append(Component.newline())
+                        .append(Component.text("minSpawnDelay: ", Colors.INFO)
+                            .append(Component.text(minSpawnDelay, Colors.TERTIARY)))
+                        .append(Component.newline())
+                        .append(Component.text("maxSpawnDelay: ", Colors.INFO)
+                            .append(Component.text(maxSpawnDelay, Colors.TERTIARY)))
+                        .append(Component.newline())
+                        .append(Component.text("spawnRange: ", Colors.INFO)
+                            .append(Component.text(spawnRange, Colors.TERTIARY)))
+                        .append(Component.newline())
+                        .append(Component.text("requiredPlayerRange: ", Colors.INFO)
+                            .append(Component.text(requiredPlayerRange, Colors.TERTIARY))))))
                 .append(Component.text(" wurde erfolgreich geändert!")));
+        });
+
+
         return 1;
     }
 

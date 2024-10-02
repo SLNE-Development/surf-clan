@@ -18,6 +18,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -109,31 +110,35 @@ public class ForceloadCommand extends EssentialsCommand {
 
     private int query(CommandSender source, Location2D location2D) {
         val world = location2D.getWorld();
-        val isForcedChunk = location2D.getWorld().isChunkForceLoaded(location2D.getBlockX(), location2D.getBlockZ());
 
-        EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.INFO)
-                .append(Component.text("%s %s".formatted(location2D.getBlockX() >> 4, location2D.getBlockZ() >> 4), Colors.VARIABLE_VALUE))
-                .append(Component.text(" in ", Colors.INFO))
-                .append(EssentialsUtil.getDisplayName(world))
-                .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", Colors.INFO))
-                .append(Component.text("dauerhaft geladen!", Colors.INFO)));
+        EssentialsUtil.doWithIsChunkForceLoaded(world, location2D.getBlockX(), location2D.getBlockZ(), isForcedChunk -> EssentialsUtil.sendSuccess(source, Component.text("Der Chunk ", Colors.INFO)
+            .append(Component.text("%s %s".formatted(location2D.getBlockX() >> 4, location2D.getBlockZ() >> 4), Colors.VARIABLE_VALUE))
+            .append(Component.text(" in ", Colors.INFO))
+            .append(EssentialsUtil.getDisplayName(world))
+            .append(Component.text((isForcedChunk) ? " wird " : " wird nicht ", Colors.INFO))
+            .append(Component.text("dauerhaft geladen!", Colors.INFO))));
 
         return 1;
     }
 
     private int removeAll(CommandSender source, World world) throws WrapperCommandSyntaxException {
-        int successfulRemoved = 0;
+        EssentialsUtil.runGlobal(() -> {
+            int successfulRemoved = 0;
 
-        for (Chunk forceLoadedChunk : world.getForceLoadedChunks()) {
-            forceLoadedChunk.setForceLoaded(false);
-            successfulRemoved++;
-        }
+            for (Chunk forceLoadedChunk : world.getForceLoadedChunks()) {
+                EssentialsUtil.setForceLoaded(forceLoadedChunk, false);
+                successfulRemoved++;
+            }
 
-        if (successfulRemoved == 0) throw Exceptions.ERROR_NO_FORCE_LOADED_CHUNKS;
+            if (successfulRemoved == 0) {
+                EssentialsUtil.sendException(source, Exceptions.ERROR_NO_FORCE_LOADED_CHUNKS);
+                return;
+            }
 
-        EssentialsUtil.sendSuccess(source, Component.text("Es wird kein Chunk mehr dauerhaft in ", Colors.SUCCESS)
+            EssentialsUtil.sendSuccess(source, Component.text("Es wird kein Chunk mehr dauerhaft in ", Colors.SUCCESS)
                 .append(EssentialsUtil.getDisplayName(world))
                 .append(Component.text(" geladen!", Colors.SUCCESS)));
+        });
 
         return 1;
     }
@@ -165,10 +170,7 @@ public class ForceloadCommand extends EssentialsCommand {
         // Loop through all chunks and force or unforce load them
         for (int x = startX; x <= endX; ++x) {
             for (int z = startZ; z <= endZ; ++z) {
-                if (world.isChunkForceLoaded(x, z)) {
-                    continue;
-                }
-                world.setChunkForceLoaded(x, z, forceLoaded);
+                EssentialsUtil.setForceLoaded(world, x, z, forceLoaded);
                 numForced++;
                 currentX = x >> 4;
                 currentZ = z >> 4;

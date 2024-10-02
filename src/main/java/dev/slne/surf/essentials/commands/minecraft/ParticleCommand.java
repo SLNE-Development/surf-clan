@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class ParticleCommand extends EssentialsCommand {
+public class ParticleCommand extends EssentialsCommand { // TODO: bukkitData is marked non-null but is null
     private static final double MAX_FORCE_DISTANCE = 512.0;
     private static final double MAX_DISTANCE = 32.0;
 
