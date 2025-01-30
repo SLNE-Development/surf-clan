@@ -98,7 +98,7 @@ class ClanInviteCommand(clanService: ClanService) : CommandAPICommand("invite") 
                         append(clanComponent(playerClan))
                         append(Component.text(" eingeladen.", COLOR_INFO))
 
-                        val acceptComponent = buildMessage {
+                        val acceptComponent = buildMessage(false) {
                             append(Component.text("[Annehmen]", COLOR_SUCCESS))
                             hoverEvent(
                                 HoverEvent.showText(
@@ -114,7 +114,7 @@ class ClanInviteCommand(clanService: ClanService) : CommandAPICommand("invite") 
                         append(acceptComponent)
                         appendSpace()
 
-                        val denyComponent = buildMessage {
+                        val denyComponent = buildMessage(false) {
                             append(Component.text("[Ablehnen]", COLOR_ERROR))
                             hoverEvent(
                                 HoverEvent.showText(
