@@ -42,7 +42,7 @@ class ClanDemoteMemberCommand(clanService: ClanService) : CommandAPICommand("dem
                 return@PlayerCommandExecutor
             }
 
-            if (memberName == player.username) {
+            if (member.uuid == player.uniqueId) {
                 player.sendMessage(buildMessage {
                     append(Component.text("Du kannst dich nicht selbst degradieren.", COLOR_ERROR))
                 })

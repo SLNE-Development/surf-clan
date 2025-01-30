@@ -42,7 +42,7 @@ class ClanPromoteMemberCommand(clanService: ClanService) : CommandAPICommand("pr
                 return@PlayerCommandExecutor
             }
 
-            if (memberName == player.username) {
+            if (member.uuid == player.uniqueId) {
                 player.sendMessage(buildMessage {
                     append(Component.text("Du kannst dich nicht selbst befördern.", COLOR_ERROR))
                 })
