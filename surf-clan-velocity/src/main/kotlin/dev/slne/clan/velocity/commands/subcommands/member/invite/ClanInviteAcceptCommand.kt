@@ -31,6 +31,14 @@ class ClanInviteAcceptCommand(clanService: ClanService) : CommandAPICommand("acc
 
             val playerClan = player.findClan(clanService)
 
+            val chunkedMembers = playerClan?.members?.chunked(10) ?: emptyList()
+            val currentPage = 10
+            val totalSize = chunkedMembers.size
+            val hasNextPage = chunkedMembers.getOrNull(currentPage) != null
+            val hasPreviousPage = chunkedMembers.getOrNull(currentPage - 2) != null
+
+            val pageMembers = chunkedMembers.getOrNull(currentPage - 1) ?: emptyList()
+
             if (playerClan != null) {
                 player.sendMessage(buildMessage {
                     append(Component.text("Du bist bereits im Clan ", COLOR_ERROR))
