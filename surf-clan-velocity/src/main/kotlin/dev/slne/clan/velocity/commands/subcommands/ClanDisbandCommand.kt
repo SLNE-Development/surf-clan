@@ -17,7 +17,7 @@ import net.kyori.adventure.text.Component
 
 class ClanDisbandCommand(clanService: ClanService) : CommandAPICommand("disband") {
     init {
-//        withPermission("surf.clan.disband")
+        withPermission("surf.clan.disband")
 
         executesPlayer(PlayerCommandExecutor { player, args ->
             val clan = player.findClan(clanService)
@@ -48,7 +48,7 @@ class ClanDisbandCommand(clanService: ClanService) : CommandAPICommand("disband"
 
             plugin.container.launch {
                 clanService.deleteClan(clan)
-                
+
                 clan.members.forEach { member ->
                     member.player.sendMessage(clanDisbandedMessage)
                 }

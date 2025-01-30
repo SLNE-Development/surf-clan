@@ -15,7 +15,7 @@ import net.kyori.adventure.text.Component
 
 class ClanCreateCommand(clanService: ClanService) : CommandAPICommand("create") {
     init {
-//        withPermission("surf.clan.create")
+        withPermission("surf.clan.create")
 
         stringArgument("name")
         stringArgument("tag")

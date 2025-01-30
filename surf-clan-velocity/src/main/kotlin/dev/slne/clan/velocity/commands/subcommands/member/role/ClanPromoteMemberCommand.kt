@@ -15,7 +15,7 @@ import net.kyori.adventure.text.Component
 
 class ClanPromoteMemberCommand(clanService: ClanService) : CommandAPICommand("promote") {
     init {
-//        withPermission("surf.clan.promote")
+        withPermission("surf.clan.promote")
 
         clanMemberArgument(clanService)
 

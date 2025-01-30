@@ -15,7 +15,7 @@ import net.kyori.adventure.text.Component
 
 class ClanDemoteMemberCommand(clanService: ClanService) : CommandAPICommand("demote") {
     init {
-//        withPermission("surf.clan.demote")
+        withPermission("surf.clan.demote")
 
         clanMemberArgument(clanService)
 

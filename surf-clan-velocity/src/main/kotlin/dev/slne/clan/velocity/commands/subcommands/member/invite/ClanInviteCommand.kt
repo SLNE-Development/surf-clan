@@ -20,7 +20,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 
 class ClanInviteCommand(clanService: ClanService) : CommandAPICommand("invite") {
     init {
-//        withPermission("surf.clan.invite")
+        withPermission("surf.clan.invite")
 
         withSubcommands(ClanInviteAcceptCommand(clanService))
         withSubcommands(ClanInviteDenyCommand(clanService))

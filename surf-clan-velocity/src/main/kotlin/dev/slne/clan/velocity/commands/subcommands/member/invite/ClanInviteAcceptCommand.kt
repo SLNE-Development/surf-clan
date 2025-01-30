@@ -18,7 +18,7 @@ import net.kyori.adventure.text.Component
 
 class ClanInviteAcceptCommand(clanService: ClanService) : CommandAPICommand("accept") {
     init {
-//        withPermission("surf.clan.invite.accept")
+        withPermission("surf.clan.invite.accept")
 
         clanInviteArgument(clanService)
 

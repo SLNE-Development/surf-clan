@@ -15,7 +15,7 @@ import net.kyori.adventure.text.Component
 
 class ClanKickMemberCommand(clanService: ClanService) : CommandAPICommand("kick") {
     init {
-//        withPermission("surf.clan.kick")
+        withPermission("surf.clan.kick")
 
         clanMemberArgument(clanService)
 
