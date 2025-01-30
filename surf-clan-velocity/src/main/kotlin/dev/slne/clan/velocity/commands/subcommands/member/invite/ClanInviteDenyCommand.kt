@@ -6,6 +6,7 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.core.*
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
 import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
@@ -14,7 +15,10 @@ import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import net.kyori.adventure.text.Component
 
-class ClanInviteDenyCommand(clanService: ClanService) : CommandAPICommand("deny") {
+class ClanInviteDenyCommand(
+    clanService: ClanService,
+    nameCacheService: NameCacheService
+) : CommandAPICommand("deny") {
     init {
         withPermission("surf.clan.invite.deny")
 
@@ -42,18 +46,18 @@ class ClanInviteDenyCommand(clanService: ClanService) : CommandAPICommand("deny"
                 clanService.saveClan(invitedClan)
 
                 invite.invitedBy?.let { invitedBy ->
-                    invitedBy.playerOrNull?.sendMessage(buildMessage {
+                    invitedBy.playerOrNull?.sendMessage(buildMessageAsync {
                         append(Component.text("Der Spieler ", COLOR_INFO))
                         append(player.realName())
                         append(Component.text(" hat deine Einladung zum Clan ", COLOR_INFO))
-                        append(clanComponent(invitedClan))
+                        append(clanComponent(invitedClan, nameCacheService))
                         append(Component.text(" abgelehnt.", COLOR_INFO))
                     })
                 }
 
-                player.sendMessage(buildMessage {
+                player.sendMessage(buildMessageAsync {
                     append(Component.text("Du hast die Einladung zum Clan ", COLOR_SUCCESS))
-                    append(clanComponent(invitedClan))
+                    append(clanComponent(invitedClan, nameCacheService))
                     append(Component.text(" abgelehnt.", COLOR_SUCCESS))
                 })
             }

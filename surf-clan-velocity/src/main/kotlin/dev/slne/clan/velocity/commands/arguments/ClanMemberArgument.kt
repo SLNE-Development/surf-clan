@@ -6,48 +6,62 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
+import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.velocity.extensions.findClan
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.future.future
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 const val CLAN_MEMBER_ARGUMENT_NODE_NAME = "target"
 
+@OptIn(DelicateCoroutinesApi::class)
 class ClanMemberArgument(
     clanService: ClanService,
+    nameCacheService: NameCacheService,
     nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
-) :
-    StringArgument(nodeName) {
+) : StringArgument(nodeName) {
     init {
-        replaceSuggestions(ArgumentSuggestions.strings { info ->
-            val player = info.sender as? Player ?: return@strings emptyArray()
-            val clan = player.findClan(clanService) ?: return@strings emptyArray()
+        replaceSuggestions(ArgumentSuggestions.stringCollectionAsync { info ->
+            val player = info.sender as? Player
+                ?: return@stringCollectionAsync CompletableFuture.supplyAsync(::emptyList)
 
-            clan.members.map { it.uuid.toString() }.toTypedArray() // TODO: Use name instead of UUID
+            val clan = player.findClan(clanService)
+                ?: return@stringCollectionAsync CompletableFuture.supplyAsync(::emptyList)
+
+            GlobalScope.future(Dispatchers.IO) {
+                clan.members.map { nameCacheService.findNameByUuid(it.uuid) ?: it.uuid.toString() }
+            }
         })
     }
 
     companion object {
-        fun clanMember(
-            clanService: ClanService,
-            player: Player,
+        suspend fun clanMember(
+            nameCacheService: NameCacheService,
+            clan: Clan,
             args: CommandArguments,
             nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
-        ): ClanMember? =
-            args.getOrDefaultUnchecked(nodeName, "")?.let { uuidArg ->
-                val clan = player.findClan(clanService) ?: return@let null
-                val uuid = UUID.fromString(uuidArg)
+        ): ClanMember? {
+            val argument = args.getOrDefaultUnchecked(nodeName, "")
+            val uuidByArgument =
+                nameCacheService.findUuidByName(argument) ?: UUID.fromString(argument)
 
-                clan.members.firstOrNull { it.uuid == uuid }
-            }
+            return clan.members.find { it.uuid == uuidByArgument }
+        }
     }
 }
 
 inline fun CommandAPICommand.clanMemberArgument(
     clanService: ClanService,
+    nameCacheService: NameCacheService,
     nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME,
     optional: Boolean = false,
     block: Argument<*>.() -> Unit = {}
 ): CommandAPICommand = withArguments(
-    ClanMemberArgument(clanService, nodeName).setOptional(optional).apply(block)
+    ClanMemberArgument(clanService, nameCacheService, nodeName).setOptional(optional).apply(block)
 )

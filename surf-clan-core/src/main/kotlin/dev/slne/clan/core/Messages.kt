@@ -13,6 +13,21 @@ val COLOR_VARIABLE: TextColor = NamedTextColor.YELLOW
 @DslMarker
 annotation class MessageMarker
 
+suspend fun buildMessageAsync(
+    prefixed: Boolean = true,
+    @MessageMarker builder: suspend TextComponent.Builder.() -> Unit
+): Component {
+    val textBuilder = Component.text()
+
+    if (prefixed) {
+        textBuilder.append(Messages.prefix)
+    }
+
+    textBuilder.builder()
+
+    return textBuilder.build()
+}
+
 fun buildMessage(
     prefixed: Boolean = true,
     @MessageMarker builder: TextComponent.Builder.() -> Unit

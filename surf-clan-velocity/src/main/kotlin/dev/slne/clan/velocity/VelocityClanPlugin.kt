@@ -17,6 +17,7 @@ import dev.slne.clan.core.dataDirectory
 import dev.slne.clan.core.getBean
 import dev.slne.clan.core.runApplication
 import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
@@ -56,7 +57,7 @@ class VelocityClanPlugin @Inject constructor(
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        ClanCommand(getBean<ClanService>()).register()
+        ClanCommand(getBean<ClanService>(), getBean<NameCacheService>()).register()
         ListenerProcessor.registerListeners()
 
         val lcs = LegacyComponentSerializer.legacySection()
