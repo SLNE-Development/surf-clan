@@ -7,6 +7,7 @@ import dev.jorel.commandapi.kotlindsl.integerArgument
 import dev.slne.clan.core.*
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.service.NameCacheService
+import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
@@ -14,9 +15,10 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
-private const val MEMBERS_PER_PAGE = 1 //TODO: Change to 10
+private const val MEMBERS_PER_PAGE = 10 //TODO: Change to 10
 
 class ClanMembersCommand(
     clanService: ClanService,
@@ -32,7 +34,11 @@ class ClanMembersCommand(
                 val clan = player.findClan(clanService)
                 var page = args.getOrDefaultUnchecked("page", 1)
 
-                val chunkedMembers = clan?.members?.chunked(MEMBERS_PER_PAGE) ?: emptyList()
+                val chunkedMembers = clan?.members
+                    ?.sortedBy { it.role.ordinal }
+                    ?.reversed()
+                    ?.chunked(MEMBERS_PER_PAGE)
+                    ?: emptyList()
                 val totalPages = chunkedMembers.size
 
                 page = if (page < 1) 1 else page
@@ -47,17 +53,29 @@ class ClanMembersCommand(
                 }
 
                 val clanInfoMessage = buildMessageAsync(false) {
-                    append(Component.text("Mitglieder von ", COLOR_INFO))
+                    appendNewline()
+                    append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", CLAN_COMPONENT_BAR_COLOR))
                     append(clanComponent(clan, nameCacheService))
-                    append(Component.text(" (Seite $page/$totalPages)", COLOR_INFO))
                     appendNewline()
 
                     pageMembers.forEach { member ->
-                        append(Component.text(" - ", COLOR_INFO))
-                        append(Component.text(member.uuid.toString()))
-                        append(Component.text(" (", COLOR_INFO))
-                        append(Component.text(member.role.toString(), COLOR_VARIABLE))
-                        append(Component.text(")", COLOR_INFO))
+                        val memberName =
+                            nameCacheService.findNameByUuid(member.uuid) ?: member.uuid.toString()
+
+                        append(buildMessage(false) {
+                            append(
+                                Component.text(
+                                    "| ",
+                                    CLAN_COMPONENT_BAR_COLOR,
+                                    TextDecoration.BOLD
+                                )
+                            )
+                            append(Component.text(memberName, NamedTextColor.WHITE))
+                            append(Component.text(" (", NamedTextColor.GRAY))
+                            append(Component.text(member.role.toString(), CLAN_COMPONENT_BAR_COLOR))
+                            append(Component.text(")", NamedTextColor.GRAY))
+                        })
+
                         appendNewline()
                     }
 
@@ -114,13 +132,19 @@ class ClanMembersCommand(
                         appendSpace()
                         append(previousPageComponent)
                         appendSpace()
-                        append(Component.text("Seite $page/$totalPages", NamedTextColor.GRAY))
+                        append(
+                            Component.text(
+                                "sᴇɪᴛᴇ $page/$totalPages",
+                                NamedTextColor.GRAY
+                            )
+                        )
                         appendSpace()
                         append(nextPageComponent)
                         appendSpace()
                         append(lastPageComponent)
                     }
 
+                    appendNewline()
                     append(pagination)
                 }
 
