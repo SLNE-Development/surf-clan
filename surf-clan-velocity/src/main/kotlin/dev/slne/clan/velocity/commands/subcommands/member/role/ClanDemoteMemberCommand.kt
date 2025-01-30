@@ -83,7 +83,7 @@ class ClanDemoteMemberCommand(clanService: ClanService) : CommandAPICommand("dem
                     append(clanComponent(clan))
                     append(
                         Component.text(
-                            " erstellt und kann nicht degradiert werden. Wende dich hierfür bitte an den Support.",
+                            " erstellt und kann nicht degradiert werden. Wende dich dafür bitte an den Support.",
                             COLOR_ERROR
                         )
                     )
