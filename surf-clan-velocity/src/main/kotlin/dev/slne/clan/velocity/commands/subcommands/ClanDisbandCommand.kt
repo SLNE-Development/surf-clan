@@ -11,7 +11,7 @@ import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.extensions.player
+import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
@@ -80,7 +80,7 @@ class ClanDisbandCommand(
                     clanService.deleteClan(clan)
 
                     clan.members.forEach { member ->
-                        member.player.sendMessage(clanDisbandedMessage)
+                        member.playerOrNull?.sendMessage(clanDisbandedMessage)
                     }
 
                     return@launch
