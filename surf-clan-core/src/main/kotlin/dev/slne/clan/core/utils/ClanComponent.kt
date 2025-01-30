@@ -1,7 +1,7 @@
 package dev.slne.clan.core.utils
 
 import dev.slne.clan.api.Clan
-import dev.slne.clan.core.COLOR_INFO
+import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.COLOR_VARIABLE
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
@@ -9,19 +9,69 @@ import dev.slne.clan.core.service.NameCacheService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
+
+private val BAR_COLOR = TextColor.fromHexString("#97B3F7")
 
 suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
     buildMessageAsync(false) {
         val createdBy = nameCacheService.findNameByUuid(clan.createdBy) ?: "Unbekannt"
 
         val hoverComponent = buildMessage(false) {
-            append(Component.text("Name: ", COLOR_INFO))
-            append(Component.text(clan.name, COLOR_VARIABLE))
+            append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", BAR_COLOR, TextDecoration.BOLD))
             appendNewline()
 
-            append(Component.text("Tag: ", COLOR_INFO))
-            append(Component.text(clan.tag, COLOR_VARIABLE))
+            append(renderLine("ɴᴀᴍᴇ", clan.name))
             appendNewline()
+
+            append(renderLine("ᴛᴀɢ", clan.tag))
+            appendNewline()
+
+            append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴠᴏɴ", createdBy))
+            appendNewline()
+
+            append(renderLine("ᴍɪᴛɢʟɪᴇᴅᴇʀ", clan.members.size.toString()))
+            appendNewline()
+
+            append(renderLine("ᴇɪɴʟᴀᴅᴜɴɢᴇɴ", clan.invites.size.toString()))
+            appendNewline()
+
+            append(
+                renderLine(
+                    "ᴀɴғüʜʀᴇʀ",
+                    clan.members.filter { it.role == ClanMemberRole.LEADER }.size.toString()
+                )
+            )
+            appendNewline()
+
+            append(
+                renderLine(
+                    "ᴏғғɪᴢɪᴇʀᴇ",
+                    clan.members.filter { it.role == ClanMemberRole.OFFICER }.size.toString()
+                )
+            )
+            appendNewline()
+
+            append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴀᴍ", clan.createdAt?.formatted() ?: "/"))
+            appendNewline()
+
+            append(renderLine("ᴀᴋᴛᴜᴀʟɪsɪᴇʀᴛ ᴀᴍ", clan.updatedAt?.formatted() ?: "/"))
+
+            appendNewline()
+            appendNewline()
+
+            append(
+                Component.text(
+                    "Klicke, um eine Einladung zum Clan-Discord",
+                    NamedTextColor.GRAY
+                )
+            )
+            appendNewline()
+            append(Component.text(" zu erhalten.", NamedTextColor.GRAY))
+
+        }
 
 //        append(Component.text("Beschreibung: ", COLOR_INFO))
 //        val description = clan.description ?: "Keine Beschreibung"
@@ -33,34 +83,20 @@ suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
 //        }
 //        appendNewline()
 
-            append(Component.text("Erstellt von: ", COLOR_INFO))
-            append(Component.text(createdBy, COLOR_VARIABLE))
-            appendNewline()
-
 //        append(Component.text("Discord Einladung: ", COLOR_INFO))
 //        append(Component.text(clan.discordInvite ?: "Keine Einladung", COLOR_VARIABLE))
 //        appendNewline()
-
-            append(Component.text("Mitglieder: ", COLOR_INFO))
-            append(Component.text(clan.members.size.toString(), COLOR_VARIABLE))
-            appendNewline()
-
-            append(Component.text("Einladungen: ", COLOR_INFO))
-            append(Component.text(clan.invites.size.toString(), COLOR_VARIABLE))
-            appendNewline()
-
-            append(Component.text("Erstellt am: ", COLOR_INFO))
-            append(Component.text(clan.createdAt?.formatted() ?: "/", COLOR_VARIABLE))
-            appendNewline()
-
-            append(Component.text("Aktualisiert am: ", COLOR_INFO))
-            append(Component.text(clan.updatedAt?.formatted() ?: "/", COLOR_VARIABLE))
-        }
 
         append(Component.text(clan.name, COLOR_VARIABLE))
         hoverEvent(HoverEvent.showText(hoverComponent))
         clickEvent(ClickEvent.openUrl(clan.discordInvite ?: "https://discord.gg/castcrafter"))
     }
+
+private fun renderLine(key: String, value: String) =
+    Component.text()
+        .append(Component.text("| ", BAR_COLOR, TextDecoration.BOLD))
+        .append(Component.text("$key: ", NamedTextColor.GRAY))
+        .append(Component.text(value, NamedTextColor.WHITE))
 
 private fun splitDescription(description: String, maxLength: Int = 50): List<String> {
     val lines = mutableListOf<String>()
