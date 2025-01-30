@@ -55,7 +55,7 @@ class ClanLeaveCommand(
                             member.player.sendMessage(clanDisbandedMessage)
                         }
                     } else {
-                        val clanMember = clan.members.find { it.player.uniqueId == player.uniqueId }
+                        val clanMember = clan.members.find { it.uuid == player.uniqueId }
 
                         if (clanMember == null) {
                             player.sendMessage(Messages.notInClanComponent)
