@@ -79,6 +79,8 @@ class ClanDisbandCommand(clanService: ClanService) : CommandAPICommand("disband"
                         member.player.sendMessage(clanDisbandedMessage)
                     }
                 }
+
+                return@PlayerCommandExecutor
             }
 
             player.sendMessage(buildMessage {
