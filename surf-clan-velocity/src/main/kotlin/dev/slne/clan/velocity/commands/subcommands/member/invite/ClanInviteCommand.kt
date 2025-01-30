@@ -96,7 +96,7 @@ class ClanInviteCommand(clanService: ClanService) : CommandAPICommand("invite") 
                         append(player.realName())
                         append(Component.text(" in den Clan ", COLOR_INFO))
                         append(clanComponent(playerClan))
-                        append(Component.text(" eingeladen.", COLOR_INFO))
+                        append(Component.text(" eingeladen. ", COLOR_INFO))
 
                         val acceptComponent = buildMessage(false) {
                             append(Component.text("[Annehmen]", COLOR_SUCCESS))
