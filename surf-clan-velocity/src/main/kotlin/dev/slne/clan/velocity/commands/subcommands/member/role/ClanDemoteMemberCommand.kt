@@ -75,6 +75,23 @@ class ClanDemoteMemberCommand(clanService: ClanService) : CommandAPICommand("dem
                 return@PlayerCommandExecutor
             }
 
+            if (member.uuid == clan.createdBy) {
+                player.sendMessage(buildMessage {
+                    append(Component.text("Der Spieler ", COLOR_ERROR))
+                    append(memberNameComponent)
+                    append(Component.text(" hat den Clan ", COLOR_ERROR))
+                    append(clanComponent(clan))
+                    append(
+                        Component.text(
+                            " erstellt und kann nicht degradiert werden. Wende dich hierfür bitte an den Support.",
+                            COLOR_ERROR
+                        )
+                    )
+                })
+
+                return@PlayerCommandExecutor
+            }
+
             val oldRole = member.role
             val newRole = member.role.previousRole()
 
