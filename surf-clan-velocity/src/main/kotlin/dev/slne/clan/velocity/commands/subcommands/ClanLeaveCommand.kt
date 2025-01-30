@@ -2,6 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.core.*
 import dev.slne.clan.core.service.ClanService
@@ -21,7 +22,7 @@ class ClanLeaveCommand(clanService: ClanService) : CommandAPICommand("leave") {
     init {
         withPermission("surf.clan.leave")
 
-        withSubcommand(object : CommandAPICommand("confirm") {
+        withOptionalArguments(object : StringArgument("confirm") {
             init {
                 withPermission("surf.clan.leave.confirm")
 
