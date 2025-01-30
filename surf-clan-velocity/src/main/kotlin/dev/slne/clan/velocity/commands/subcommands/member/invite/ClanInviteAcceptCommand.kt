@@ -4,7 +4,10 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.*
+import dev.slne.clan.core.COLOR_ERROR
+import dev.slne.clan.core.COLOR_INFO
+import dev.slne.clan.core.COLOR_VARIABLE
+import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -72,12 +75,6 @@ class ClanInviteAcceptCommand(clanService: ClanService) : CommandAPICommand("acc
 
             plugin.container.launch {
                 clanService.saveClan(invitedClan)
-
-                player.sendMessage(buildMessage {
-                    append(Component.text("Du bist dem Clan ", COLOR_SUCCESS))
-                    append(clanComponent(invitedClan))
-                    append(Component.text(" beigetreten.", COLOR_SUCCESS))
-                })
             }
         })
     }
