@@ -24,5 +24,8 @@ class ClanCommand(
         withSubcommand(ClanPromoteMemberCommand(clanService, nameCacheService))
         withSubcommand(ClanDemoteMemberCommand(clanService, nameCacheService))
         withSubcommand(ClanKickMemberCommand(clanService, nameCacheService))
+
+        withSubcommand(ClanInfoCommand(clanService))
+        withSubcommand(ClanMembersCommand(clanService))
     }
 }
