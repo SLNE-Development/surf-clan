@@ -13,14 +13,14 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 
-private val BAR_COLOR = TextColor.fromHexString("#97B3F7")
+val CLAN_COMPONENT_BAR_COLOR = TextColor.fromHexString("#97B3F7")
 
 suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
     buildMessageAsync(false) {
         val createdBy = nameCacheService.findNameByUuid(clan.createdBy) ?: "Unbekannt"
 
         val hoverComponent = buildMessage(false) {
-            append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", BAR_COLOR, TextDecoration.BOLD))
+            append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
             appendNewline()
 
             append(renderLine("ɴᴀᴍᴇ", clan.name))
@@ -70,7 +70,6 @@ suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
             )
             appendNewline()
             append(Component.text(" zu erhalten.", NamedTextColor.GRAY))
-
         }
 
 //        append(Component.text("Beschreibung: ", COLOR_INFO))
@@ -94,7 +93,7 @@ suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
 
 private fun renderLine(key: String, value: String) =
     Component.text()
-        .append(Component.text("| ", BAR_COLOR, TextDecoration.BOLD))
+        .append(Component.text("| ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
         .append(Component.text("$key: ", NamedTextColor.GRAY))
         .append(Component.text(value, NamedTextColor.WHITE))
 

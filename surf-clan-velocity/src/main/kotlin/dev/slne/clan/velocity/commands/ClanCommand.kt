@@ -21,7 +21,7 @@ class ClanCommand(
         withSubcommand(ClanCreateCommand(clanService, nameCacheService))
         withSubcommand(ClanDisbandCommand(clanService, nameCacheService))
         withSubcommand(ClanLeaveCommand(clanService, nameCacheService))
-        withSubcommand(ClanInfoCommand(clanService))
+        withSubcommand(ClanInfoCommand(clanService, nameCacheService))
 
         withSubcommand(ClanInviteMemberCommand(clanService, nameCacheService))
         withSubcommand(ClanPromoteMemberCommand(clanService, nameCacheService))
