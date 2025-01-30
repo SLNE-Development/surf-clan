@@ -14,8 +14,10 @@ class JoinNameCacheListener(
     suspend fun onLogin(event: LoginEvent) {
         val nameByUuid = nameCacheService.findNameByUuid(event.player.uniqueId)
 
-        if (nameByUuid != null && nameByUuid != event.player.username) {
-            nameCacheService.updateNameByUuidCache(event.player.uniqueId, event.player.username)
+        if (nameByUuid != null) {
+            if (nameByUuid == event.player.username) return
+
+            nameCacheService.updateNameCache(event.player.uniqueId, event.player.username)
         } else {
             nameCacheService.createNameCache(event.player.uniqueId, event.player.username)
         }
