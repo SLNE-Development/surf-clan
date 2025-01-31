@@ -10,6 +10,7 @@ import dev.slne.clan.core.*
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
+import dev.slne.clan.core.utils.isInvalidClanTag
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import net.kyori.adventure.text.Component
@@ -94,6 +95,17 @@ class ClanCreateCommand(
 
                     return@launch
                 }
+
+                if (isInvalidClanTag(tag)) {
+                    player.sendMessage(buildMessageAsync {
+                        append(Component.text("Der Clan-Tag ", COLOR_ERROR))
+                        append(Component.text(tag, COLOR_VARIABLE))
+                        append(Component.text(" ist nicht erlaubt.", COLOR_ERROR))
+                    })
+
+                    return@launch
+                }
+
                 val uuid = clanService.createUnusedClanUuid()
 
                 val clan = CoreClan(
