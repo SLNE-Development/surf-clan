@@ -3,7 +3,8 @@ package dev.slne.clan.velocity.commands.subcommands.member.invite
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import dev.slne.clan.core.*
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
@@ -13,6 +14,7 @@ import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
 class ClanInviteDenyCommand(
@@ -30,9 +32,9 @@ class ClanInviteDenyCommand(
 
             if (invite == null) {
                 player.sendMessage(buildMessage {
-                    append(Component.text("Du hast keine Einladung zum Clan ", COLOR_ERROR))
-                    append(Component.text(clanName, COLOR_VARIABLE))
-                    append(Component.text(" erhalten.", COLOR_ERROR))
+                    append(Component.text("Du hast keine Einladung zum Clan ", Colors.ERROR))
+                    append(Component.text(clanName, Colors.VARIABLE_VALUE))
+                    append(Component.text(" erhalten.", Colors.ERROR))
                 })
 
                 return@PlayerCommandExecutor
@@ -47,18 +49,18 @@ class ClanInviteDenyCommand(
 
                 invite.invitedBy?.let { invitedBy ->
                     invitedBy.playerOrNull?.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Spieler ", COLOR_INFO))
+                        append(Component.text("Der Spieler ", Colors.INFO))
                         append(player.realName())
-                        append(Component.text(" hat deine Einladung zum Clan ", COLOR_INFO))
+                        append(Component.text(" hat deine Einladung zum Clan ", Colors.INFO))
                         append(clanComponent(invitedClan, clanPlayerService))
-                        append(Component.text(" abgelehnt.", COLOR_INFO))
+                        append(Component.text(" abgelehnt.", Colors.INFO))
                     })
                 }
 
                 player.sendMessage(buildMessageAsync {
-                    append(Component.text("Du hast die Einladung zum Clan ", COLOR_SUCCESS))
+                    append(Component.text("Du hast die Einladung zum Clan ", Colors.SUCCESS))
                     append(clanComponent(invitedClan, clanPlayerService))
-                    append(Component.text(" abgelehnt.", COLOR_SUCCESS))
+                    append(Component.text(" abgelehnt.", Colors.SUCCESS))
                 })
             }
         })

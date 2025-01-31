@@ -13,6 +13,7 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -43,10 +44,10 @@ class ClanDisbandCommand(
                 if (!clan.hasPermission(player, ClanPermission.DISBAND)) {
                     player.sendMessage(buildMessageAsync {
                         append(
-                            Component.text("Du hast keine Berechtigung, den Clan ", COLOR_ERROR)
+                            Component.text("Du hast keine Berechtigung, den Clan ", Colors.ERROR)
                         )
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" aufzulösen.", COLOR_ERROR))
+                        append(Component.text(" aufzulösen.", Colors.ERROR))
                     })
 
                     return@launch
@@ -54,14 +55,14 @@ class ClanDisbandCommand(
 
                 if (clan.members.size > CLAN_MAX_MEMBERS_DISBAND) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du kannst den Clan ", COLOR_ERROR))
+                        append(Component.text("Du kannst den Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" nicht auflösen, da er mehr als ", COLOR_ERROR))
-                        append(Component.text(CLAN_MAX_MEMBERS_DISBAND.toString(), COLOR_VARIABLE))
+                        append(Component.text(" nicht auflösen, da er mehr als ", Colors.ERROR))
+                        append(Component.text(CLAN_MAX_MEMBERS_DISBAND.toString(), Colors.VARIABLE_VALUE))
                         append(
                             Component.text(
                                 " Mitglieder hat. Wende dich bitte an den Support.",
-                                COLOR_ERROR
+                                Colors.ERROR
                             )
                         )
                     })
@@ -72,9 +73,9 @@ class ClanDisbandCommand(
                 val confirm = args.getOrDefaultUnchecked("confirm", "")
                 if (confirm.isNotEmpty() && confirm == "confirm") {
                     val clanDisbandedMessage = buildMessageAsync {
-                        append(Component.text("Der Clan ", COLOR_ERROR))
+                        append(Component.text("Der Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" wurde aufgelöst.", COLOR_ERROR))
+                        append(Component.text(" wurde aufgelöst.", Colors.ERROR))
                     }
 
                     clanService.deleteClan(clan)
@@ -87,11 +88,11 @@ class ClanDisbandCommand(
                 }
 
                 player.sendMessage(buildMessageAsync {
-                    append(Component.text("Bist du sicher, dass du den Clan ", COLOR_INFO))
+                    append(Component.text("Bist du sicher, dass du den Clan ", Colors.INFO))
                     append(clanComponent(clan, clanPlayerService))
-                    append(Component.text(" auflösen möchtest? Klicke ", COLOR_INFO))
+                    append(Component.text(" auflösen möchtest? Klicke ", Colors.INFO))
                     append(buildMessage(false) {
-                        append(Component.text("hier", COLOR_VARIABLE, TextDecoration.BOLD))
+                        append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
 
                         hoverEvent(HoverEvent.showText(buildMessage(false) {
                             append(
@@ -103,32 +104,32 @@ class ClanDisbandCommand(
                             appendNewline()
                             appendNewline()
 
-                            append(Component.text("Achtung: ", COLOR_ERROR, TextDecoration.BOLD))
+                            append(Component.text("Achtung: ", Colors.ERROR, TextDecoration.BOLD))
                             append(
                                 Component.text(
                                     "Alle Daten des Clans werden gelöscht ",
-                                    COLOR_ERROR
+                                    Colors.ERROR
                                 )
                             )
                             appendNewline()
                             append(
                                 Component.text(
                                     "und können nicht wiederhergestellt werden.",
-                                    COLOR_ERROR
+                                    Colors.ERROR
                                 )
                             )
                             appendNewline()
                             append(
                                 Component.text(
                                     "Auch der Support kann keine Daten wiederherstellen.",
-                                    COLOR_ERROR
+                                    Colors.ERROR
                                 )
                             )
                         }))
 
                         clickEvent(ClickEvent.suggestCommand("/clan disband confirm"))
                     })
-                    append(Component.text(" um den Clan aufzulösen.", COLOR_INFO))
+                    append(Component.text(" um den Clan aufzulösen.", Colors.INFO))
                 })
             }
         })

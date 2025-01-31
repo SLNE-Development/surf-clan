@@ -4,7 +4,8 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.*
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
@@ -15,6 +16,7 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
 class ClanInviteAcceptCommand(
@@ -35,12 +37,12 @@ class ClanInviteAcceptCommand(
 
                 if (playerClan != null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du bist bereits im Clan ", COLOR_ERROR))
+                        append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(playerClan, clanPlayerService))
                         append(
                             Component.text(
                                 " und kannst keine weiteren Einladungen annehmen.",
-                                COLOR_ERROR
+                                Colors.ERROR
                             )
                         )
                     })
@@ -50,9 +52,9 @@ class ClanInviteAcceptCommand(
 
                 if (invite == null) {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Du hast keine Einladung zum Clan ", COLOR_ERROR))
-                        append(Component.text(clanName, COLOR_VARIABLE))
-                        append(Component.text(" erhalten.", COLOR_ERROR))
+                        append(Component.text("Du hast keine Einladung zum Clan ", Colors.ERROR))
+                        append(Component.text(clanName, Colors.VARIABLE_VALUE))
+                        append(Component.text(" erhalten.", Colors.ERROR))
                     })
 
                     return@launch
@@ -67,11 +69,11 @@ class ClanInviteAcceptCommand(
                     val memberPlayer = member.playerOrNull ?: return@forEach
 
                     memberPlayer.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Spieler ", COLOR_INFO))
+                        append(Component.text("Der Spieler ", Colors.INFO))
                         append(player.realName())
-                        append(Component.text(" ist dem Clan ", COLOR_INFO))
+                        append(Component.text(" ist dem Clan ", Colors.INFO))
                         append(clanComponent(invitedClan, clanPlayerService))
-                        append(Component.text(" beigetreten.", COLOR_INFO))
+                        append(Component.text(" beigetreten.", Colors.INFO))
                     })
                 }
 

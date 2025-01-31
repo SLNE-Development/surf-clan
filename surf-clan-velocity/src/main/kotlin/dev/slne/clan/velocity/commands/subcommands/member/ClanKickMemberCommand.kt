@@ -4,7 +4,8 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.*
+import dev.slne.clan.core.Messages
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -12,6 +13,7 @@ import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
 import dev.slne.clan.velocity.extensions.*
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
 class ClanKickMemberCommand(
@@ -38,44 +40,44 @@ class ClanKickMemberCommand(
 
                 if (member == null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Spieler ", COLOR_ERROR))
-                        append(Component.text(memberName, COLOR_VARIABLE))
-                        append(Component.text(" ist nicht im Clan ", COLOR_ERROR))
+                        append(Component.text("Der Spieler ", Colors.ERROR))
+                        append(Component.text(memberName, Colors.VARIABLE_VALUE))
+                        append(Component.text(" ist nicht im Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(".", COLOR_ERROR))
+                        append(Component.text(".", Colors.ERROR))
                     })
 
                     return@launch
                 }
 
                 val memberNameComponent =
-                    member.playerOrNull?.realName() ?: Component.text(memberName, COLOR_VARIABLE)
+                    member.playerOrNull?.realName() ?: Component.text(memberName, Colors.VARIABLE_VALUE)
 
                 if (!clan.hasPermission(player, ClanPermission.KICK)) {
                     player.sendMessage(buildMessageAsync {
                         append(
                             Component.text(
                                 "Du hast keine Berechtigung, den Spieler ",
-                                COLOR_ERROR
+                                Colors.ERROR
                             )
                         )
                         append(memberNameComponent)
-                        append(Component.text(" aus dem Clan ", COLOR_ERROR))
+                        append(Component.text(" aus dem Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" zu entfernen.", COLOR_ERROR))
+                        append(Component.text(" zu entfernen.", Colors.ERROR))
                     })
 
                     return@launch
                 }
 
                 val memberKickedMessage = buildMessageAsync {
-                    append(Component.text("Der Spieler ", COLOR_INFO))
+                    append(Component.text("Der Spieler ", Colors.INFO))
                     append(memberNameComponent)
-                    append(Component.text(" wurde von ", COLOR_INFO))
+                    append(Component.text(" wurde von ", Colors.INFO))
                     append(player.realName())
-                    append(Component.text(" aus dem Clan ", COLOR_INFO))
+                    append(Component.text(" aus dem Clan ", Colors.INFO))
                     append(clanComponent(clan, clanPlayerService))
-                    append(Component.text(" entfernt.", COLOR_INFO))
+                    append(Component.text(" entfernt.", Colors.INFO))
                 }
 
                 clan.removeMember(member)

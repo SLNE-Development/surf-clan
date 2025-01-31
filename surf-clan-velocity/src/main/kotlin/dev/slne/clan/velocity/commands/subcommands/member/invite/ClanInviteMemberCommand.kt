@@ -4,7 +4,9 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.*
+import dev.slne.clan.core.Messages
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -14,6 +16,7 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -37,9 +40,9 @@ class ClanInviteMemberCommand(
 
                 if (invitedPlayer == null) {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Der Spieler ", COLOR_ERROR))
-                        append(Component.text(args[0] as String, COLOR_VARIABLE))
-                        append(Component.text(" ist nicht online.", COLOR_ERROR))
+                        append(Component.text("Der Spieler ", Colors.ERROR))
+                        append(Component.text(args[0] as String, Colors.VARIABLE_VALUE))
+                        append(Component.text(" ist nicht online.", Colors.ERROR))
                     })
 
                     return@launch
@@ -49,11 +52,11 @@ class ClanInviteMemberCommand(
 
                 if (invitedPlayerClan != null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Spieler ", COLOR_ERROR))
+                        append(Component.text("Der Spieler ", Colors.ERROR))
                         append(invitedPlayer.realName())
-                        append(Component.text(" ist bereits im Clan ", COLOR_ERROR))
+                        append(Component.text(" ist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(invitedPlayerClan, clanPlayerService))
-                        append(Component.text(".", COLOR_ERROR))
+                        append(Component.text(".", Colors.ERROR))
                     })
 
                     return@launch
@@ -72,11 +75,11 @@ class ClanInviteMemberCommand(
                         append(
                             Component.text(
                                 "Du hast keine Berechtigung, Spieler in den Clan ",
-                                COLOR_ERROR
+                                Colors.ERROR
                             )
                         )
                         append(clanComponent(playerClan, clanPlayerService))
-                        append(Component.text(" einzuladen.", COLOR_ERROR))
+                        append(Component.text(" einzuladen.", Colors.ERROR))
                     })
 
                     return@launch
@@ -96,9 +99,9 @@ class ClanInviteMemberCommand(
 
                 if (!clanPlayer.acceptsClanInvites) {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Der Spieler ", COLOR_ERROR))
+                        append(Component.text("Der Spieler ", Colors.ERROR))
                         append(invitedPlayer.realName())
-                        append(Component.text(" nimmt keine Einladungen an.", COLOR_ERROR))
+                        append(Component.text(" nimmt keine Einladungen an.", Colors.ERROR))
                     })
 
                     return@launch
@@ -110,22 +113,22 @@ class ClanInviteMemberCommand(
                     clanService.saveClan(playerClan)
 
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du hast ", COLOR_SUCCESS))
+                        append(Component.text("Du hast ", Colors.SUCCESS))
                         append(invitedPlayer.realName())
-                        append(Component.text(" in den Clan ", COLOR_SUCCESS))
+                        append(Component.text(" in den Clan ", Colors.SUCCESS))
                         append(clanComponent(playerClan, clanPlayerService))
-                        append(Component.text(" eingeladen.", COLOR_SUCCESS))
+                        append(Component.text(" eingeladen.", Colors.SUCCESS))
                     })
 
                     invitedPlayer.sendMessage(buildMessageAsync {
-                        append(Component.text("Du wurdest von ", COLOR_INFO))
+                        append(Component.text("Du wurdest von ", Colors.INFO))
                         append(player.realName())
-                        append(Component.text(" in den Clan ", COLOR_INFO))
+                        append(Component.text(" in den Clan ", Colors.INFO))
                         append(clanComponent(playerClan, clanPlayerService))
-                        append(Component.text(" eingeladen. ", COLOR_INFO))
+                        append(Component.text(" eingeladen. ", Colors.INFO))
 
                         val acceptComponent = buildMessage(false) {
-                            append(Component.text("[Annehmen]", COLOR_SUCCESS))
+                            append(Component.text("[Annehmen]", Colors.SUCCESS))
                             hoverEvent(
                                 HoverEvent.showText(
                                     Component.text(
@@ -141,7 +144,7 @@ class ClanInviteMemberCommand(
                         appendSpace()
 
                         val denyComponent = buildMessage(false) {
-                            append(Component.text("[Ablehnen]", COLOR_ERROR))
+                            append(Component.text("[Ablehnen]", Colors.ERROR))
                             hoverEvent(
                                 HoverEvent.showText(
                                     Component.text(
@@ -157,9 +160,9 @@ class ClanInviteMemberCommand(
                     })
                 } else {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Der Spieler ", COLOR_ERROR))
+                        append(Component.text("Der Spieler ", Colors.ERROR))
                         append(invitedPlayer.realName())
-                        append(Component.text(" wurde bereits eingeladen.", COLOR_ERROR))
+                        append(Component.text(" wurde bereits eingeladen.", Colors.ERROR))
                     })
                 }
             }

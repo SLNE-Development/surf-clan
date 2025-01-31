@@ -2,13 +2,15 @@ package dev.slne.clan.velocity.listeners
 
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
-import dev.slne.clan.core.*
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClanInvites
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -31,16 +33,16 @@ class JoinInviteListener(
         }
 
         player.sendMessage(buildMessage {
-            append(Component.text("ᴅᴜ ʜᴀsᴛ ɴᴏᴄʜ ", COLOR_INFO))
-            append(Component.text("${invites.size} ", COLOR_VARIABLE))
-            append(Component.text(" ᴏғғᴇɴᴇ ᴄʟᴀɴ-ᴇɪɴʟᴀᴅᴜɴɢᴇɴ.", COLOR_INFO))
+            append(Component.text("ᴅᴜ ʜᴀsᴛ ɴᴏᴄʜ ", Colors.INFO))
+            append(Component.text("${invites.size} ", Colors.VARIABLE_VALUE))
+            append(Component.text(" ᴏғғᴇɴᴇ ᴄʟᴀɴ-ᴇɪɴʟᴀᴅᴜɴɢᴇɴ.", Colors.INFO))
         })
 
         for (invite in invites) {
             val clan = invite.clan
 
             val acceptComponent = buildMessage(false) {
-                append(Component.text("[Annehmen]", COLOR_SUCCESS))
+                append(Component.text("[Annehmen]", Colors.SUCCESS))
                 hoverEvent(
                     HoverEvent.showText(
                         Component.text(
@@ -53,7 +55,7 @@ class JoinInviteListener(
             }
 
             val denyComponent = buildMessage(false) {
-                append(Component.text("[Ablehnen]", COLOR_ERROR))
+                append(Component.text("[Ablehnen]", Colors.ERROR))
                 hoverEvent(
                     HoverEvent.showText(
                         Component.text(

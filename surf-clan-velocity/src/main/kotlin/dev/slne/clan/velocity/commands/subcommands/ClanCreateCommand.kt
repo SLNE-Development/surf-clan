@@ -13,6 +13,7 @@ import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.core.utils.isInvalidClanTag
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
 class ClanCreateCommand(
@@ -34,9 +35,9 @@ class ClanCreateCommand(
 
                 if (findClan != null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du bist bereits im Clan ", COLOR_ERROR))
+                        append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(findClan, clanPlayerService))
-                        append(Component.text(".", COLOR_ERROR))
+                        append(Component.text(".", Colors.ERROR))
                     })
 
                     return@launch
@@ -45,9 +46,9 @@ class ClanCreateCommand(
                 val findClanByName = clanService.findClanByName(name)
                 if (findClanByName != null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Ein Clan mit dem Namen ", COLOR_ERROR))
+                        append(Component.text("Ein Clan mit dem Namen ", Colors.ERROR))
                         append(clanComponent(findClanByName, clanPlayerService))
-                        append(Component.text(" existiert bereits.", COLOR_ERROR))
+                        append(Component.text(" existiert bereits.", Colors.ERROR))
                     })
 
                     return@launch
@@ -56,9 +57,9 @@ class ClanCreateCommand(
                 val findClanByTag = clanService.findClanByTag(tag)
                 if (findClanByTag != null) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Ein Clan mit dem Tag ", COLOR_ERROR))
+                        append(Component.text("Ein Clan mit dem Tag ", Colors.ERROR))
                         append(clanComponent(findClanByTag, clanPlayerService))
-                        append(Component.text(" existiert bereits.", COLOR_ERROR))
+                        append(Component.text(" existiert bereits.", Colors.ERROR))
                     })
 
                     return@launch
@@ -66,11 +67,11 @@ class ClanCreateCommand(
 
                 if (tag.length < 3 || tag.length > 4) {
                     val builder = Component.text()
-                    builder.append(Component.text("Der Tag muss zwischen ", COLOR_ERROR))
-                    builder.append(Component.text("3", COLOR_VARIABLE))
-                    builder.append(Component.text(" und ", COLOR_ERROR))
-                    builder.append(Component.text("4", COLOR_VARIABLE))
-                    builder.append(Component.text(" Zeichen lang sein.", COLOR_ERROR))
+                    builder.append(Component.text("Der Tag muss zwischen ", Colors.ERROR))
+                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" und ", Colors.ERROR))
+                    builder.append(Component.text("4", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
                     val message = builder.build()
 
                     player.sendMessage(buildMessage {
@@ -82,11 +83,11 @@ class ClanCreateCommand(
 
                 if (name.length < 3 || name.length > 16) {
                     val builder = Component.text()
-                    builder.append(Component.text("Der Name muss zwischen ", COLOR_ERROR))
-                    builder.append(Component.text("3", COLOR_VARIABLE))
-                    builder.append(Component.text(" und ", COLOR_ERROR))
-                    builder.append(Component.text("16", COLOR_VARIABLE))
-                    builder.append(Component.text(" Zeichen lang sein.", COLOR_ERROR))
+                    builder.append(Component.text("Der Name muss zwischen ", Colors.ERROR))
+                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" und ", Colors.ERROR))
+                    builder.append(Component.text("16", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
                     val message = builder.build()
 
                     player.sendMessage(buildMessage {
@@ -98,9 +99,9 @@ class ClanCreateCommand(
 
                 if (isInvalidClanTag(tag)) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Clan-Tag ", COLOR_ERROR))
-                        append(Component.text(tag, COLOR_VARIABLE))
-                        append(Component.text(" ist nicht erlaubt.", COLOR_ERROR))
+                        append(Component.text("Der Clan-Tag ", Colors.ERROR))
+                        append(Component.text(tag, Colors.VARIABLE_VALUE))
+                        append(Component.text(" ist nicht erlaubt.", Colors.ERROR))
                     })
 
                     return@launch
@@ -120,9 +121,9 @@ class ClanCreateCommand(
                 clanService.saveClan(clan)
 
                 player.sendMessage(buildMessageAsync {
-                    append(Component.text("Der Clan ", COLOR_SUCCESS))
+                    append(Component.text("Der Clan ", Colors.SUCCESS))
                     append(clanComponent(clan, clanPlayerService))
-                    append(Component.text(" wurde erfolgreich erstellt.", COLOR_SUCCESS))
+                    append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS))
                 })
             }
         })

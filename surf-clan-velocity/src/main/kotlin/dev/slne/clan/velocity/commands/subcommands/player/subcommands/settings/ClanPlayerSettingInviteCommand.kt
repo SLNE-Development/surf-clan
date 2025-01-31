@@ -5,14 +5,13 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.jorel.commandapi.kotlindsl.getValue
-import dev.slne.clan.core.COLOR_ERROR
-import dev.slne.clan.core.COLOR_SUCCESS
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
 class ClanPlayerSettingInviteCommand(
@@ -41,15 +40,15 @@ class ClanPlayerSettingInviteCommand(
 
                 if (accept) {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Du hast Einladungen zu Clans ", COLOR_SUCCESS))
-                        append(Component.text("aktiviert", COLOR_SUCCESS))
-                        append(Component.text(".", COLOR_SUCCESS))
+                        append(Component.text("Du hast Einladungen zu Clans ", Colors.INFO))
+                        append(Component.text("aktiviert", Colors.SUCCESS))
+                        append(Component.text(".", Colors.INFO))
                     })
                 } else {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Du hast Einladungen zu Clans ", COLOR_SUCCESS))
-                        append(Component.text("deaktiviert", COLOR_ERROR))
-                        append(Component.text(".", COLOR_SUCCESS))
+                        append(Component.text("Du hast Einladungen zu Clans ", Colors.INFO))
+                        append(Component.text("deaktiviert", Colors.ERROR))
+                        append(Component.text(".", Colors.INFO))
                     })
                 }
             }

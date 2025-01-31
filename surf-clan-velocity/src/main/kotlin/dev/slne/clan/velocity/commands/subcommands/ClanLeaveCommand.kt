@@ -4,7 +4,9 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
-import dev.slne.clan.core.*
+import dev.slne.clan.core.Messages
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -13,6 +15,7 @@ import dev.slne.clan.velocity.extensions.player
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -41,11 +44,11 @@ class ClanLeaveCommand(
                 val confirm = args.getOrDefaultUnchecked("confirm", "")
                 if (confirm.isNotEmpty() && confirm == "confirm") {
                     val clanDisbandedMessage = buildMessageAsync {
-                        append(Component.text("Der Clan ", COLOR_INFO))
+                        append(Component.text("Der Clan ", Colors.INFO))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" wurde aufgelöst, da der Anführer ", COLOR_INFO))
+                        append(Component.text(" wurde aufgelöst, da der Anführer ", Colors.INFO))
                         append(player.realName())
-                        append(Component.text(" den Clan verlassen hat.", COLOR_INFO))
+                        append(Component.text(" den Clan verlassen hat.", Colors.INFO))
                     }
 
                     if (clan.createdBy == player.uniqueId) {
@@ -68,16 +71,16 @@ class ClanLeaveCommand(
 
                         clan.members.forEach { member ->
                             member.playerOrNull?.sendMessage(buildMessage {
-                                append(Component.text("Der Spieler ", COLOR_INFO))
+                                append(Component.text("Der Spieler ", Colors.INFO))
                                 append(player.realName())
-                                append(Component.text(" hat den Clan verlassen.", COLOR_INFO))
+                                append(Component.text(" hat den Clan verlassen.", Colors.INFO))
                             })
                         }
 
                         player.sendMessage(buildMessageAsync {
-                            append(Component.text("Du hast den Clan ", COLOR_SUCCESS))
+                            append(Component.text("Du hast den Clan ", Colors.SUCCESS))
                             append(clanComponent(clan, clanPlayerService))
-                            append(Component.text(" verlassen.", COLOR_SUCCESS))
+                            append(Component.text(" verlassen.", Colors.SUCCESS))
                         })
                     }
 
@@ -85,11 +88,11 @@ class ClanLeaveCommand(
                 }
 
                 player.sendMessage(buildMessageAsync {
-                    append(Component.text("Möchtest du den Clan ", COLOR_INFO))
+                    append(Component.text("Möchtest du den Clan ", Colors.INFO))
                     append(clanComponent(clan, clanPlayerService))
-                    append(Component.text(" wirklich verlassen? Klicke ", COLOR_INFO))
+                    append(Component.text(" wirklich verlassen? Klicke ", Colors.INFO))
                     append(buildMessage(false) {
-                        append(Component.text("hier", COLOR_VARIABLE, TextDecoration.BOLD))
+                        append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
                         hoverEvent(HoverEvent.showText(buildMessage(false) {
                             append(
                                 Component.text(
@@ -150,7 +153,7 @@ class ClanLeaveCommand(
                         }))
                         clickEvent(ClickEvent.suggestCommand("/clan leave confirm"))
                     })
-                    append(Component.text(" um zu bestätigen.", COLOR_INFO))
+                    append(Component.text(" um zu bestätigen.", Colors.INFO))
                 })
             }
         })

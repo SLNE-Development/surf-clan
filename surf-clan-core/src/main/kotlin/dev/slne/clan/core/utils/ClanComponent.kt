@@ -2,10 +2,10 @@ package dev.slne.clan.core.utils
 
 import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.COLOR_VARIABLE
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -87,7 +87,7 @@ suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
 //        append(Component.text(clan.discordInvite ?: "Keine Einladung", COLOR_VARIABLE))
 //        appendNewline()
 
-        append(Component.text(clan.name, COLOR_VARIABLE))
+        append(Component.text(clan.name, Colors.VARIABLE_VALUE))
         hoverEvent(HoverEvent.showText(hoverComponent))
         clickEvent(ClickEvent.openUrl(clan.discordInvite ?: "https://discord.gg/castcrafter"))
     }

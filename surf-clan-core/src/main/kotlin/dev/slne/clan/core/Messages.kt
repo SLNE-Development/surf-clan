@@ -1,14 +1,9 @@
 package dev.slne.clan.core
 
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-
-val COLOR_ERROR: TextColor = NamedTextColor.RED
-val COLOR_SUCCESS: TextColor = NamedTextColor.GREEN
-val COLOR_INFO: TextColor = NamedTextColor.AQUA
-val COLOR_VARIABLE: TextColor = NamedTextColor.YELLOW
 
 @DslMarker
 annotation class MessageMarker
@@ -50,7 +45,7 @@ object Messages {
         .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).build()
 
     val notInClanComponent = buildMessage {
-        append(Component.text("Du bist in keinem Clan.", COLOR_ERROR))
+        append(Component.text("Du bist in keinem Clan.", Colors.ERROR))
     }
 
 }
