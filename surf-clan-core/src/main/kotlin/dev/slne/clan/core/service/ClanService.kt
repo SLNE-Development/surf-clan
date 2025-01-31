@@ -28,6 +28,12 @@ class ClanService(
         clanRepository.findAll().forEach { clanCache.put(it.uuid, it) }
     }
 
+    suspend fun refreshCache() = withContext(Dispatchers.IO) {
+        clanCache.invalidateAll()
+
+        clanRepository.findAll().forEach { clanCache.put(it.uuid, it) }
+    }
+
     fun findClanByTag(tag: String) = clans.find { it.tag.equals(tag, ignoreCase = true) }
 
     fun findClanByName(name: String) = clans.find { it.name.equals(name, ignoreCase = true) }
