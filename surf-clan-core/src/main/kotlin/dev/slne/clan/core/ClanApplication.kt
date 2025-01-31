@@ -1,11 +1,12 @@
 package dev.slne.clan.core
 
-import dev.slne.clan.core.spring.JoinClassLoader
-import org.springframework.boot.Banner
-import org.springframework.boot.autoconfigure.SpringBootApplication
+import dev.slne.data.api.DataApi
+import dev.slne.data.api.spring.SurfSpringApplication
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
@@ -14,8 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.nio.file.Path
 
 lateinit var dataDirectory: Path
-
-lateinit var _context: ConfigurableApplicationContext
+private lateinit var _context: ConfigurableApplicationContext
 
 val context: ConfigurableApplicationContext
     get() {
@@ -26,33 +26,22 @@ val context: ConfigurableApplicationContext
         return _context
     }
 
-fun runApplication(classLoader: ClassLoader, vararg parentClassLoader: ClassLoader) {
-    if (::_context.isInitialized) {
-        error("Application already running")
-    }
+inline fun <reified B : Any> getBean(): B = context.getBean(B::class.java)
 
-    val contextClassLoader = Thread.currentThread().contextClassLoader
-    val joinClassLoader = JoinClassLoader(classLoader, parentClassLoader)
 
-    Thread.currentThread().contextClassLoader = joinClassLoader
-
-    _context = SpringApplicationBuilder(ClanApplication::class.java)
-        .bannerMode(Banner.Mode.OFF)
-        .profiles("production")
-        .run()
-
-    Thread.currentThread().contextClassLoader = contextClassLoader
-}
-
-inline fun <reified B : Any> getBean(): B = _context.getBean(B::class.java)
-
-@SpringBootApplication(
-    exclude = [DataSourceAutoConfiguration::class],
-    scanBasePackages = ["dev.slne.clan"]
+@SurfSpringApplication(
+    scanBasePackages = ["dev.slne.clan"],
+    scanFeignBasePackages = ["dev.slne.clan"]
 )
+@EnableAutoConfiguration(exclude = [RedisAutoConfiguration::class, RedisRepositoriesAutoConfiguration::class, SpringDataWebAutoConfiguration::class])
 @EnableCaching
 @EnableJpaRepositories(basePackages = ["dev.slne.clan"])
 @EnableJpaAuditing
 @EnableTransactionManagement
 @EntityScan(basePackages = ["dev.slne.clan"])
-class ClanApplication
+class ClanApplication {
+    companion object {
+        fun run(classLoader: ClassLoader) = DataApi.run(ClanApplication::class.java, classLoader).also { _context = it }
+    }
+
+}

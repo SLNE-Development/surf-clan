@@ -2,6 +2,7 @@ package dev.slne.clan.core.spring
 
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.gson.GsonBuilderCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -29,11 +30,16 @@ class SpringDataConfig {
             password = databaseConfig.password
             url =
                 "jdbc:mariadb://${databaseConfig.hostname}:${databaseConfig.port}/${databaseConfig.database}"
+
         }
 
         validateDatasource(dataSource)
 
         return dataSource
+    }
+
+    fun standardGsonBuilderCustomizer() = GsonBuilderCustomizer {
+
     }
 
     private fun validateDatasource(dataSource: DriverManagerDataSource) {

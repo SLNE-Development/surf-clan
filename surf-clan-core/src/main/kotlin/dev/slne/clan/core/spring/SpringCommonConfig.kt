@@ -7,12 +7,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import java.util.*
 
-@Configuration
+//@Configuration
 class SpringCommonConfig {
-    @Bean
+    @Bean("clanObjectMapper")
     fun objectMapper(modules: ObjectProvider<Module>): JsonMapper = JsonMapper.builder()
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)

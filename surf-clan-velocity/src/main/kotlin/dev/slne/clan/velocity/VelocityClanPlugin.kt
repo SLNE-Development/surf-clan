@@ -3,6 +3,7 @@ package dev.slne.clan.velocity
 import com.github.shynixn.mccoroutine.velocity.SuspendingPluginContainer
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
+import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
@@ -15,7 +16,6 @@ import com.velocitypowered.api.proxy.ProxyServer
 import dev.slne.clan.core.ClanApplication
 import dev.slne.clan.core.dataDirectory
 import dev.slne.clan.core.getBean
-import dev.slne.clan.core.runApplication
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.ClanCommand
@@ -34,6 +34,7 @@ val plugin get() = VelocityClanPlugin.instance
     name = "Surf Clan",
     dependencies = [
         Dependency(id = "surf-api-velocity", optional = false),
+        Dependency(id = "surf-data-velocity", optional = false),
         Dependency(id = "commandapi", optional = false),
         Dependency(id = "tab", optional = false)
     ]
@@ -52,10 +53,12 @@ class VelocityClanPlugin @Inject constructor(
 
         dataDirectory = dataPath
 
-        runApplication(ClanApplication::class.java.classLoader)
+        ClanApplication.run(this.javaClass.classLoader)
+//        DataApi.run(ClanApplication::class.java, ClanApplication::class.java.classLoader)
+        //runApplication(ClanApplication::class.java.classLoader)
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LATE)
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         ClanCommand(getBean<ClanService>(), getBean<ClanPlayerService>()).register()
         ListenerProcessor.registerListeners()
