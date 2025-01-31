@@ -4,8 +4,8 @@ import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import dev.slne.clan.core.*
 import dev.slne.clan.core.invite.CoreClanInvite
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClanInvites
@@ -18,7 +18,7 @@ import net.kyori.adventure.text.format.TextDecoration
 @org.springframework.stereotype.Component
 class JoinInviteListener(
     private val clanService: ClanService,
-    private val nameCacheService: NameCacheService
+    private val clanPlayerService: ClanPlayerService
 ) {
 
     @Subscribe
@@ -67,7 +67,7 @@ class JoinInviteListener(
 
             player.sendMessage(buildMessageAsync(false) {
                 append(Component.text("| ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
-                append(clanComponent(clan, nameCacheService))
+                append(clanComponent(clan, clanPlayerService))
                 append(acceptComponent)
                 appendSpace()
                 append(denyComponent)

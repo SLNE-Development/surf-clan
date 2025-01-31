@@ -5,7 +5,7 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.COLOR_VARIABLE
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
-import dev.slne.clan.core.service.NameCacheService
+import dev.slne.clan.core.service.ClanPlayerService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -15,9 +15,10 @@ import net.kyori.adventure.text.format.TextDecoration
 
 val CLAN_COMPONENT_BAR_COLOR = TextColor.fromHexString("#97B3F7")
 
-suspend fun clanComponent(clan: Clan, nameCacheService: NameCacheService) =
+suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
     buildMessageAsync(false) {
-        val createdBy = nameCacheService.findNameByUuid(clan.createdBy) ?: "Unbekannt"
+        val createdBy =
+            clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
 
         val hoverComponent = buildMessage(false) {
             append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))

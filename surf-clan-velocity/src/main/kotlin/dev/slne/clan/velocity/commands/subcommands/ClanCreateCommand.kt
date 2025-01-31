@@ -7,8 +7,8 @@ import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.*
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.core.utils.isInvalidClanTag
 import dev.slne.clan.velocity.extensions.findClan
@@ -17,7 +17,7 @@ import net.kyori.adventure.text.Component
 
 class ClanCreateCommand(
     clanService: ClanService,
-    nameCacheService: NameCacheService
+    clanPlayerService: ClanPlayerService
 ) : CommandAPICommand("create") {
     init {
         withPermission("surf.clan.create")
@@ -35,7 +35,7 @@ class ClanCreateCommand(
                 if (findClan != null) {
                     player.sendMessage(buildMessageAsync {
                         append(Component.text("Du bist bereits im Clan ", COLOR_ERROR))
-                        append(clanComponent(findClan, nameCacheService))
+                        append(clanComponent(findClan, clanPlayerService))
                         append(Component.text(".", COLOR_ERROR))
                     })
 
@@ -46,7 +46,7 @@ class ClanCreateCommand(
                 if (findClanByName != null) {
                     player.sendMessage(buildMessageAsync {
                         append(Component.text("Ein Clan mit dem Namen ", COLOR_ERROR))
-                        append(clanComponent(findClanByName, nameCacheService))
+                        append(clanComponent(findClanByName, clanPlayerService))
                         append(Component.text(" existiert bereits.", COLOR_ERROR))
                     })
 
@@ -57,7 +57,7 @@ class ClanCreateCommand(
                 if (findClanByTag != null) {
                     player.sendMessage(buildMessageAsync {
                         append(Component.text("Ein Clan mit dem Tag ", COLOR_ERROR))
-                        append(clanComponent(findClanByTag, nameCacheService))
+                        append(clanComponent(findClanByTag, clanPlayerService))
                         append(Component.text(" existiert bereits.", COLOR_ERROR))
                     })
 
@@ -121,7 +121,7 @@ class ClanCreateCommand(
 
                 player.sendMessage(buildMessageAsync {
                     append(Component.text("Der Clan ", COLOR_SUCCESS))
-                    append(clanComponent(clan, nameCacheService))
+                    append(clanComponent(clan, clanPlayerService))
                     append(Component.text(" wurde erfolgreich erstellt.", COLOR_SUCCESS))
                 })
             }

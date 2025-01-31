@@ -6,8 +6,8 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.*
 import dev.slne.clan.core.invite.CoreClanInvite
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
 import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
@@ -19,7 +19,7 @@ import net.kyori.adventure.text.Component
 
 class ClanInviteAcceptCommand(
     clanService: ClanService,
-    nameCacheService: NameCacheService
+    clanPlayerService: ClanPlayerService
 ) : CommandAPICommand("accept") {
     init {
         withPermission("surf.clan.invite.accept")
@@ -36,7 +36,7 @@ class ClanInviteAcceptCommand(
                 if (playerClan != null) {
                     player.sendMessage(buildMessageAsync {
                         append(Component.text("Du bist bereits im Clan ", COLOR_ERROR))
-                        append(clanComponent(playerClan, nameCacheService))
+                        append(clanComponent(playerClan, clanPlayerService))
                         append(
                             Component.text(
                                 " und kannst keine weiteren Einladungen annehmen.",
@@ -70,7 +70,7 @@ class ClanInviteAcceptCommand(
                         append(Component.text("Der Spieler ", COLOR_INFO))
                         append(player.realName())
                         append(Component.text(" ist dem Clan ", COLOR_INFO))
-                        append(clanComponent(invitedClan, nameCacheService))
+                        append(clanComponent(invitedClan, clanPlayerService))
                         append(Component.text(" beigetreten.", COLOR_INFO))
                     })
                 }

@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.integerArgument
 import dev.slne.clan.core.*
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClan
@@ -22,7 +22,7 @@ private const val MEMBERS_PER_PAGE = 10 //TODO: Change to 10
 
 class ClanMembersCommand(
     clanService: ClanService,
-    nameCacheService: NameCacheService
+    clanPlayerService: ClanPlayerService
 ) : CommandAPICommand("members") {
     init {
         withPermission("surf.clan.members")
@@ -55,12 +55,13 @@ class ClanMembersCommand(
                 val clanInfoMessage = buildMessageAsync(false) {
                     appendNewline()
                     append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", CLAN_COMPONENT_BAR_COLOR))
-                    append(clanComponent(clan, nameCacheService))
+                    append(clanComponent(clan, clanPlayerService))
                     appendNewline()
 
                     pageMembers.forEach { member ->
                         val memberName =
-                            nameCacheService.findNameByUuid(member.uuid) ?: member.uuid.toString()
+                            clanPlayerService.findClanPlayerByUuid(member.uuid)?.username
+                                ?: member.uuid.toString()
 
                         append(buildMessage(false) {
                             append(

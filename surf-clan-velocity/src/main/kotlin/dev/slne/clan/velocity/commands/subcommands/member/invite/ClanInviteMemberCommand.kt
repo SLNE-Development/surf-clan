@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.*
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.PlayerArgument
 import dev.slne.clan.velocity.commands.arguments.playerArgument
@@ -21,13 +21,13 @@ import net.kyori.adventure.text.format.NamedTextColor
 
 class ClanInviteMemberCommand(
     clanService: ClanService,
-    nameCacheService: NameCacheService
+    clanPlayerService: ClanPlayerService
 ) : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.invite")
 
-        withSubcommands(ClanInviteAcceptCommand(clanService, nameCacheService))
-        withSubcommands(ClanInviteDenyCommand(clanService, nameCacheService))
+        withSubcommands(ClanInviteAcceptCommand(clanService, clanPlayerService))
+        withSubcommands(ClanInviteDenyCommand(clanService, clanPlayerService))
 
         playerArgument()
 
@@ -52,7 +52,7 @@ class ClanInviteMemberCommand(
                         append(Component.text("Der Spieler ", COLOR_ERROR))
                         append(invitedPlayer.realName())
                         append(Component.text(" ist bereits im Clan ", COLOR_ERROR))
-                        append(clanComponent(invitedPlayerClan, nameCacheService))
+                        append(clanComponent(invitedPlayerClan, clanPlayerService))
                         append(Component.text(".", COLOR_ERROR))
                     })
 
@@ -75,8 +75,30 @@ class ClanInviteMemberCommand(
                                 COLOR_ERROR
                             )
                         )
-                        append(clanComponent(playerClan, nameCacheService))
+                        append(clanComponent(playerClan, clanPlayerService))
                         append(Component.text(" einzuladen.", COLOR_ERROR))
+                    })
+
+                    return@launch
+                }
+
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(invitedPlayer.uniqueId)
+                if (clanPlayer == null) {
+                    player.sendMessage(
+                        Component.text(
+                            "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+                            NamedTextColor.RED
+                        )
+                    )
+
+                    return@launch
+                }
+
+                if (!clanPlayer.acceptsClanInvites) {
+                    player.sendMessage(buildMessage {
+                        append(Component.text("Der Spieler ", COLOR_ERROR))
+                        append(invitedPlayer.realName())
+                        append(Component.text(" nimmt keine Einladungen an.", COLOR_ERROR))
                     })
 
                     return@launch
@@ -91,7 +113,7 @@ class ClanInviteMemberCommand(
                         append(Component.text("Du hast ", COLOR_SUCCESS))
                         append(invitedPlayer.realName())
                         append(Component.text(" in den Clan ", COLOR_SUCCESS))
-                        append(clanComponent(playerClan, nameCacheService))
+                        append(clanComponent(playerClan, clanPlayerService))
                         append(Component.text(" eingeladen.", COLOR_SUCCESS))
                     })
 
@@ -99,7 +121,7 @@ class ClanInviteMemberCommand(
                         append(Component.text("Du wurdest von ", COLOR_INFO))
                         append(player.realName())
                         append(Component.text(" in den Clan ", COLOR_INFO))
-                        append(clanComponent(playerClan, nameCacheService))
+                        append(clanComponent(playerClan, clanPlayerService))
                         append(Component.text(" eingeladen. ", COLOR_INFO))
 
                         val acceptComponent = buildMessage(false) {

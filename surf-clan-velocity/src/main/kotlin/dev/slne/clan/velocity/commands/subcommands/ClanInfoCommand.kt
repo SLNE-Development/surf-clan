@@ -6,8 +6,8 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.service.NameCacheService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.formatted
 import dev.slne.clan.velocity.extensions.findClan
@@ -19,7 +19,7 @@ import net.kyori.adventure.text.format.TextDecoration
 
 class ClanInfoCommand(
     clanService: ClanService,
-    nameCacheService: NameCacheService
+    clanPlayerService: ClanPlayerService
 ) : CommandAPICommand("info") {
     init {
         withPermission("surf.clan.info")
@@ -34,7 +34,8 @@ class ClanInfoCommand(
                     return@launch
                 }
 
-                val createdBy = nameCacheService.findNameByUuid(clan.createdBy) ?: "Unbekannt"
+                val createdBy =
+                    clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
                 val clanInfoComponent = buildMessage(false) {
                     append(
                         Component.text(
