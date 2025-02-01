@@ -62,7 +62,7 @@ private val blacklist = mapOf(
     ),
     "pre-blocked" to listOf(
         "GHG", "XYZ", "AAA", "PISS", "LGBT", "TEAM", "CAST", "PEDO", "QWE",
-        "MAMA", "PAPA", "MUM", "DAD", "MUMY", "DADY", "TOD", "GRWM", "BONG", "RUSS", "RUS", "MUSK", "ROMA", "TEST", "MÜLL"
+        "MAMA", "PAPA", "MUM", "DAD", "MUMY", "DADY", "TOD", "GRWM", "BONG", "RUSS", "RUS", "MUSK", "ROMA", "TEST", "MÜLL", "AFK", "MOD", "DEV", "HELP", "SCAM"
     ),
     "transphobia" to listOf(
         "TRN", "TGM", "H8T"
