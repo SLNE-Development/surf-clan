@@ -5,7 +5,9 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.*
+import dev.slne.clan.core.Messages
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -73,9 +75,9 @@ class ClanDisbandCommand(
                 val confirm = args.getOrDefaultUnchecked("confirm", "")
                 if (confirm.isNotEmpty() && confirm == "confirm") {
                     val clanDisbandedMessage = buildMessageAsync {
-                        append(Component.text("Der Clan ", Colors.ERROR))
+                        append(Component.text("Der Clan ", Colors.SUCCESS))
                         append(clanComponent(clan, clanPlayerService))
-                        append(Component.text(" wurde aufgelöst.", Colors.ERROR))
+                        append(Component.text(" wurde aufgelöst.", Colors.SUCCESS))
                     }
 
                     clanService.deleteClan(clan)

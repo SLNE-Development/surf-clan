@@ -22,10 +22,12 @@ import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
 import me.neznamy.tab.api.TabAPI
+import me.neznamy.tab.api.event.player.PlayerLoadEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.nio.file.Path
+
 
 val plugin get() = VelocityClanPlugin.instance
 
@@ -62,44 +64,50 @@ class VelocityClanPlugin @Inject constructor(
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         ClanCommand(getBean<ClanService>(), getBean<ClanPlayerService>()).register()
         ListenerProcessor.registerListeners()
+        registerPlaceholder()
 
-        val lcs = LegacyComponentSerializer.legacySection()
-        TabAPI.getInstance().placeholderManager.registerPlayerPlaceholder(
-            "%clan_name%",
-            100
-        ) { player ->
-            val velocityPlayer = player.player as Player
+        TabAPI.getInstance().eventBus!!.register(PlayerLoadEvent::class.java) {registerPlaceholder()}
+    }
 
-            velocityPlayer.findClan(getBean<ClanService>())?.name ?: ""
-        }
+    private fun registerPlaceholder() {
+        with(TabAPI.getInstance().placeholderManager) {
+            registerPlayerPlaceholder(
+                "%clan_name%",
+                100
+            ) { player ->
+                val velocityPlayer = player.player as Player
 
-        TabAPI.getInstance().placeholderManager.registerPlayerPlaceholder(
-            "%clan_tag_raw%",
-            100
-        ) { player ->
-            val velocityPlayer = player.player as Player
-
-            velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
-        }
-
-        TabAPI.getInstance().placeholderManager.registerPlayerPlaceholder(
-            "%clan_tag%",
-            100
-        ) { player ->
-            val velocityPlayer = player.player as Player
-            val clanTag = velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
-
-            if (clanTag.isEmpty()) {
-                return@registerPlayerPlaceholder ""
+                velocityPlayer.findClan(getBean<ClanService>())?.name ?: ""
             }
 
-            val clanTagComponent = Component.text()
-            clanTagComponent.appendSpace()
-            clanTagComponent.append(Component.text("[", NamedTextColor.GRAY))
-            clanTagComponent.append(Component.text(clanTag, NamedTextColor.YELLOW))
-            clanTagComponent.append(Component.text("]", NamedTextColor.GRAY))
+            registerPlayerPlaceholder(
+                "%clan_tag_raw%",
+                100
+            ) { player ->
+                val velocityPlayer = player.player as Player
 
-            lcs.serialize(clanTagComponent.build())
+                velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
+            }
+
+            registerPlayerPlaceholder(
+                "%clan_tag%",
+                100
+            ) { player ->
+                val velocityPlayer = player.player as Player
+                val clanTag = velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
+
+                if (clanTag.isEmpty()) {
+                    return@registerPlayerPlaceholder ""
+                }
+
+                val clanTagComponent = Component.text()
+                clanTagComponent.appendSpace()
+                clanTagComponent.append(Component.text("[", NamedTextColor.DARK_GRAY))
+                clanTagComponent.append(Component.text(clanTag, NamedTextColor.YELLOW))
+                clanTagComponent.append(Component.text("]", NamedTextColor.DARK_GRAY))
+
+                LegacyComponentSerializer.legacySection().serialize(clanTagComponent.build())
+            }
         }
     }
 

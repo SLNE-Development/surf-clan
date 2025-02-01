@@ -1,13 +1,19 @@
 package dev.slne.clan.core
 
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.appendText
+import dev.slne.surf.surfapi.core.api.messages.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor
 
 @DslMarker
 annotation class MessageMarker
 
+@Deprecated(
+    message = "Use buildText from surf-api instead",
+    replaceWith = ReplaceWith("buildText(builder)", imports = ["dev.slne.surf.surfapi.core.api.messages.buildText"]),
+    level = DeprecationLevel.WARNING
+)
 suspend fun buildMessageAsync(
     prefixed: Boolean = true,
     @MessageMarker builder: suspend TextComponent.Builder.() -> Unit
@@ -23,6 +29,11 @@ suspend fun buildMessageAsync(
     return textBuilder.build()
 }
 
+@Deprecated(
+    message = "Use buildText from surf-api instead",
+    replaceWith = ReplaceWith("buildText(builder)", imports = ["dev.slne.surf.surfapi.core.api.messages.buildText"]),
+    level = DeprecationLevel.WARNING
+)
 fun buildMessage(
     prefixed: Boolean = true,
     @MessageMarker builder: TextComponent.Builder.() -> Unit
@@ -39,13 +50,20 @@ fun buildMessage(
 }
 
 object Messages {
-
-    val prefix = Component.text().append(Component.text(">> ", NamedTextColor.DARK_GRAY))
-        .append(Component.text("Clan", NamedTextColor.AQUA))
-        .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).build()
+    val prefix = buildText {
+        appendText(">> ", Colors.DARK_SPACER)
+        appendText("Clan", Colors.PREFIX_COLOR)
+        appendText(" | ", Colors.DARK_SPACER)
+    }
 
     val notInClanComponent = buildMessage {
-        append(Component.text("Du bist in keinem Clan.", Colors.ERROR))
+        appendText("Du bist in keinem Clan.", Colors.ERROR)
+    }
+
+    fun unknownClanComponent(clanTag: String) = buildMessage {
+        appendText("Der Clan '", Colors.ERROR)
+        appendText(clanTag, Colors.VARIABLE_VALUE)
+        appendText("' existiert nicht.", Colors.ERROR)
     }
 
 }

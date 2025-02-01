@@ -12,7 +12,10 @@ import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
-import dev.slne.clan.velocity.extensions.*
+import dev.slne.clan.velocity.extensions.findClan
+import dev.slne.clan.velocity.extensions.hasPermission
+import dev.slne.clan.velocity.extensions.playerOrNull
+import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
@@ -51,19 +54,6 @@ class ClanPromoteMemberCommand(
                     return@launch
                 }
 
-                if (member.uuid == player.uniqueId) {
-                    player.sendMessage(buildMessage {
-                        append(
-                            Component.text(
-                                "Du kannst dich nicht selbst befördern.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
-
-                    return@launch
-                }
-
                 val memberNameComponent =
                     member.playerOrNull?.realName() ?: Component.text(memberName, Colors.VARIABLE_VALUE)
 
@@ -79,6 +69,30 @@ class ClanPromoteMemberCommand(
                         append(Component.text(" im Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
                         append(Component.text(" zu befördern.", Colors.ERROR))
+                    })
+
+                    return@launch
+                }
+
+                if (member.uuid == player.uniqueId) {
+                    player.sendMessage(buildMessage {
+                        append(
+                            Component.text(
+                                "Du kannst dich nicht selbst befördern.",
+                                Colors.ERROR
+                            )
+                        )
+                    })
+
+                    return@launch
+                }
+
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("Player not found")
+                val clanPlayerMember = clan.getMember(clanPlayer)
+
+                if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
+                    player.sendMessage(buildMessageAsync {
+                        append(Component.text("Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.", Colors.ERROR))
                     })
 
                     return@launch
@@ -121,7 +135,7 @@ class ClanPromoteMemberCommand(
                 clanService.saveClan(clan)
 
                 clan.members.forEach { clanMember ->
-                    clanMember.player.sendMessage(memberPromotedMessage)
+                    clanMember.playerOrNull?.sendMessage(memberPromotedMessage)
                 }
             }
         })

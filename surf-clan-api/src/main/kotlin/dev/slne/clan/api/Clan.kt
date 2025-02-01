@@ -4,6 +4,7 @@ import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
+import dev.slne.clan.api.player.ClanPlayer
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.time.LocalDateTime
 import java.util.*
@@ -34,5 +35,6 @@ interface Clan {
     fun removeMember(member: ClanMember): Boolean
 
     fun hasPermission(clanMember: ClanMember, permission: ClanPermission): Boolean
+    fun getMember(clanPlayer: ClanPlayer): ClanMember?
 
 }

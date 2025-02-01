@@ -9,7 +9,6 @@ import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
@@ -26,10 +25,9 @@ class ClanPlayerSettingInviteCommand(
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
                 val accept: Boolean by args
-                val clan = player.findClan(clanService)
                 val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
 
-                if (clan == null || clanPlayer == null) {
+                if (clanPlayer == null) {
                     player.sendMessage(Messages.notInClanComponent)
 
                     return@launch

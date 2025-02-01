@@ -2,19 +2,22 @@ package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.formatted
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.appendText
+import dev.slne.surf.surfapi.core.api.messages.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import kotlin.jvm.optionals.getOrNull
 
 
 class ClanInfoCommand(
@@ -23,27 +26,33 @@ class ClanInfoCommand(
 ) : CommandAPICommand("info") {
     init {
         withPermission("surf.clan.info")
+        stringArgument("clanTag", optional = true)
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
-                val clan = player.findClan(clanService)
+                val clanTag = args.getOptionalUnchecked<String>("clanTag").getOrNull()
+                val clan = if (clanTag != null) {
+                    clanService.findClanByTag(clanTag)
+                } else {
+                    player.findClan(clanService)
+                }
 
                 if (clan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
+                    if (clanTag != null) {
+                        player.sendMessage(Messages.unknownClanComponent(clanTag))
+                    } else {
+                        player.sendMessage(Messages.notInClanComponent)
+                    }
 
                     return@launch
                 }
 
                 val createdBy =
                     clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
-                val clanInfoComponent = buildMessage(false) {
-                    append(
-                        Component.text(
-                            "ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ",
-                            CLAN_COMPONENT_BAR_COLOR,
-                            TextDecoration.BOLD
-                        )
-                    )
+                val clanInfoComponent = buildText {
+                    appendText("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR) {
+                        decorate(TextDecoration.BOLD)
+                    }
                     appendNewline()
 
                     append(renderLine("ɴᴀᴍᴇ", clan.name))
@@ -55,26 +64,16 @@ class ClanInfoCommand(
                     append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴠᴏɴ", createdBy))
                     appendNewline()
 
-                    append(
-                        renderLine(
-                            "ᴍɪᴛɢʟɪᴇᴅᴇʀ",
-                            clan.members.size.toString()
-                        )
-                    )
+                    append(renderLine("ᴍɪᴛɢʟɪᴇᴅᴇʀ", clan.members.size.toString()))
                     appendNewline()
 
-                    append(
-                        renderLine(
-                            "ᴇɪɴʟᴀᴅᴜɴɢᴇɴ",
-                            clan.invites.size.toString()
-                        )
-                    )
+                    append(renderLine("ᴇɪɴʟᴀᴅᴜɴɢᴇɴ", clan.invites.size.toString()))
                     appendNewline()
 
                     append(
                         renderLine(
                             "ᴀɴғüʜʀᴇʀ",
-                            clan.members.filter { it.role == ClanMemberRole.LEADER }.size.toString()
+                            clan.members.count { it.role == ClanMemberRole.LEADER }.toString()
                         )
                     )
                     appendNewline()
@@ -105,7 +104,7 @@ class ClanInfoCommand(
 
                 player.sendMessage(clanInfoComponent)
             }
-        })
+        }
     }
 
     private fun renderLine(key: String, value: String) =

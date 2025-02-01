@@ -5,13 +5,17 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
+import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
-import dev.slne.clan.velocity.extensions.*
+import dev.slne.clan.velocity.extensions.findClan
+import dev.slne.clan.velocity.extensions.hasPermission
+import dev.slne.clan.velocity.extensions.playerOrNull
+import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
@@ -70,6 +74,30 @@ class ClanKickMemberCommand(
                     return@launch
                 }
 
+                if (member.uuid == player.uniqueId) {
+                    player.sendMessage(buildMessage {
+                        append(
+                            Component.text(
+                                "Du kannst dich nicht selbst rauswerfen.",
+                                Colors.ERROR
+                            )
+                        )
+                    })
+
+                    return@launch
+                }
+
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("Player not found")
+                val clanPlayerMember = clan.getMember(clanPlayer)
+
+                if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
+                    player.sendMessage(buildMessageAsync {
+                        append(Component.text("Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.", Colors.ERROR))
+                    })
+
+                    return@launch
+                }
+
                 val memberKickedMessage = buildMessageAsync {
                     append(Component.text("Der Spieler ", Colors.INFO))
                     append(memberNameComponent)
@@ -84,7 +112,7 @@ class ClanKickMemberCommand(
                 clanService.saveClan(clan)
 
                 clan.members.forEach { clanMember ->
-                    clanMember.player.sendMessage(memberKickedMessage)
+                    clanMember.playerOrNull?.sendMessage(memberKickedMessage)
                 }
 
                 member.playerOrNull?.sendMessage(memberKickedMessage)

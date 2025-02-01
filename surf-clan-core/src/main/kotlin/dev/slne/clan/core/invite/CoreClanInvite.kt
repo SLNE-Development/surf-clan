@@ -40,12 +40,12 @@ data class CoreClanInvite(
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val createdAt: LocalDateTime? = LocalDateTime.now(),
+    override var createdAt: LocalDateTime? = LocalDateTime.now(),
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = true)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val updatedAt: LocalDateTime? = LocalDateTime.now()
+    override var updatedAt: LocalDateTime? = LocalDateTime.now()
 ) : ClanInvite {
 
     override val invitedBy: ClanMember?
@@ -61,7 +61,7 @@ data class CoreClanInvite(
         if (thisEffectiveClass != oEffectiveClass) return false
         other as CoreClanInvite
 
-        return id != null && id == other.id
+        return invited == other.invited && clan.uuid == other.clan.uuid
     }
 
     final override fun hashCode(): Int =

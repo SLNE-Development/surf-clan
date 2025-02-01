@@ -12,7 +12,10 @@ import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
-import dev.slne.clan.velocity.extensions.*
+import dev.slne.clan.velocity.extensions.findClan
+import dev.slne.clan.velocity.extensions.hasPermission
+import dev.slne.clan.velocity.extensions.playerOrNull
+import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
@@ -49,19 +52,6 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                     return@launch
                 }
 
-                if (member.uuid == player.uniqueId) {
-                    player.sendMessage(buildMessage {
-                        append(
-                            Component.text(
-                                "Du kannst dich nicht selbst degradieren.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
-
-                    return@launch
-                }
-
                 val memberNameComponent =
                     member.playerOrNull?.realName() ?: Component.text(memberName, Colors.VARIABLE_VALUE)
 
@@ -82,28 +72,35 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                     return@launch
                 }
 
-                if (!member.role.hasPreviousRole()) {
+                if (member.uuid == player.uniqueId) {
                     player.sendMessage(buildMessage {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(memberNameComponent)
-                        append(Component.text(" hat bereits den niedrigsten Rang.", Colors.ERROR))
+                        append(
+                            Component.text(
+                                "Du kannst dich nicht selbst degradieren.",
+                                Colors.ERROR
+                            )
+                        )
                     })
 
                     return@launch
                 }
 
-                if (member.uuid == clan.createdBy) {
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("Player not found")
+                val clanPlayerMember = clan.getMember(clanPlayer)
+
+                if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
                     player.sendMessage(buildMessageAsync {
+                        append(Component.text("Du kannst keinen Spieler degradieren, der den selben oder einen höheren Rang hat.", Colors.ERROR))
+                    })
+
+                    return@launch
+                }
+
+                if (!member.role.hasPreviousRole()) {
+                    player.sendMessage(buildMessage {
                         append(Component.text("Der Spieler ", Colors.ERROR))
                         append(memberNameComponent)
-                        append(Component.text(" hat den Clan ", Colors.ERROR))
-                        append(clanComponent(clan, clanPlayerService))
-                        append(
-                            Component.text(
-                                " erstellt und kann nicht degradiert werden. Wende dich dafür bitte an den Support.",
-                                Colors.ERROR
-                            )
-                        )
+                        append(Component.text(" hat bereits den niedrigsten Rang.", Colors.ERROR))
                     })
 
                     return@launch
@@ -129,7 +126,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                 clanService.saveClan(clan)
 
                 clan.members.forEach { clanMember ->
-                    clanMember.player.sendMessage(memberPromotedMessage)
+                    clanMember.playerOrNull?.sendMessage(memberPromotedMessage)
                 }
             }
         })

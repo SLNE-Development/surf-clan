@@ -46,12 +46,12 @@ data class CoreClanMember(
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val createdAt: LocalDateTime? = LocalDateTime.now(),
+    override var createdAt: LocalDateTime? = LocalDateTime.now(),
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = true)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val updatedAt: LocalDateTime? = LocalDateTime.now()
+    override var updatedAt: LocalDateTime? = LocalDateTime.now()
 ) : ClanMember {
 
     override val addedBy: ClanMember?

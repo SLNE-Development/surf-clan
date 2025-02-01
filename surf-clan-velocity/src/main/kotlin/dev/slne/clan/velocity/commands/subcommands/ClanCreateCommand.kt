@@ -6,7 +6,9 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.*
+import dev.slne.clan.core.CoreClan
+import dev.slne.clan.core.buildMessage
+import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -38,6 +40,22 @@ class ClanCreateCommand(
                         append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(findClan, clanPlayerService))
                         append(Component.text(".", Colors.ERROR))
+                    })
+
+                    return@launch
+                }
+
+                if (name.length < 3 || name.length > 16) {
+                    val builder = Component.text()
+                    builder.append(Component.text("Der Name muss zwischen ", Colors.ERROR))
+                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" und ", Colors.ERROR))
+                    builder.append(Component.text("16", Colors.VARIABLE_VALUE))
+                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
+                    val message = builder.build()
+
+                    player.sendMessage(buildMessage {
+                        append(message)
                     })
 
                     return@launch
@@ -81,22 +99,6 @@ class ClanCreateCommand(
                     return@launch
                 }
 
-                if (name.length < 3 || name.length > 16) {
-                    val builder = Component.text()
-                    builder.append(Component.text("Der Name muss zwischen ", Colors.ERROR))
-                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" und ", Colors.ERROR))
-                    builder.append(Component.text("16", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
-                    val message = builder.build()
-
-                    player.sendMessage(buildMessage {
-                        append(message)
-                    })
-
-                    return@launch
-                }
-
                 if (isInvalidClanTag(tag)) {
                     player.sendMessage(buildMessageAsync {
                         append(Component.text("Der Clan-Tag ", Colors.ERROR))
@@ -116,7 +118,7 @@ class ClanCreateCommand(
                     createdBy = player.uniqueId,
                 )
 
-                clan.addMember(player.uniqueId, ClanMemberRole.LEADER, player.uniqueId)
+                clan.addMember(player.uniqueId, ClanMemberRole.OWNER, player.uniqueId)
 
                 clanService.saveClan(clan)
 

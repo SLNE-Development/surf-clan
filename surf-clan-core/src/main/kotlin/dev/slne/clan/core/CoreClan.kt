@@ -5,6 +5,7 @@ import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
+import dev.slne.clan.api.player.ClanPlayer
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.member.CoreClanMember
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
@@ -73,12 +74,12 @@ data class CoreClan(
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val createdAt: LocalDateTime? = LocalDateTime.now(),
+    override var createdAt: LocalDateTime? = LocalDateTime.now(),
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = true)
     @TimeZoneStorage(TimeZoneStorageType.NORMALIZE_UTC)
-    override val updatedAt: LocalDateTime? = LocalDateTime.now()
+    override var updatedAt: LocalDateTime? = LocalDateTime.now()
 ) : Clan {
 
     @get:Transient
@@ -115,6 +116,8 @@ data class CoreClan(
 
     override fun hasPermission(clanMember: ClanMember, permission: ClanPermission) =
         clanMember.role.hasPermission(permission)
+
+    override fun getMember(clanPlayer: ClanPlayer): ClanMember? = members.find { it.uuid == clanPlayer.uuid }
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
