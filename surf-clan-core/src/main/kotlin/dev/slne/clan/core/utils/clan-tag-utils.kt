@@ -72,7 +72,7 @@ private val blacklist = mapOf(
     ),
     "parties" to listOf(
         "CDU", "SPD", "FDP", "CSU", "GRN", "LNK", "GOP", "DEM", "LAB", "CON", "UKP", "BREX",
-        "M5S", "LEG", "SNP", "BSW"
+        "M5S", "LEG", "SNP", "BSW", "AFD"
     ),
     "ableism" to listOf(
         "TARD", "GIMP", "SPAZ", "SPST", "KRPL"
