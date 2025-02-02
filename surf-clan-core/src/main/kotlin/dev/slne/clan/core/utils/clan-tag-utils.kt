@@ -4,8 +4,34 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 
 private val blacklist = mapOf(
     "nazi" to listOf(
-        "NSD", "KRF", "HKN", "NPD", "KKK", "NAZI", "ZOG", "NSU", "SIEG", "HEIL", "NSM", "3RK",
-        "BDM", "RSHA", "FUHR", "HITL", "HESS", "HIML", "GOEB", "GOER", "SIPO", "ORPO", "GEST", "SWAS", "REIC", "ARYN", "HTLR", "H!TL"
+        "NSD",
+        "KRF",
+        "HKN",
+        "NPD",
+        "KKK",
+        "NAZI",
+        "ZOG",
+        "NSU",
+        "SIEG",
+        "HEIL",
+        "NSM",
+        "3RK",
+        "BDM",
+        "RSHA",
+        "FUHR",
+        "HITL",
+        "HESS",
+        "HIML",
+        "GOEB",
+        "GOER",
+        "SIPO",
+        "ORPO",
+        "GEST",
+        "SWAS",
+        "REIC",
+        "ARYN",
+        "HTLR",
+        "H!TL"
     ),
     "racism" to listOf(
         "NIG", "NGR", "SPC", "WET", "CHK", "GOK", "GYO", "GSL", "WOG", "JAP", "APE", "SPIC", "GYPS",
@@ -52,7 +78,23 @@ private val blacklist = mapOf(
         "CUT", "SUI", "KYS", "SLF", "HURT", "SLIT", "BURN", "HANG", "JUMP"
     ),
     "offensive" to listOf(
-        "DUM", "DUMM", "IDI", "STF", "NOO", "SUQ", "FUQ", "GFY", "SMD", "FUX", "LOL", "SUK", "YDI", "KACK", "SHIT", "FURZ", "KEK"
+        "DUM",
+        "DUMM",
+        "IDI",
+        "STF",
+        "NOO",
+        "SUQ",
+        "FUQ",
+        "GFY",
+        "SMD",
+        "FUX",
+        "LOL",
+        "SUK",
+        "YDI",
+        "KACK",
+        "SHIT",
+        "FURZ",
+        "KEK"
     ),
     "cybercrime" to listOf(
         "DDOS", "PISH", "SCAM", "HAX", "BOT", "TOR", "DOX", "RAT", "HACK"
@@ -61,8 +103,35 @@ private val blacklist = mapOf(
         "BLOD", "CORE", "GORE", "GUTS", "AMPT", "GASH", "SLSH", "SKIN"
     ),
     "pre-blocked" to listOf(
-        "GHG", "XYZ", "AAA", "PISS", "LGBT", "TEAM", "CAST", "PEDO", "QWE",
-        "MAMA", "PAPA", "MUM", "DAD", "MUMY", "DADY", "TOD", "GRWM", "BONG", "RUSS", "RUS", "MUSK", "ROMA", "TEST", "MÜLL", "AFK", "MOD", "DEV", "HELP", "SCAM"
+        "GHG",
+        "XYZ",
+        "AAA",
+        "PISS",
+        "LGBT",
+        "TEAM",
+        "CAST",
+        "PEDO",
+        "QWE",
+        "MAMA",
+        "PAPA",
+        "MUM",
+        "DAD",
+        "MUMY",
+        "DADY",
+        "TOD",
+        "GRWM",
+        "BONG",
+        "RUSS",
+        "RUS",
+        "MUSK",
+        "ROMA",
+        "TEST",
+        "MÜLL",
+        "AFK",
+        "MOD",
+        "DEV",
+        "HELP",
+        "SCAM"
     ),
     "transphobia" to listOf(
         "TRN", "TGM", "H8T"
@@ -72,7 +141,7 @@ private val blacklist = mapOf(
     ),
     "parties" to listOf(
         "CDU", "SPD", "FDP", "CSU", "GRN", "LNK", "GOP", "DEM", "LAB", "CON", "UKP", "BREX",
-        "M5S", "LEG", "SNP", "BSW", "AFD"
+        "M5S", "LEG", "SNP", "BSW", "AFD", "MLPD"
     ),
     "ableism" to listOf(
         "TARD", "GIMP", "SPAZ", "SPST", "KRPL"
@@ -97,5 +166,7 @@ private val blacklist = mapOf(
     )
 )
 
-private val performantBlacklist = ObjectArrayList(blacklist.flatMap { it.value }.map { it.lowercase() })
+private val performantBlacklist =
+    ObjectArrayList(blacklist.flatMap { it.value }.map { it.lowercase() })
+
 fun isInvalidClanTag(clanTag: String) = performantBlacklist.contains(clanTag.lowercase())
