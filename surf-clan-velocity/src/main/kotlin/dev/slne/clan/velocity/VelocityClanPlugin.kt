@@ -109,7 +109,7 @@ class VelocityClanPlugin @Inject constructor(
         val clan = velocityPlayer.findClan(getBean<ClanService>()) ?: return ""
         val clanTag = clan.tag
 
-        if (clanTag.isEmpty() || clan.members.size < minSize) {
+        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag != "SLNE") {
             return ""
         }
 

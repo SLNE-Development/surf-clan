@@ -91,9 +91,9 @@ class ClanInfoCommand(
                             clan.createdAt?.formatted() ?: "/"
                         )
                     )
-                    appendNewline()
 
                     if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
+                        appendNewline()
                         append(
                             buildText {
                                 append(renderLine(
