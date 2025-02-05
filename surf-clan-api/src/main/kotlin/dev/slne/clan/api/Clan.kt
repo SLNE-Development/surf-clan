@@ -18,7 +18,7 @@ interface Clan {
     val createdBy: UUID
 
     val description: String?
-    val discordInvite: String?
+    var discordInvite: String?
 
     val members: ObjectSet<ClanMember>
     val invites: ObjectSet<ClanInvite>

@@ -51,7 +51,7 @@ data class CoreClan(
     override val createdBy: UUID,
 
     @Column(name = "discord_invite", nullable = true)
-    override val discordInvite: String? = null,
+    override var discordInvite: String? = null,
 
     @OneToMany(
         mappedBy = "clan",

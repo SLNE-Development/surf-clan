@@ -9,12 +9,14 @@ import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
+import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.core.utils.formatted
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.appendText
 import dev.slne.surf.surfapi.core.api.messages.buildText
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import kotlin.jvm.optionals.getOrNull
@@ -61,19 +63,10 @@ class ClanInfoCommand(
                     append(renderLine("ᴛᴀɢ", clan.tag))
                     appendNewline()
 
-                    append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴠᴏɴ", createdBy))
-                    appendNewline()
-
-                    append(renderLine("ᴍɪᴛɢʟɪᴇᴅᴇʀ", clan.members.size.toString()))
-                    appendNewline()
-
-                    append(renderLine("ᴇɪɴʟᴀᴅᴜɴɢᴇɴ", clan.invites.size.toString()))
-                    appendNewline()
-
                     append(
                         renderLine(
                             "ᴀɴғüʜʀᴇʀ",
-                            clan.members.count { it.role == ClanMemberRole.LEADER }.toString()
+                            clan.members.count { it.role == ClanMemberRole.LEADER || it.role == ClanMemberRole.OWNER }
                         )
                     )
                     appendNewline()
@@ -81,9 +74,15 @@ class ClanInfoCommand(
                     append(
                         renderLine(
                             "ᴏғғɪᴢɪᴇʀᴇ",
-                            clan.members.filter { it.role == ClanMemberRole.OFFICER }.size.toString()
+                            clan.members.count { it.role == ClanMemberRole.OFFICER }
                         )
                     )
+                    appendNewline()
+
+                    append(renderLine("ᴍɪᴛɢʟɪᴇᴅᴇʀ", clan.members.size))
+                    appendNewline()
+
+                    append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴠᴏɴ", createdBy))
                     appendNewline()
 
                     append(
@@ -94,12 +93,22 @@ class ClanInfoCommand(
                     )
                     appendNewline()
 
-                    append(
-                        renderLine(
-                            "ᴀᴋᴛᴜᴀʟɪsɪᴇʀᴛ ᴀᴍ",
-                            clan.updatedAt?.formatted() ?: "/"
+                    if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
+                        append(
+                            buildText {
+                                append(renderLine(
+                                    "ᴅɪsᴄᴏʀᴅ",
+                                    clan.discordInvite ?: "https://discord.gg/castcrafter"
+                                ))
+
+                                clickEvent(
+                                    ClickEvent.openUrl(
+                                        clan.discordInvite ?: "https://discord.gg/castcrafter"
+                                    )
+                                )
+                            }
                         )
-                    )
+                    }
                 }
 
                 player.sendMessage(clanInfoComponent)
@@ -107,9 +116,9 @@ class ClanInfoCommand(
         }
     }
 
-    private fun renderLine(key: String, value: String) =
+    private fun renderLine(key: String, value: Any) =
         Component.text()
             .append(Component.text("| ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
             .append(Component.text("$key: ", NamedTextColor.GRAY))
-            .append(Component.text(value, NamedTextColor.WHITE))
+            .append(Component.text(value.toString(), NamedTextColor.WHITE))
 }

@@ -8,4 +8,6 @@ enum class ClanPermission {
 
     PROMOTE,
     DEMOTE,
+
+    DISCORD,
 }

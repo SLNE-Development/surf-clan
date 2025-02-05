@@ -29,6 +29,7 @@ enum class ClanMemberRole(
             ClanPermission.DEMOTE,
             ClanPermission.PROMOTE,
 
+            ClanPermission.DISCORD,
         ),
         Component.text("Anführer", NamedTextColor.RED)
     ),
@@ -43,6 +44,7 @@ enum class ClanMemberRole(
         ClanPermission.DEMOTE,
         ClanPermission.PROMOTE,
 
+        ClanPermission.DISCORD,
     ),
     Component.text("Besitzer", NamedTextColor.RED)
     );
