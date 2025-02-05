@@ -1,4 +1,4 @@
-package dev.slne.clan.velocity.commands
+package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand

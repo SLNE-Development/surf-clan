@@ -3,10 +3,7 @@ package dev.slne.clan.velocity.commands
 import dev.jorel.commandapi.CommandAPICommand
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.velocity.commands.subcommands.ClanCreateCommand
-import dev.slne.clan.velocity.commands.subcommands.ClanDisbandCommand
-import dev.slne.clan.velocity.commands.subcommands.ClanInfoCommand
-import dev.slne.clan.velocity.commands.subcommands.ClanLeaveCommand
+import dev.slne.clan.velocity.commands.subcommands.*
 import dev.slne.clan.velocity.commands.subcommands.admin.ClanAdminCommand
 import dev.slne.clan.velocity.commands.subcommands.member.ClanKickMemberCommand
 import dev.slne.clan.velocity.commands.subcommands.member.ClanMembersCommand
