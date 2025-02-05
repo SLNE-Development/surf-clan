@@ -23,7 +23,7 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
 import me.neznamy.tab.api.TabAPI
 import me.neznamy.tab.api.TabPlayer
-import me.neznamy.tab.api.event.player.PlayerLoadEvent
+import me.neznamy.tab.api.event.plugin.TabLoadEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -67,7 +67,7 @@ class VelocityClanPlugin @Inject constructor(
         ListenerProcessor.registerListeners()
         registerPlaceholder()
 
-        TabAPI.getInstance().eventBus!!.register(PlayerLoadEvent::class.java) {registerPlaceholder()}
+        TabAPI.getInstance().eventBus!!.register(TabLoadEvent::class.java) {registerPlaceholder()}
     }
 
     private fun registerPlaceholder() {
