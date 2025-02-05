@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands.member.role
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
@@ -29,7 +29,7 @@ class ClanPromoteMemberCommand(
 
         clanMemberArgument(clanService, clanPlayerService)
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
                 val memberName = args[0] as String
                 val clan = player.findClan(clanService)
@@ -55,7 +55,10 @@ class ClanPromoteMemberCommand(
                 }
 
                 val memberNameComponent =
-                    member.playerOrNull?.realName() ?: Component.text(memberName, Colors.VARIABLE_VALUE)
+                    member.playerOrNull?.realName() ?: Component.text(
+                        memberName,
+                        Colors.VARIABLE_VALUE
+                    )
 
                 if (!clan.hasPermission(player, ClanPermission.PROMOTE)) {
                     player.sendMessage(buildMessageAsync {
@@ -87,12 +90,18 @@ class ClanPromoteMemberCommand(
                     return@launch
                 }
 
-                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("Player not found")
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
+                    ?: error("Player not found")
                 val clanPlayerMember = clan.getMember(clanPlayer)
 
                 if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.", Colors.ERROR))
+                        append(
+                            Component.text(
+                                "Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.",
+                                Colors.ERROR
+                            )
+                        )
                     })
 
                     return@launch
@@ -138,6 +147,6 @@ class ClanPromoteMemberCommand(
                     clanMember.playerOrNull?.sendMessage(memberPromotedMessage)
                 }
             }
-        })
+        }
     }
 }

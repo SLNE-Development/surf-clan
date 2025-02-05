@@ -3,8 +3,8 @@ package dev.slne.clan.velocity.commands.subcommands
 import com.github.shynixn.mccoroutine.velocity.launch
 import com.velocitypowered.api.proxy.Player
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.CoreClan
@@ -29,12 +29,12 @@ class ClanCreateCommand(
         stringArgument("name")
         stringArgument("tag")
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             val name: String by args
             val tag: String by args
 
             if (!preValidateInput(player, tag)) {
-                return@PlayerCommandExecutor
+                return@playerExecutor
             }
 
             plugin.container.launch {
@@ -91,7 +91,7 @@ class ClanCreateCommand(
                     append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS))
                 })
             }
-        })
+        }
     }
 
 

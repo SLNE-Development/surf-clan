@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
@@ -33,7 +33,7 @@ class ClanDisbandCommand(
 
         stringArgument("confirm", true)
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
                 val clan = player.findClan(clanService)
 
@@ -60,7 +60,12 @@ class ClanDisbandCommand(
                         append(Component.text("Du kannst den Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
                         append(Component.text(" nicht auflösen, da er mehr als ", Colors.ERROR))
-                        append(Component.text(CLAN_MAX_MEMBERS_DISBAND.toString(), Colors.VARIABLE_VALUE))
+                        append(
+                            Component.text(
+                                CLAN_MAX_MEMBERS_DISBAND.toString(),
+                                Colors.VARIABLE_VALUE
+                            )
+                        )
                         append(
                             Component.text(
                                 " Mitglieder hat. Wende dich bitte an den Support.",
@@ -134,6 +139,6 @@ class ClanDisbandCommand(
                     append(Component.text(" um den Clan aufzulösen.", Colors.INFO))
                 })
             }
-        })
+        }
     }
 }

@@ -21,9 +21,7 @@ class ClanInviteArgument(
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollection { info ->
             val player = info.sender as? Player ?: return@stringCollection emptyList()
-            val invites = player.findClanInvites<CoreClanInvite>(clanService)
-
-            invites.map { it.clan.name }.toList()
+            player.findClanInvites<CoreClanInvite>(clanService).map { it.clan.name }
         })
     }
 
@@ -34,10 +32,10 @@ class ClanInviteArgument(
             args: CommandArguments,
             nodeName: String = CLAN_INVITE_ARGUMENT_NODE_NAME
         ): ClanInvite? {
-            val clanName: String = args.getOrDefaultUnchecked(nodeName, "") ?: return null
+            val clanName = args.getUnchecked<String>(nodeName) ?: return null
 
             return player.findClanInvites<CoreClanInvite>(clanService)
-                .firstOrNull { it.clan.name == clanName }
+                .find { it.clan.name == clanName }
         }
     }
 }

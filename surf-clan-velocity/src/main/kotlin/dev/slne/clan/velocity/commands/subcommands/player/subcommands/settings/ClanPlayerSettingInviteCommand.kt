@@ -4,7 +4,6 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.booleanArgument
-import dev.jorel.commandapi.kotlindsl.getValue
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.service.ClanPlayerService
@@ -20,11 +19,11 @@ class ClanPlayerSettingInviteCommand(
     init {
         withPermission("surf.clan.player.settings.invite")
 
-        booleanArgument("accept")
+        booleanArgument("accept", optional = true)
 
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
-                val accept: Boolean by args
+                val accept = args.getOptionalUnchecked<Boolean>("accept").orElse(true)
                 val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
 
                 if (clanPlayer == null) {

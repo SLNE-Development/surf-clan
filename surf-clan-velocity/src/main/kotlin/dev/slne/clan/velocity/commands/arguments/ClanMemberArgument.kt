@@ -11,12 +11,9 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.extensions.findClan
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 const val CLAN_MEMBER_ARGUMENT_NODE_NAME = "target"
 
@@ -28,16 +25,16 @@ class ClanMemberArgument(
 ) : StringArgument(nodeName) {
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollectionAsync { info ->
-            val player = info.sender as? Player
-                ?: return@stringCollectionAsync CompletableFuture.supplyAsync(::emptyList)
-
-            val clan = player.findClan(clanService)
-                ?: return@stringCollectionAsync CompletableFuture.supplyAsync(::emptyList)
-
             GlobalScope.future(Dispatchers.IO) {
+                val player = info.sender as? Player ?: return@future emptyList()
+                val clan = player.findClan(clanService) ?: return@future emptyList()
+
                 clan.members.map {
-                    clanPlayerService.findClanPlayerByUuid(it.uuid)?.username ?: it.uuid.toString()
-                }
+                    async {
+                        clanPlayerService.findClanPlayerByUuid(it.uuid)?.username
+                            ?: it.uuid.toString()
+                    }
+                }.awaitAll()
             }
         })
     }
@@ -49,11 +46,12 @@ class ClanMemberArgument(
             args: CommandArguments,
             nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
         ): ClanMember? {
-            val argument = args.getOrDefaultUnchecked(nodeName, "")
-            val uuidByArgument =
-                clanPlayerService.findClanPlayerByName(argument)?.uuid ?: UUID.fromString(argument)
+            val argument = args.getUnchecked<String>(nodeName) ?: return null
+            val uuid = runCatching { UUID.fromString(argument) }.onFailure {
+                clanPlayerService.findClanPlayerByName(argument)?.uuid
+            }.getOrThrow()
 
-            return clan.members.find { it.uuid == uuidByArgument }
+            return clan.members.find { it.uuid == uuid }
         }
     }
 }

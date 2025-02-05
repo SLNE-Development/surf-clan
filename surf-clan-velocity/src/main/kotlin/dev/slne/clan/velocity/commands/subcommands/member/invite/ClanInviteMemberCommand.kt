@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands.member.invite
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
@@ -34,7 +34,7 @@ class ClanInviteMemberCommand(
 
         playerArgument()
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
                 val invitedPlayer = PlayerArgument.player(args)
 
@@ -166,6 +166,6 @@ class ClanInviteMemberCommand(
                     })
                 }
             }
-        })
+        }
     }
 }

@@ -28,7 +28,9 @@ class ClanInfoCommand(
 ) : CommandAPICommand("info") {
     init {
         withPermission("surf.clan.info")
-        stringArgument("clanTag", optional = true)
+        stringArgument("clanTag", optional = true) {
+            includeClanTagSuggestions(clanService)
+        }
 
         playerExecutor { player, args ->
             plugin.container.launch {
@@ -96,10 +98,12 @@ class ClanInfoCommand(
                         appendNewline()
                         append(
                             buildText {
-                                append(renderLine(
-                                    "ᴅɪsᴄᴏʀᴅ",
-                                    clan.discordInvite ?: "https://discord.gg/castcrafter"
-                                ))
+                                append(
+                                    renderLine(
+                                        "ᴅɪsᴄᴏʀᴅ",
+                                        clan.discordInvite ?: "https://discord.gg/castcrafter"
+                                    )
+                                )
 
                                 clickEvent(
                                     ClickEvent.openUrl(

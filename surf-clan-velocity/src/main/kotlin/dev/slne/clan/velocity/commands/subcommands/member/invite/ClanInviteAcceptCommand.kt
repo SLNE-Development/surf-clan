@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands.member.invite
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
@@ -28,9 +28,9 @@ class ClanInviteAcceptCommand(
 
         clanInviteArgument(clanService)
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
-                val clanName = args.getOrDefaultUnchecked("clan", "")
+                val clanName = args.getUnchecked<String>("clan") ?: ""
                 val invite = ClanInviteArgument.clanInvite(clanService, player, args)
 
                 val playerClan = player.findClan(clanService)
@@ -79,6 +79,6 @@ class ClanInviteAcceptCommand(
 
                 clanService.saveClan(invitedClan)
             }
-        })
+        }
     }
 }

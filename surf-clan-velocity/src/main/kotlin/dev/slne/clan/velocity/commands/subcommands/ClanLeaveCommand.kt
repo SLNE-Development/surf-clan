@@ -3,7 +3,7 @@ package dev.slne.clan.velocity.commands.subcommands
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import dev.jorel.commandapi.kotlindsl.stringArgument
+import dev.jorel.commandapi.kotlindsl.literalArgument
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
@@ -29,7 +29,7 @@ class ClanLeaveCommand(
     init {
         withPermission("surf.clan.leave")
 
-        stringArgument("confirm", true)
+        literalArgument("confirm", true)
 
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
