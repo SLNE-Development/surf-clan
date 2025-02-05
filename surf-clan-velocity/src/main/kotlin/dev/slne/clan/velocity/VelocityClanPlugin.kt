@@ -22,6 +22,7 @@ import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
 import me.neznamy.tab.api.TabAPI
+import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.event.player.PlayerLoadEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -92,23 +93,33 @@ class VelocityClanPlugin @Inject constructor(
             registerPlayerPlaceholder(
                 "%clan_tag%",
                 100
-            ) { player ->
-                val velocityPlayer = player.player as Player
-                val clanTag = velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
+            ) { player -> renderClanTag(player) }
 
-                if (clanTag.isEmpty()) {
-                    return@registerPlayerPlaceholder ""
+            repeat(101) { i ->
+                if (i % 10 == 0) {
+                    registerPlayerPlaceholder("%clan_tag_$i%", 100) { player -> renderClanTag(player, i) }
                 }
-
-                val clanTagComponent = Component.text()
-                clanTagComponent.appendSpace()
-                clanTagComponent.append(Component.text("[", NamedTextColor.DARK_GRAY))
-                clanTagComponent.append(Component.text(clanTag.uppercase(), NamedTextColor.YELLOW))
-                clanTagComponent.append(Component.text("]", NamedTextColor.DARK_GRAY))
-
-                LegacyComponentSerializer.legacySection().serialize(clanTagComponent.build())
             }
         }
+    }
+
+
+    private fun renderClanTag(player: TabPlayer, minSize: Int = 0): String {
+        val velocityPlayer = player.player as Player
+        val clan = velocityPlayer.findClan(getBean<ClanService>()) ?: return ""
+        val clanTag = clan.tag
+
+        if (clanTag.isEmpty() || clan.members.size < minSize) {
+            return ""
+        }
+
+        val clanTagComponent = Component.text()
+        clanTagComponent.appendSpace()
+        clanTagComponent.append(Component.text("[", NamedTextColor.DARK_GRAY))
+        clanTagComponent.append(Component.text(clanTag.uppercase(), NamedTextColor.YELLOW))
+        clanTagComponent.append(Component.text("]", NamedTextColor.DARK_GRAY))
+
+        return LegacyComponentSerializer.legacySection().serialize(clanTagComponent.build())
     }
 
     @Subscribe
