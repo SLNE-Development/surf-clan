@@ -1,6 +1,7 @@
 package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
+import com.velocitypowered.api.proxy.Player
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
@@ -29,10 +30,14 @@ class ClanCreateCommand(
         stringArgument("tag")
 
         executesPlayer(PlayerCommandExecutor { player, args ->
-            plugin.container.launch {
-                val name: String by args
-                val tag: String by args
+            val name: String by args
+            val tag: String by args
 
+            if (!preValidateInput(player, tag)) {
+                return@PlayerCommandExecutor
+            }
+
+            plugin.container.launch {
                 val findClan = player.findClan(clanService)
 
                 if (findClan != null) {
@@ -40,22 +45,6 @@ class ClanCreateCommand(
                         append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(findClan, clanPlayerService))
                         append(Component.text(".", Colors.ERROR))
-                    })
-
-                    return@launch
-                }
-
-                if (name.length < 3 || name.length > 16) {
-                    val builder = Component.text()
-                    builder.append(Component.text("Der Name muss zwischen ", Colors.ERROR))
-                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" und ", Colors.ERROR))
-                    builder.append(Component.text("16", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
-                    val message = builder.build()
-
-                    player.sendMessage(buildMessage {
-                        append(message)
                     })
 
                     return@launch
@@ -83,32 +72,6 @@ class ClanCreateCommand(
                     return@launch
                 }
 
-                if (tag.length < 3 || tag.length > 4) {
-                    val builder = Component.text()
-                    builder.append(Component.text("Der Tag muss zwischen ", Colors.ERROR))
-                    builder.append(Component.text("3", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" und ", Colors.ERROR))
-                    builder.append(Component.text("4", Colors.VARIABLE_VALUE))
-                    builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
-                    val message = builder.build()
-
-                    player.sendMessage(buildMessage {
-                        append(message)
-                    })
-
-                    return@launch
-                }
-
-                if (isInvalidClanTag(tag)) {
-                    player.sendMessage(buildMessageAsync {
-                        append(Component.text("Der Clan-Tag ", Colors.ERROR))
-                        append(Component.text(tag, Colors.VARIABLE_VALUE))
-                        append(Component.text(" ist nicht erlaubt.", Colors.ERROR))
-                    })
-
-                    return@launch
-                }
-
                 val uuid = clanService.createUnusedClanUuid()
 
                 val clan = CoreClan(
@@ -129,5 +92,67 @@ class ClanCreateCommand(
                 })
             }
         })
+    }
+
+
+    private fun preValidateInput(player: Player, tag: String): Boolean {
+        if (name.length < 3 || name.length > 16) {
+            val builder = Component.text()
+            builder.append(Component.text("Der Name muss zwischen ", Colors.ERROR))
+            builder.append(Component.text("3", Colors.VARIABLE_VALUE))
+            builder.append(Component.text(" und ", Colors.ERROR))
+            builder.append(Component.text("16", Colors.VARIABLE_VALUE))
+            builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
+            val message = builder.build()
+
+            player.sendMessage(buildMessage {
+                append(message)
+            })
+
+            return false
+        }
+
+        if (tag.length < 3 || tag.length > 4) {
+            val builder = Component.text()
+            builder.append(Component.text("Der Tag muss zwischen ", Colors.ERROR))
+            builder.append(Component.text("3", Colors.VARIABLE_VALUE))
+            builder.append(Component.text(" und ", Colors.ERROR))
+            builder.append(Component.text("4", Colors.VARIABLE_VALUE))
+            builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
+            val message = builder.build()
+
+            player.sendMessage(buildMessage {
+                append(message)
+            })
+
+            return false
+        }
+
+        if (tag.any { !it.isLetterOrDigit() }) {
+            player.sendMessage(buildMessage {
+                append(Component.text("Der Clan-Tag ", Colors.ERROR))
+                append(Component.text(tag, Colors.VARIABLE_VALUE))
+                append(
+                    Component.text(
+                        " ist nicht erlaubt. Er darf nur aus Buchstaben und Zahlen bestehen.",
+                        Colors.ERROR
+                    )
+                )
+            })
+
+            return false
+        }
+
+        if (isInvalidClanTag(tag)) {
+            player.sendMessage(buildMessage {
+                append(Component.text("Der Clan-Tag ", Colors.ERROR))
+                append(Component.text(tag, Colors.VARIABLE_VALUE))
+                append(Component.text(" ist nicht erlaubt.", Colors.ERROR))
+            })
+
+            return false
+        }
+
+        return true
     }
 }
