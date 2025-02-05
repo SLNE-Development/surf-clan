@@ -103,7 +103,7 @@ class VelocityClanPlugin @Inject constructor(
                 val clanTagComponent = Component.text()
                 clanTagComponent.appendSpace()
                 clanTagComponent.append(Component.text("[", NamedTextColor.DARK_GRAY))
-                clanTagComponent.append(Component.text(clanTag, NamedTextColor.YELLOW))
+                clanTagComponent.append(Component.text(clanTag.uppercase(), NamedTextColor.YELLOW))
                 clanTagComponent.append(Component.text("]", NamedTextColor.DARK_GRAY))
 
                 LegacyComponentSerializer.legacySection().serialize(clanTagComponent.build())
