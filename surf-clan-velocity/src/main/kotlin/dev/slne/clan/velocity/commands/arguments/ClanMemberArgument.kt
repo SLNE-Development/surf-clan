@@ -13,7 +13,6 @@ import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.extensions.findClan
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
-import java.util.*
 
 const val CLAN_MEMBER_ARGUMENT_NODE_NAME = "target"
 
@@ -47,11 +46,10 @@ class ClanMemberArgument(
             nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
         ): ClanMember? {
             val argument = args.getUnchecked<String>(nodeName) ?: return null
-            val uuid = runCatching { UUID.fromString(argument) }.onFailure {
-                clanPlayerService.findClanPlayerByName(argument)?.uuid
-            }.getOrThrow()
+            val clanPlayer =
+                clanPlayerService.findClanPlayerByName(argument) ?: return null
 
-            return clan.members.find { it.uuid == uuid }
+            return clan.members.find { it.uuid == clanPlayer.uuid }
         }
     }
 }
