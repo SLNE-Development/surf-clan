@@ -67,14 +67,14 @@ class VelocityClanPlugin @Inject constructor(
         ListenerProcessor.registerListeners()
         registerPlaceholder()
 
-        TabAPI.getInstance().eventBus!!.register(TabLoadEvent::class.java) {registerPlaceholder()}
+        TabAPI.getInstance().eventBus!!.register(TabLoadEvent::class.java) { registerPlaceholder() }
     }
 
     private fun registerPlaceholder() {
         with(TabAPI.getInstance().placeholderManager) {
             registerPlayerPlaceholder(
                 "%clan_name%",
-                100
+                10000
             ) { player ->
                 val velocityPlayer = player.player as Player
 
@@ -83,7 +83,7 @@ class VelocityClanPlugin @Inject constructor(
 
             registerPlayerPlaceholder(
                 "%clan_tag_raw%",
-                100
+                10000
             ) { player ->
                 val velocityPlayer = player.player as Player
 
@@ -92,12 +92,17 @@ class VelocityClanPlugin @Inject constructor(
 
             registerPlayerPlaceholder(
                 "%clan_tag%",
-                100
+                10000
             ) { player -> renderClanTag(player) }
 
             repeat(101) { i ->
                 if (i % 10 == 0) {
-                    registerPlayerPlaceholder("%clan_tag_$i%", 100) { player -> renderClanTag(player, i) }
+                    registerPlayerPlaceholder("%clan_tag_$i%", 10000) { player ->
+                        renderClanTag(
+                            player,
+                            i
+                        )
+                    }
                 }
             }
         }
