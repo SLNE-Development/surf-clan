@@ -13,13 +13,10 @@ import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
-import dev.slne.clan.core.ClanApplication
-import dev.slne.clan.core.dataDirectory
-import dev.slne.clan.core.getBean
-import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
+import dev.slne.surf.database.DatabaseProvider
 import me.neznamy.tab.api.TabAPI
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.event.plugin.TabLoadEvent
@@ -27,6 +24,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.nio.file.Path
+import kotlin.io.path.div
 
 
 val plugin get() = VelocityClanPlugin.instance
@@ -53,16 +51,12 @@ class VelocityClanPlugin @Inject constructor(
         instance = this
         suspendingPluginContainer.initialize(this)
 
-        dataDirectory = dataPath
-
-        ClanApplication.run(this.javaClass.classLoader)
-//        DataApi.run(ClanApplication::class.java, ClanApplication::class.java.classLoader)
-        //runApplication(ClanApplication::class.java.classLoader)
+        DatabaseProvider(dataPath, dataPath / "storage").connect()
     }
 
     @Subscribe(order = PostOrder.LATE)
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        ClanCommand(getBean<ClanService>(), getBean<ClanPlayerService>()).register()
+        ClanCommand.register()
         ListenerProcessor.registerListeners()
         registerPlaceholder()
 
@@ -77,7 +71,7 @@ class VelocityClanPlugin @Inject constructor(
             ) { player ->
                 val velocityPlayer = player.player as Player
 
-                velocityPlayer.findClan(getBean<ClanService>())?.name ?: ""
+                velocityPlayer.findClan()?.name ?: ""
             }
 
             registerPlayerPlaceholder(
@@ -86,7 +80,7 @@ class VelocityClanPlugin @Inject constructor(
             ) { player ->
                 val velocityPlayer = player.player as Player
 
-                velocityPlayer.findClan(getBean<ClanService>())?.tag ?: ""
+                velocityPlayer.findClan()?.tag ?: ""
             }
 
             registerPlayerPlaceholder(
@@ -110,7 +104,7 @@ class VelocityClanPlugin @Inject constructor(
 
     private fun renderClanTag(player: TabPlayer, minSize: Int = 0): String {
         val velocityPlayer = player.player as Player
-        val clan = velocityPlayer.findClan(getBean<ClanService>()) ?: return ""
+        val clan = velocityPlayer.findClan() ?: return ""
         val clanTag = clan.tag
 
         if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag != "SLNE") {

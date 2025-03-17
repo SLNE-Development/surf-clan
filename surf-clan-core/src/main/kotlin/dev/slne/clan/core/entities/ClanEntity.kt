@@ -1,23 +1,12 @@
 package dev.slne.clan.core.entities
 
-import dev.slne.clan.api.Clan
-import dev.slne.clan.api.invite.ClanInvite
-import dev.slne.clan.api.member.ClanMember
-import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.surf.surfapi.core.api.util.toObjectSet
-import it.unimi.dsi.fastutil.objects.ObjectSet
-import kotlinx.coroutines.Dispatchers
+import dev.slne.clan.core.CoreClan
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 
 object ClanTable : LongIdTable("clans") {
@@ -35,74 +24,39 @@ object ClanTable : LongIdTable("clans") {
 
 }
 
-class ClanEntity(id: EntityID<Long>) : LongEntity(id), Clan {
+class ClanEntity(id: EntityID<Long>) : LongEntity(id) {
 
     companion object : LongEntityClass<ClanEntity>(ClanTable)
 
-    override var uuid by ClanTable.uuid
-    override var name by ClanTable.name
-    override var tag by ClanTable.tag
+    var uuid by ClanTable.uuid
+    var name by ClanTable.name
+    var tag by ClanTable.tag
 
-    override var description by ClanTable.description
-    override var createdBy by ClanPlayerEntity referencedOn ClanTable.createdBy
-    override var discordInvite by ClanTable.discordInvite
+    var description by ClanTable.description
+    var createdBy by ClanPlayerEntity referencedOn ClanTable.createdBy
+    var discordInvite by ClanTable.discordInvite
 
-    override var createdAt by ClanTable.createdAt
-    override var updatedAt by ClanTable.updatedAt
+    var createdAt by ClanTable.createdAt
+    var updatedAt by ClanTable.updatedAt
 
-    private val _members by ClanMemberEntity referrersOn ClanMemberTable.clan
-    override val members: ObjectSet<ClanMember> = _members.toObjectSet()
+    val members by ClanMemberEntity referrersOn ClanMemberTable.clan
+    val invites by ClanInviteEntity referrersOn ClanInviteTable.clan
 
-    private val _invites by ClanInviteEntity referrersOn ClanInviteTable.clan
-    override val invites: ObjectSet<ClanInvite> = _invites.toObjectSet()
+    fun toClan() = CoreClan(
+        uuid = uuid,
+        name = name,
+        tag = tag,
 
-    override suspend fun invite(player: ClanPlayer, invitedBy: ClanPlayer): Boolean =
-        newSuspendedTransaction(Dispatchers.IO) {
-            if (invites.any { it.invited == player }) return false
+        description = description,
+        createdBy = createdBy.toClanPlayer(),
+        discordInvite = discordInvite,
 
-            val invite = ClanInviteEntity.new {
-                this.invited = player
-                this.invitedBy = invitedBy
-                this.clan = this@ClanEntity
-            }
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+    )
 
-            true
-        }
-
-    override suspend fun uninvite(player: ClanPlayer): Boolean {
-        TODO("Not yet implemented")
+    override fun toString(): String {
+        return "ClanEntity(uuid=$uuid, name='$name', tag='$tag', description=$description, createdBy=$createdBy, discordInvite=$discordInvite, createdAt=$createdAt, updatedAt=$updatedAt, members=$members, invites=$invites)"
     }
 
-    override fun isMember(player: ClanPlayer): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addMember(
-        player: ClanPlayer,
-        role: ClanMemberRole,
-        addedBy: ClanPlayer
-    ): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addMember(member: ClanMember): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun removeMember(member: ClanMember): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun hasPermission(clanMember: ClanMember, permission: ClanPermission): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun getMember(clanPlayer: ClanPlayer): ClanMember? {
-        TODO("Not yet implemented")
-    }
-
-    fun updateClan(block: ClanEntity.() -> Unit) {
-        block()
-        updatedAt = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()
-    }
 }

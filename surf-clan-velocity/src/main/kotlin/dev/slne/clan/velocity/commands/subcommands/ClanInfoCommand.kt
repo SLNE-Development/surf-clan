@@ -21,10 +21,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import kotlin.jvm.optionals.getOrNull
 
 
-class ClanInfoCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("info") {
+object ClanInfoCommand : CommandAPICommand("info") {
     init {
         withPermission("surf.clan.info")
         stringArgument("clanTag", optional = true) {

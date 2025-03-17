@@ -1,6 +1,6 @@
 package dev.slne.clan.core.entities
 
-import dev.slne.clan.api.invite.ClanInvite
+import dev.slne.clan.core.invite.CoreClanInvite
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -18,15 +18,27 @@ object ClanInviteTable : LongIdTable("clan_invites") {
     val updatedAt = datetime("updated_at").defaultExpression(CurrentDateTime)
 }
 
-class ClanInviteEntity(id: EntityID<Long>) : LongEntity(id), ClanInvite {
+class ClanInviteEntity(id: EntityID<Long>) : LongEntity(id) {
 
     companion object : LongEntityClass<ClanInviteEntity>(ClanInviteTable)
 
-    override var invited by ClanPlayerEntity referencedOn ClanInviteTable.invited
-    override var invitedBy by ClanPlayerEntity referencedOn ClanInviteTable.invitedBy
+    var invited by ClanPlayerEntity referencedOn ClanInviteTable.invited
+    var invitedBy by ClanPlayerEntity referencedOn ClanInviteTable.invitedBy
     var clan by ClanEntity referencedOn ClanInviteTable.clan
 
-    override var createdAt by ClanInviteTable.createdAt
-    override var updatedAt by ClanInviteTable.updatedAt
+    var createdAt by ClanInviteTable.createdAt
+    var updatedAt by ClanInviteTable.updatedAt
+
+    fun toClanInvite() = CoreClanInvite(
+        invited = invited.toClanPlayer(),
+        invitedBy = invitedBy.toClanPlayer(),
+        clan = clan.toClan(),
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+
+    override fun toString(): String {
+        return "ClanInviteEntity(invited=$invited, invitedBy=$invitedBy, clan=$clan, createdAt=$createdAt, updatedAt=$updatedAt)"
+    }
 
 }

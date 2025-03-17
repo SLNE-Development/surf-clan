@@ -16,10 +16,7 @@ import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
-class ClanSetDiscordCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("setdiscord") {
+object ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
     init {
         withPermission("surf.clan.setdiscord")
 

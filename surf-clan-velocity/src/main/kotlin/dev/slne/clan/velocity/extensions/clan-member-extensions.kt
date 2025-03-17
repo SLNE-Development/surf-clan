@@ -8,21 +8,21 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.VelocityClanPlugin
 
-fun Player.findClan(clanService: ClanService): Clan? = clanService.findClanByMember(uniqueId)
+fun Player.findClan(): Clan? = ClanService.findClanByMemberUniqueId(uniqueId)
 
 @Suppress("UNCHECKED_CAST")
-fun <C : ClanInvite> Player.findClanInvites(clanService: ClanService) =
-    clanService.findInvitesByMember(uniqueId).map { it as C }
+fun <C : ClanInvite> Player.findClanInvites() =
+    ClanService.findClanInvitesByMemberUniqueId(uniqueId).map { it as C }
 
 fun Clan.hasPermission(player: Player, permission: ClanPermission): Boolean {
-    val clanMember = members.find { it.uuid == player.uniqueId } ?: return false
+    val clanMember = members.find { it.player.uuid == player.uniqueId } ?: return false
 
     return clanMember.hasPermission(permission)
 }
 
-val ClanMember.playerOrNull: Player?
-    get() = VelocityClanPlugin.instance.server.getPlayer(uuid).orElse(null)
+val ClanMember.proxyPlayerOrNull: Player?
+    get() = VelocityClanPlugin.instance.server.getPlayer(player.uuid).orElse(null)
 
-val ClanMember.player: Player
-    get() = VelocityClanPlugin.instance.server.getPlayer(uuid)
+val ClanMember.proxyPlayer: Player
+    get() = VelocityClanPlugin.instance.server.getPlayer(player.uuid)
         .orElseThrow { IllegalStateException("Player not found") }

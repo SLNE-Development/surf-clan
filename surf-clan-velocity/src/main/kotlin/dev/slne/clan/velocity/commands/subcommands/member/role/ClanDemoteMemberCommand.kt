@@ -19,8 +19,7 @@ import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
-class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanPlayerService) :
-    CommandAPICommand("demote") {
+object ClanDemoteMemberCommand : CommandAPICommand("demote") {
     init {
         withPermission("surf.clan.demote")
 

@@ -1,7 +1,6 @@
 package dev.slne.clan.velocity.commands
 
 import dev.jorel.commandapi.CommandAPICommand
-import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.subcommands.*
 import dev.slne.clan.velocity.commands.subcommands.admin.ClanAdminCommand
 import dev.slne.clan.velocity.commands.subcommands.member.ClanKickMemberCommand
@@ -11,24 +10,21 @@ import dev.slne.clan.velocity.commands.subcommands.member.role.ClanDemoteMemberC
 import dev.slne.clan.velocity.commands.subcommands.member.role.ClanPromoteMemberCommand
 import dev.slne.clan.velocity.commands.subcommands.player.ClanPlayerCommand
 
-class ClanCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("clan") {
+object ClanCommand : CommandAPICommand("clan") {
     init {
-        withSubcommand(ClanCreateCommand(clanService, clanPlayerService))
-        withSubcommand(ClanDisbandCommand(clanService, clanPlayerService))
-        withSubcommand(ClanLeaveCommand(clanService, clanPlayerService))
-        withSubcommand(ClanInfoCommand(clanService, clanPlayerService))
-        withSubcommand(ClanSetDiscordCommand(clanService, clanPlayerService))
+        withSubcommand(ClanCreateCommand)
+        withSubcommand(ClanDisbandCommand)
+        withSubcommand(ClanLeaveCommand)
+        withSubcommand(ClanInfoCommand)
+        withSubcommand(ClanSetDiscordCommand)
 
-        withSubcommand(ClanInviteMemberCommand(clanService, clanPlayerService))
-        withSubcommand(ClanPromoteMemberCommand(clanService, clanPlayerService))
-        withSubcommand(ClanDemoteMemberCommand(clanService, clanPlayerService))
-        withSubcommand(ClanKickMemberCommand(clanService, clanPlayerService))
-        withSubcommand(ClanMembersCommand(clanService, clanPlayerService))
+        withSubcommand(ClanInviteMemberCommand)
+        withSubcommand(ClanPromoteMemberCommand)
+        withSubcommand(ClanDemoteMemberCommand)
+        withSubcommand(ClanKickMemberCommand)
+        withSubcommand(ClanMembersCommand)
 
-        withSubcommand(ClanPlayerCommand(clanService, clanPlayerService))
-        withSubcommand(ClanAdminCommand(clanService))
+        withSubcommand(ClanPlayerCommand)
+        withSubcommand(ClanAdminCommand)
     }
 }

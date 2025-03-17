@@ -19,10 +19,7 @@ import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
-class ClanKickMemberCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("kick") {
+object ClanKickMemberCommand : CommandAPICommand("kick") {
     init {
         withPermission("surf.clan.kick")
 

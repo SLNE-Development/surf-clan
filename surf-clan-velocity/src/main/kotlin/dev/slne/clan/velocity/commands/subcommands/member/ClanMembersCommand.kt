@@ -24,10 +24,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 private const val MEMBERS_PER_PAGE = 10
 
-class ClanMembersCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("members") {
+object ClanMembersCommand : CommandAPICommand("members") {
     init {
         withPermission("surf.clan.members")
 

@@ -4,6 +4,5 @@ plugins {
 
 dependencies {
     api(project(":surf-clan-api"))
-
-    implementation(libs.surf.database)
+    api(libs.surf.database)
 }

@@ -4,10 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.subcommands.player.subcommands.ClanPlayerSettingsCommand
 
-class ClanPlayerCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("player") {
+object ClanPlayerCommand : CommandAPICommand("player") {
     init {
         withPermission("surf.clan.player")
 

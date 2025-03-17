@@ -21,10 +21,7 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 
-class ClanInviteMemberCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("invite") {
+object ClanInviteMemberCommand : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.invite")
 

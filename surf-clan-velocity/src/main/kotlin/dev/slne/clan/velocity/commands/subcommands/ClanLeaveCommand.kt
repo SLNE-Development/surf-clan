@@ -21,10 +21,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
-class ClanLeaveCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("leave") {
+object ClanLeaveCommand : CommandAPICommand("leave") {
     init {
         withPermission("surf.clan.leave")
 

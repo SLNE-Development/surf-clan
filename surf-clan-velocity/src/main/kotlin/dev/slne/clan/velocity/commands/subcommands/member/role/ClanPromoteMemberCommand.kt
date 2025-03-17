@@ -19,10 +19,7 @@ import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 
-class ClanPromoteMemberCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("promote") {
+object ClanPromoteMemberCommand : CommandAPICommand("promote") {
     init {
         withPermission("surf.clan.promote")
 

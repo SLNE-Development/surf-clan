@@ -5,7 +5,7 @@ import java.util.*
 interface ClanPlayer {
 
     val uuid: UUID
-    var username: String
+    var username: String?
 
     var acceptsClanInvites: Boolean
 
