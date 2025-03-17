@@ -1,9 +1,5 @@
 [versions]
-kaml = "0.67.0"
-
-# Run server versions
-paper-server = "1.21.4"
-commandapi-server = "9.7.0"
+surf-database = "1.0.5-SNAPSHOT"
 
 [libraries]
-kaml = { module = "com.charleskorn.kaml:kaml-jvm", version.ref = "kaml" }
+surf-database = { module = "dev.slne.surf:surf-database", version.ref = "surf-database" }

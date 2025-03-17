@@ -1,7 +1,6 @@
 package dev.slne.clan.velocity.commands.subcommands.player.subcommands
 
 import dev.jorel.commandapi.CommandAPICommand
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.subcommands.player.subcommands.settings.ClanPlayerSettingInviteCommand
 

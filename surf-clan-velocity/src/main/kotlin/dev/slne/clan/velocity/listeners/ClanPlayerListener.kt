@@ -3,7 +3,6 @@ package dev.slne.clan.velocity.listeners
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
 import dev.slne.clan.core.player.CoreClanPlayer
-import dev.slne.clan.core.service.ClanPlayerService
 import org.springframework.stereotype.Component
 
 @Component

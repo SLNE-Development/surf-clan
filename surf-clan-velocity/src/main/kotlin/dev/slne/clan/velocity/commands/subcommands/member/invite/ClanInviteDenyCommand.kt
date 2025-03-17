@@ -6,7 +6,6 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument

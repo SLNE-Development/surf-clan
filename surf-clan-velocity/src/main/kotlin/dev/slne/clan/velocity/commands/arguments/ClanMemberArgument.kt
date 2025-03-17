@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMember
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.extensions.findClan
 import kotlinx.coroutines.*

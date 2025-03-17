@@ -15,7 +15,7 @@ interface Clan {
     val name: String
     val tag: String
 
-    val createdBy: UUID
+    val createdBy: ClanPlayer
 
     val description: String?
     var discordInvite: String?
@@ -26,13 +26,13 @@ interface Clan {
     val createdAt: LocalDateTime?
     val updatedAt: LocalDateTime?
 
-    fun invite(uuid: UUID, invitedBy: UUID): Boolean
-    fun uninvite(uuid: UUID): Boolean
+    suspend fun invite(player: ClanPlayer, invitedBy: ClanPlayer): Boolean
+    suspend fun uninvite(player: ClanPlayer): Boolean
 
-    fun isMember(uuid: UUID): Boolean
-    fun addMember(uuid: UUID, role: ClanMemberRole, addedBy: UUID): Boolean
-    fun addMember(member: ClanMember): Boolean
-    fun removeMember(member: ClanMember): Boolean
+    fun isMember(player: ClanPlayer): Boolean
+    suspend fun addMember(player: ClanPlayer, role: ClanMemberRole, addedBy: ClanPlayer): Boolean
+    suspend fun addMember(member: ClanMember): Boolean
+    suspend fun removeMember(member: ClanMember): Boolean
 
     fun hasPermission(clanMember: ClanMember, permission: ClanPermission): Boolean
     fun getMember(clanPlayer: ClanPlayer): ClanMember?

@@ -16,7 +16,6 @@ import com.velocitypowered.api.proxy.ProxyServer
 import dev.slne.clan.core.ClanApplication
 import dev.slne.clan.core.dataDirectory
 import dev.slne.clan.core.getBean
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan

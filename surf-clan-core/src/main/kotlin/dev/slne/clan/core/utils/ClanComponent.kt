@@ -4,7 +4,6 @@ import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component

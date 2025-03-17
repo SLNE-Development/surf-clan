@@ -7,7 +7,6 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
@@ -55,7 +54,10 @@ class ClanKickMemberCommand(
                 }
 
                 val memberNameComponent =
-                    member.playerOrNull?.realName() ?: Component.text(memberName, Colors.VARIABLE_VALUE)
+                    member.playerOrNull?.realName() ?: Component.text(
+                        memberName,
+                        Colors.VARIABLE_VALUE
+                    )
 
                 if (!clan.hasPermission(player, ClanPermission.KICK)) {
                     player.sendMessage(buildMessageAsync {
@@ -87,12 +89,18 @@ class ClanKickMemberCommand(
                     return@launch
                 }
 
-                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("Player not found")
+                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
+                    ?: error("Player not found")
                 val clanPlayerMember = clan.getMember(clanPlayer)
 
                 if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
                     player.sendMessage(buildMessageAsync {
-                        append(Component.text("Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.", Colors.ERROR))
+                        append(
+                            Component.text(
+                                "Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.",
+                                Colors.ERROR
+                            )
+                        )
                     })
 
                     return@launch

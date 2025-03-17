@@ -6,7 +6,6 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent
 import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
-import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClanInvites
@@ -40,7 +39,12 @@ class JoinInviteListener(
             player.sendMessage(buildMessage(false) {
                 append(Component.text("ᴅᴜ ʜᴀsᴛ ɴᴏᴄʜ ", Colors.INFO))
                 append(Component.text("${invites.size}", Colors.VARIABLE_VALUE))
-                append(Component.text(" ᴏғғᴇɴᴇ ᴄʟᴀɴ-ᴇɪɴʟᴀᴅᴜɴɢ${if (invites.size==1)"" else "ᴇɴ"}:", Colors.INFO))
+                append(
+                    Component.text(
+                        " ᴏғғᴇɴᴇ ᴄʟᴀɴ-ᴇɪɴʟᴀᴅᴜɴɢ${if (invites.size == 1) "" else "ᴇɴ"}:",
+                        Colors.INFO
+                    )
+                )
             })
 
             for (invite in invites) {
@@ -81,4 +85,5 @@ class JoinInviteListener(
                 })
             }
         }
-    }}
+    }
+}
