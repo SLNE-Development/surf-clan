@@ -1,10 +1,9 @@
 plugins {
     id("dev.slne.surf.surfapi.gradle.velocity")
-    `common-conventions`
 }
 
-tasks.shadowJar {
-    exclude("kotlin/**")
+velocityPluginFile {
+    main = "dev.slne.clan.velocity.VelocityClanPlugin"
 }
 
 dependencies {
