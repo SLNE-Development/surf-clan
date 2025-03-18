@@ -4,6 +4,13 @@ plugins {
 
 velocityPluginFile {
     main = "dev.slne.clan.velocity.VelocityClanPlugin"
+
+    pluginDependencies {
+        register("surf-api-velocity")
+        register("surf-data-velocity")
+        register("commandapi")
+        register("tab")
+    }
 }
 
 dependencies {
