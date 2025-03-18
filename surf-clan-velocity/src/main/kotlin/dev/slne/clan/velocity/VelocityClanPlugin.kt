@@ -21,6 +21,8 @@ import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import me.neznamy.tab.api.TabAPI
 import me.neznamy.tab.api.TabPlayer
 import me.neznamy.tab.api.event.plugin.TabLoadEvent
@@ -88,16 +90,65 @@ class VelocityClanPlugin @Inject constructor(
             }
 
             registerPlayerPlaceholder(
-                "%clan_tag%",
+                "%clan_tag_single_arrow%",
                 10000
             ) { player -> renderClanTag(player) }
 
+
+            registerPlayerPlaceholder(
+                "%clan_tag_double_arrow%",
+                10000
+            ) { player -> renderClanTag(player, doubleArrow = true) }
+
+
+            registerPlayerPlaceholder(
+                "%clan_tag_single_arrow_space%",
+                10000
+            ) { player -> renderClanTag(player, space = true) }
+
+
+            registerPlayerPlaceholder(
+                "%clan_tag_double_arrow_space%",
+                10000
+            ) { player -> renderClanTag(player, doubleArrow = true, space = true) }
+
             repeat(101) { i ->
                 if (i % 10 == 0) {
-                    registerPlayerPlaceholder("%clan_tag_$i%", 10000) { player ->
+                    registerPlayerPlaceholder("%clan_tag_${i}_single_arrow%", 10000) { player ->
                         renderClanTag(
                             player,
                             i
+                        )
+                    }
+
+                    registerPlayerPlaceholder("%clan_tag_${i}_double_arrow%", 10000) { player ->
+                        renderClanTag(
+                            player,
+                            i,
+                            doubleArrow = true
+                        )
+                    }
+
+                    registerPlayerPlaceholder(
+                        "%clan_tag_${i}_single_arrow_space%",
+                        10000
+                    ) { player ->
+                        renderClanTag(
+                            player,
+                            i,
+                            space = true
+                        )
+                    }
+
+                    registerPlayerPlaceholder(
+                        "%clan_tag_${i}_double_arrow_space%",
+                        10000
+                    ) { player ->
+                        renderClanTag(
+                            player,
+                            i,
+                            doubleArrow = true,
+                            space = true
                         )
                     }
                 }
@@ -105,22 +156,45 @@ class VelocityClanPlugin @Inject constructor(
         }
     }
 
-    private fun renderClanTag(player: TabPlayer, minSize: Int = 0): String {
+    private fun renderClanTag(
+        player: TabPlayer,
+        minSize: Int = 0,
+        space: Boolean = false,
+        doubleArrow: Boolean = false
+    ): String {
         val velocityPlayer = player.player as Player
         val clan = velocityPlayer.findClan(getBean<ClanService>()) ?: return ""
         val clanTag = clan.tag
 
-        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag != "SLNE") {
+        val whitelistedClanTags = listOf("SLNE", "CXN", "SPDY")
+
+        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag !in whitelistedClanTags) {
             return ""
         }
 
-        val clanTagComponent = Component.text()
-        clanTagComponent.appendSpace()
-        clanTagComponent.append(Component.text("[", NamedTextColor.DARK_GRAY))
-        clanTagComponent.append(Component.text(clanTag.uppercase(), NamedTextColor.YELLOW))
-        clanTagComponent.append(Component.text("]", NamedTextColor.DARK_GRAY))
+//        val clanTagComponent = buildText {
+//            darkSpacer("[")
+//            append(Component.text(clanTag.uppercase(), NamedTextColor.YELLOW))
+//            darkSpacer("]")
+//        }
+        val clanTagComponent = buildText {
+            if (space) {
+                appendSpace()
+            }
 
-        return LegacyComponentSerializer.legacySection().serialize(clanTagComponent.build())
+            spacer(if (doubleArrow) "<<" else "<")
+
+            val tag = clanTag.uppercase()
+            if (tag.contains("[0-9]".toRegex())) {
+                append(Component.text(clanTag, NamedTextColor.YELLOW))
+            } else {
+                append(Component.text(clanTag.toSmallCaps(), NamedTextColor.YELLOW))
+            }
+
+            spacer(if (doubleArrow) ">>" else ">")
+        }
+
+        return LegacyComponentSerializer.legacySection().serialize(clanTagComponent)
     }
 
     @Subscribe

@@ -8,8 +8,6 @@ import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.CoreClan
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -17,6 +15,7 @@ import dev.slne.clan.core.utils.isInvalidClanTag
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
 class ClanCreateCommand(
@@ -41,7 +40,7 @@ class ClanCreateCommand(
                 val findClan = player.findClan(clanService)
 
                 if (findClan != null) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(findClan, clanPlayerService))
                         append(Component.text(".", Colors.ERROR))
@@ -52,7 +51,7 @@ class ClanCreateCommand(
 
                 val findClanByName = clanService.findClanByName(name)
                 if (findClanByName != null) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Ein Clan mit dem Namen ", Colors.ERROR))
                         append(clanComponent(findClanByName, clanPlayerService))
                         append(Component.text(" existiert bereits.", Colors.ERROR))
@@ -63,7 +62,7 @@ class ClanCreateCommand(
 
                 val findClanByTag = clanService.findClanByTag(tag)
                 if (findClanByTag != null) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Ein Clan mit dem Tag ", Colors.ERROR))
                         append(clanComponent(findClanByTag, clanPlayerService))
                         append(Component.text(" existiert bereits.", Colors.ERROR))
@@ -85,7 +84,7 @@ class ClanCreateCommand(
 
                 clanService.saveClan(clan)
 
-                player.sendMessage(buildMessageAsync {
+                player.sendMessage(buildText {
                     append(Component.text("Der Clan ", Colors.SUCCESS))
                     append(clanComponent(clan, clanPlayerService))
                     append(Component.text(" wurde erfolgreich erstellt.", Colors.SUCCESS))
@@ -105,7 +104,7 @@ class ClanCreateCommand(
             builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
             val message = builder.build()
 
-            player.sendMessage(buildMessage {
+            player.sendMessage(buildText {
                 append(message)
             })
 
@@ -121,7 +120,7 @@ class ClanCreateCommand(
             builder.append(Component.text(" Zeichen lang sein.", Colors.ERROR))
             val message = builder.build()
 
-            player.sendMessage(buildMessage {
+            player.sendMessage(buildText {
                 append(message)
             })
 
@@ -129,7 +128,7 @@ class ClanCreateCommand(
         }
 
         if (tag.any { !it.isLetterOrDigit() }) {
-            player.sendMessage(buildMessage {
+            player.sendMessage(buildText {
                 append(Component.text("Der Clan-Tag ", Colors.ERROR))
                 append(Component.text(tag, Colors.VARIABLE_VALUE))
                 append(
@@ -144,7 +143,7 @@ class ClanCreateCommand(
         }
 
         if (isInvalidClanTag(tag)) {
-            player.sendMessage(buildMessage {
+            player.sendMessage(buildText {
                 append(Component.text("Der Clan-Tag ", Colors.ERROR))
                 append(Component.text(tag, Colors.VARIABLE_VALUE))
                 append(Component.text(" ist nicht erlaubt.", Colors.ERROR))

@@ -6,8 +6,6 @@ import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -16,6 +14,7 @@ import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -44,7 +43,7 @@ class ClanDisbandCommand(
                 }
 
                 if (!clan.hasPermission(player, ClanPermission.DISBAND)) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(
                             Component.text("Du hast keine Berechtigung, den Clan ", Colors.ERROR)
                         )
@@ -56,7 +55,7 @@ class ClanDisbandCommand(
                 }
 
                 if (clan.members.size > CLAN_MAX_MEMBERS_DISBAND) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Du kannst den Clan ", Colors.ERROR))
                         append(clanComponent(clan, clanPlayerService))
                         append(Component.text(" nicht auflösen, da er mehr als ", Colors.ERROR))
@@ -79,7 +78,7 @@ class ClanDisbandCommand(
 
                 val confirm = args.getOrDefaultUnchecked("confirm", "")
                 if (confirm.isNotEmpty() && confirm == "confirm") {
-                    val clanDisbandedMessage = buildMessageAsync {
+                    val clanDisbandedMessage = buildText {
                         append(Component.text("Der Clan ", Colors.SUCCESS))
                         append(clanComponent(clan, clanPlayerService))
                         append(Component.text(" wurde aufgelöst.", Colors.SUCCESS))
@@ -94,14 +93,14 @@ class ClanDisbandCommand(
                     return@launch
                 }
 
-                player.sendMessage(buildMessageAsync {
+                player.sendMessage(buildText {
                     append(Component.text("Bist du sicher, dass du den Clan ", Colors.INFO))
                     append(clanComponent(clan, clanPlayerService))
                     append(Component.text(" auflösen möchtest? Klicke ", Colors.INFO))
-                    append(buildMessage(false) {
+                    append(buildText {
                         append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
 
-                        hoverEvent(HoverEvent.showText(buildMessage(false) {
+                        hoverEvent(HoverEvent.showText(buildText {
                             append(
                                 Component.text(
                                     "Klicke hier, um den Clan aufzulösen.",

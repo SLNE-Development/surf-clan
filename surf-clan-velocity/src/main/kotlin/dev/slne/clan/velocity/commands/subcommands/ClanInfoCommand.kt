@@ -13,8 +13,8 @@ import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.core.utils.formatted
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.appendText
-import dev.slne.surf.surfapi.core.api.messages.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.appendText
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor

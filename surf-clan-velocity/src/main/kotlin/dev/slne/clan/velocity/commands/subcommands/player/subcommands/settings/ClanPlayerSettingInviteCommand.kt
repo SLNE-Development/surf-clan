@@ -5,11 +5,11 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.buildMessage
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
 class ClanPlayerSettingInviteCommand(
@@ -36,13 +36,13 @@ class ClanPlayerSettingInviteCommand(
                 clanPlayerService.save(clanPlayer)
 
                 if (accept) {
-                    player.sendMessage(buildMessage {
+                    player.sendMessage(buildText {
                         append(Component.text("Du hast Einladungen zu Clans ", Colors.INFO))
                         append(Component.text("aktiviert", Colors.SUCCESS))
                         append(Component.text(".", Colors.INFO))
                     })
                 } else {
-                    player.sendMessage(buildMessage {
+                    player.sendMessage(buildText {
                         append(Component.text("Du hast Einladungen zu Clans ", Colors.INFO))
                         append(Component.text("deaktiviert", Colors.ERROR))
                         append(Component.text(".", Colors.INFO))

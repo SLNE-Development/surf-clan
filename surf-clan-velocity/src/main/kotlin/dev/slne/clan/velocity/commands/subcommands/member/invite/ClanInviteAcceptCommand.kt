@@ -4,8 +4,6 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
@@ -17,6 +15,7 @@ import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
 class ClanInviteAcceptCommand(
@@ -36,7 +35,7 @@ class ClanInviteAcceptCommand(
                 val playerClan = player.findClan(clanService)
 
                 if (playerClan != null) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(playerClan, clanPlayerService))
                         append(
@@ -51,7 +50,7 @@ class ClanInviteAcceptCommand(
                 }
 
                 if (invite == null) {
-                    player.sendMessage(buildMessage {
+                    player.sendMessage(buildText {
                         append(Component.text("Du hast keine Einladung zum Clan ", Colors.ERROR))
                         append(Component.text(clanName, Colors.VARIABLE_VALUE))
                         append(Component.text(" erhalten.", Colors.ERROR))
@@ -68,7 +67,7 @@ class ClanInviteAcceptCommand(
                 invitedClan.members.forEach { member ->
                     val memberPlayer = member.playerOrNull ?: return@forEach
 
-                    memberPlayer.sendMessage(buildMessageAsync {
+                    memberPlayer.sendMessage(buildText {
                         append(Component.text("Der Spieler ", Colors.INFO))
                         append(player.realName())
                         append(Component.text(" ist dem Clan ", Colors.INFO))

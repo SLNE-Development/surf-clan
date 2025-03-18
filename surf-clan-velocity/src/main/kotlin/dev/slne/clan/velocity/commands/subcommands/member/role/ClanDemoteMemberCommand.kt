@@ -5,8 +5,6 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.clanComponent
@@ -18,6 +16,7 @@ import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
 class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanPlayerService) :
@@ -41,7 +40,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                 val member = ClanMemberArgument.clanMember(clanPlayerService, clan, args)
 
                 if (member == null) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(Component.text("Der Spieler ", Colors.ERROR))
                         append(Component.text(memberName, Colors.VARIABLE_VALUE))
                         append(Component.text(" ist nicht im Clan ", Colors.ERROR))
@@ -59,7 +58,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                     )
 
                 if (!clan.hasPermission(player, ClanPermission.DEMOTE)) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(
                             Component.text(
                                 "Du hast keine Berechtigung, den Spieler ",
@@ -76,7 +75,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                 }
 
                 if (member.uuid == player.uniqueId) {
-                    player.sendMessage(buildMessage {
+                    player.sendMessage(buildText {
                         append(
                             Component.text(
                                 "Du kannst dich nicht selbst degradieren.",
@@ -93,7 +92,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                 val clanPlayerMember = clan.getMember(clanPlayer)
 
                 if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
-                    player.sendMessage(buildMessageAsync {
+                    player.sendMessage(buildText {
                         append(
                             Component.text(
                                 "Du kannst keinen Spieler degradieren, der den selben oder einen höheren Rang hat.",
@@ -106,7 +105,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
                 }
 
                 if (!member.role.hasPreviousRole()) {
-                    player.sendMessage(buildMessage {
+                    player.sendMessage(buildText {
                         append(Component.text("Der Spieler ", Colors.ERROR))
                         append(memberNameComponent)
                         append(Component.text(" hat bereits den niedrigsten Rang.", Colors.ERROR))
@@ -120,7 +119,7 @@ class ClanDemoteMemberCommand(clanService: ClanService, clanPlayerService: ClanP
 
                 member.role = newRole
 
-                val memberPromotedMessage = buildMessage {
+                val memberPromotedMessage = buildText {
                     append(Component.text("Der Spieler ", Colors.INFO))
                     append(memberNameComponent)
                     append(Component.text(" wurde durch ", Colors.INFO))

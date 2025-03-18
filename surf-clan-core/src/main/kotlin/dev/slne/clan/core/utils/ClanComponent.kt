@@ -2,11 +2,10 @@ package dev.slne.clan.core.utils
 
 import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -17,11 +16,11 @@ import net.kyori.adventure.text.format.TextDecoration
 val CLAN_COMPONENT_BAR_COLOR = TextColor.fromHexString("#97B3F7")
 
 suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
-    buildMessageAsync(false) {
+    buildText {
         val createdBy =
             clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
 
-        val hoverComponent = buildMessage(false) {
+        val hoverComponent = buildText {
             append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
             appendNewline()
 
@@ -57,7 +56,12 @@ suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
             appendNewline()
 
             if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
-                append(renderLine("ᴅɪsᴄᴏʀᴅ", clan.discordInvite ?: "https://discord.gg/castcrafter"))
+                append(
+                    renderLine(
+                        "ᴅɪsᴄᴏʀᴅ",
+                        clan.discordInvite ?: "https://discord.gg/castcrafter"
+                    )
+                )
                 appendNewline()
             }
 

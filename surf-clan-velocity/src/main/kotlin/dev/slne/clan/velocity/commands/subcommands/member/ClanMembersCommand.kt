@@ -6,8 +6,6 @@ import dev.jorel.commandapi.kotlindsl.integerArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.buildMessage
-import dev.slne.clan.core.buildMessageAsync
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
@@ -16,6 +14,7 @@ import dev.slne.clan.velocity.commands.subcommands.includeClanTagSuggestions
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -68,7 +67,7 @@ class ClanMembersCommand(
 
                 val pageMembers = chunkedMembers.getOrNull(page - 1) ?: emptyList()
 
-                val clanInfoMessage = buildMessageAsync(false) {
+                val clanInfoMessage = buildText {
                     appendNewline()
                     append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", CLAN_COMPONENT_BAR_COLOR))
                     append(clanComponent(clan, clanPlayerService))
@@ -79,7 +78,7 @@ class ClanMembersCommand(
                             clanPlayerService.findClanPlayerByUuid(member.uuid)?.username
                                 ?: member.uuid.toString()
 
-                        append(buildMessage(false) {
+                        append(buildText {
                             append(
                                 Component.text(
                                     "| ",
@@ -96,55 +95,55 @@ class ClanMembersCommand(
                         appendNewline()
                     }
 
-                    val firstPageComponent = renderPageSwapComponent(buildMessage(false) {
+                    val firstPageComponent = renderPageSwapComponent(buildText {
                         append(Component.text("[", NamedTextColor.GRAY))
                         append(Component.text("<<", Colors.ERROR))
                         append(Component.text("]", NamedTextColor.GRAY))
 
-                        hoverEvent(HoverEvent.showText(buildMessage(false) {
+                        hoverEvent(HoverEvent.showText(buildText {
                             append(Component.text("Zur ersten Seite", Colors.INFO))
                         }))
 
                         clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} 1"))
                     }, page) { it > 1 }
 
-                    val previousPageComponent = renderPageSwapComponent(buildMessage(false) {
+                    val previousPageComponent = renderPageSwapComponent(buildText {
                         append(Component.text("[", NamedTextColor.GRAY))
                         append(Component.text("<", Colors.ERROR))
                         append(Component.text("]", NamedTextColor.GRAY))
 
-                        hoverEvent(HoverEvent.showText(buildMessage(false) {
+                        hoverEvent(HoverEvent.showText(buildText {
                             append(Component.text("Zurück zur Seite ${page - 1}", Colors.INFO))
                         }))
 
                         clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} ${page - 1}"))
                     }, page) { it > 1 }
 
-                    val nextPageComponent = renderPageSwapComponent(buildMessage(false) {
+                    val nextPageComponent = renderPageSwapComponent(buildText {
                         append(Component.text("[", NamedTextColor.GRAY))
                         append(Component.text(">", Colors.SUCCESS))
                         append(Component.text("]", NamedTextColor.GRAY))
 
-                        hoverEvent(HoverEvent.showText(buildMessage(false) {
+                        hoverEvent(HoverEvent.showText(buildText {
                             append(Component.text("Weiter zur Seite ${page + 1}", Colors.INFO))
                         }))
 
                         clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} ${page + 1}"))
                     }, page) { it < totalPages }
 
-                    val lastPageComponent = renderPageSwapComponent(buildMessage(false) {
+                    val lastPageComponent = renderPageSwapComponent(buildText {
                         append(Component.text("[", NamedTextColor.GRAY))
                         append(Component.text(">>", Colors.SUCCESS))
                         append(Component.text("]", NamedTextColor.GRAY))
 
-                        hoverEvent(HoverEvent.showText(buildMessage(false) {
+                        hoverEvent(HoverEvent.showText(buildText {
                             append(Component.text("Zur letzten Seite", Colors.INFO))
                         }))
 
                         clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} $totalPages"))
                     }, page) { it < totalPages }
 
-                    val pagination = buildMessage(false) {
+                    val pagination = buildText {
                         append(firstPageComponent)
                         appendSpace()
                         append(previousPageComponent)
