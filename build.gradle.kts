@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 buildscript {
     repositories {
         gradlePluginPortal()
@@ -11,4 +13,8 @@ buildscript {
 allprojects {
     group = "dev.slne.surf.clan"
     version = findProperty("version") as String
+
+    tasks.withType<ShadowJar> {
+        exclude("kotlin/**")
+    }
 }
