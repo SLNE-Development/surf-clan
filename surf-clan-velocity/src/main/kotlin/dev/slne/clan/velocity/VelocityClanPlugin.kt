@@ -29,7 +29,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import java.nio.file.Path
 
-
 val plugin get() = VelocityClanPlugin.instance
 
 @Plugin(
@@ -57,8 +56,6 @@ class VelocityClanPlugin @Inject constructor(
         dataDirectory = dataPath
 
         ClanApplication.run(this.javaClass.classLoader)
-//        DataApi.run(ClanApplication::class.java, ClanApplication::class.java.classLoader)
-        //runApplication(ClanApplication::class.java.classLoader)
     }
 
     @Subscribe(order = PostOrder.LATE)
@@ -107,7 +104,6 @@ class VelocityClanPlugin @Inject constructor(
             }
         }
     }
-
 
     private fun renderClanTag(player: TabPlayer, minSize: Int = 0): String {
         val velocityPlayer = player.player as Player
