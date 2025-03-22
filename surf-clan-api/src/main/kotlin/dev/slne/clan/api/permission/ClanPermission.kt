@@ -10,4 +10,6 @@ enum class ClanPermission {
     DEMOTE,
 
     DISCORD,
+
+    OPTIONS_TAG_COLOR
 }

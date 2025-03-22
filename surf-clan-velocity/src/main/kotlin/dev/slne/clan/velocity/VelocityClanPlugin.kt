@@ -18,7 +18,6 @@ import dev.slne.clan.core.dataDirectory
 import dev.slne.clan.core.getBean
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.utils.translateClanTag
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.listeners.ListenerProcessor
@@ -138,7 +137,9 @@ class VelocityClanPlugin @Inject constructor(
             return ""
         }
 
-        return if (space) " ${translateClanTag(clanTag)}" else translateClanTag(clanTag)
+        val translatedClanTag = clan.getTranslatedClanTag() ?: return "ERROR"
+
+        return if (space) " $translatedClanTag" else translatedClanTag
     }
 
     @Subscribe

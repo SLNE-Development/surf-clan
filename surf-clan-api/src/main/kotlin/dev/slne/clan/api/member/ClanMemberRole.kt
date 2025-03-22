@@ -29,24 +29,25 @@ enum class ClanMemberRole(
             ClanPermission.DEMOTE,
             ClanPermission.PROMOTE,
 
-            ClanPermission.DISCORD,
+            ClanPermission.DISCORD
         ),
         Component.text("Anführer", NamedTextColor.RED)
     ),
     OWNER(
-    arrayOf(
+        arrayOf(
 
-        ClanPermission.DISBAND,
+            ClanPermission.DISBAND,
 
-        ClanPermission.INVITE,
-        ClanPermission.KICK,
+            ClanPermission.INVITE,
+            ClanPermission.KICK,
 
-        ClanPermission.DEMOTE,
-        ClanPermission.PROMOTE,
+            ClanPermission.DEMOTE,
+            ClanPermission.PROMOTE,
 
-        ClanPermission.DISCORD,
-    ),
-    Component.text("Besitzer", NamedTextColor.RED)
+            ClanPermission.DISCORD,
+            ClanPermission.OPTIONS_TAG_COLOR
+        ),
+        Component.text("Besitzer", NamedTextColor.RED)
     );
 
     fun hasNextRole() = this != LEADER

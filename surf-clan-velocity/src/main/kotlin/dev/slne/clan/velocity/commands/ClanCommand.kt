@@ -31,5 +31,7 @@ class ClanCommand(
 
         withSubcommand(ClanPlayerCommand(clanService, clanPlayerService))
         withSubcommand(ClanAdminCommand(clanService))
+
+        withSubcommand(ClanOptionsCommand(clanService))
     }
 }

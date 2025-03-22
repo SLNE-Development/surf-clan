@@ -5,6 +5,7 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
+import dev.slne.clan.api.tag.ClanTagColor
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.time.LocalDateTime
 import java.util.*
@@ -19,6 +20,7 @@ interface Clan {
 
     val description: String?
     var discordInvite: String?
+    var clanTagColor: ClanTagColor?
 
     val members: ObjectSet<ClanMember>
     val invites: ObjectSet<ClanInvite>
@@ -36,5 +38,12 @@ interface Clan {
 
     fun hasPermission(clanMember: ClanMember, permission: ClanPermission): Boolean
     fun getMember(clanPlayer: ClanPlayer): ClanMember?
+
+    /**
+     * Translates the clan tag to the correct glyphs.
+     *
+     * @return the translated clan tag or null if the color the clan uses is not registered
+     */
+    fun getTranslatedClanTag(): String?
 
 }
