@@ -7,6 +7,8 @@ import dev.slne.clan.velocity.commands.subcommands.*
 import dev.slne.clan.velocity.commands.subcommands.admin.ClanAdminCommand
 import dev.slne.clan.velocity.commands.subcommands.member.ClanKickMemberCommand
 import dev.slne.clan.velocity.commands.subcommands.member.ClanMembersCommand
+import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanInviteAcceptCommand
+import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanInviteDenyCommand
 import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanInviteMemberCommand
 import dev.slne.clan.velocity.commands.subcommands.member.role.ClanDemoteMemberCommand
 import dev.slne.clan.velocity.commands.subcommands.member.role.ClanPromoteMemberCommand
@@ -28,6 +30,9 @@ class ClanCommand(
         withSubcommand(ClanDemoteMemberCommand(clanService, clanPlayerService))
         withSubcommand(ClanKickMemberCommand(clanService, clanPlayerService))
         withSubcommand(ClanMembersCommand(clanService, clanPlayerService))
+
+        withSubcommands(ClanInviteAcceptCommand(clanService, clanPlayerService))
+        withSubcommands(ClanInviteDenyCommand(clanService, clanPlayerService))
 
         withSubcommand(ClanPlayerCommand(clanService, clanPlayerService))
         withSubcommand(ClanAdminCommand(clanService))
