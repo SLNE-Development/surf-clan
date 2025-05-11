@@ -2,7 +2,7 @@ package dev.slne.clan.core.utils.tag
 
 import dev.slne.clan.api.tag.ClanTagColor
 
-private const val negSpaceChar = "ꑛ"
+private const val negSpaceChar = "\uE101"
 
 open class ClanTagColorMap(
     val clanTagColor: ClanTagColor,
