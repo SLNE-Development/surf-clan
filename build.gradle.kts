@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import dev.slne.surf.surfapi.gradle.util.slnePrivate
 
 buildscript {
     repositories {
@@ -16,5 +17,9 @@ allprojects {
 
     tasks.withType<ShadowJar> {
         exclude("kotlin/**")
+    }
+
+    repositories {
+        slnePrivate()
     }
 }
