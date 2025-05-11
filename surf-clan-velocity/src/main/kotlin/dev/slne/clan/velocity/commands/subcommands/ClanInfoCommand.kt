@@ -8,11 +8,11 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.core.utils.formatted
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendText
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
@@ -54,7 +54,7 @@ class ClanInfoCommand(
                 val createdBy =
                     clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
                 val clanInfoComponent = buildText {
-                    appendText("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR) {
+                    appendText("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", Colors.INFO) {
                         decorate(TextDecoration.BOLD)
                     }
                     appendNewline()
@@ -122,7 +122,7 @@ class ClanInfoCommand(
 
     private fun renderLine(key: String, value: Any) =
         Component.text()
-            .append(Component.text("| ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
+            .append(Component.text("| ", Colors.INFO, TextDecoration.BOLD))
             .append(Component.text("$key: ", NamedTextColor.GRAY))
             .append(Component.text(value.toString(), NamedTextColor.WHITE))
 }

@@ -10,10 +10,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-
-val CLAN_COMPONENT_BAR_COLOR = TextColor.fromHexString("#97B3F7")
 
 suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
     buildText {
@@ -21,7 +18,7 @@ suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
             clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
 
         val hoverComponent = buildText {
-            append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
+            append(Component.text("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", Colors.INFO, TextDecoration.BOLD))
             appendNewline()
 
             append(renderLine("ɴᴀᴍᴇ", clan.name))
@@ -84,6 +81,6 @@ suspend fun clanComponent(clan: Clan, clanPlayerService: ClanPlayerService) =
 
 private fun renderLine(key: String, value: Any) =
     Component.text()
-        .append(Component.text("| ", CLAN_COMPONENT_BAR_COLOR, TextDecoration.BOLD))
+        .append(Component.text("| ", Colors.INFO, TextDecoration.BOLD))
         .append(Component.text("$key: ", NamedTextColor.GRAY))
         .append(Component.text(value.toString(), NamedTextColor.WHITE))

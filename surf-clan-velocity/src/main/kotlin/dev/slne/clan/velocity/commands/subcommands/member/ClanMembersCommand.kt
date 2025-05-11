@@ -8,7 +8,6 @@ import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.ClanPlayerService
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.utils.CLAN_COMPONENT_BAR_COLOR
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.subcommands.includeClanTagSuggestions
 import dev.slne.clan.velocity.extensions.findClan
@@ -69,7 +68,7 @@ class ClanMembersCommand(
 
                 val clanInfoMessage = buildText {
                     appendNewline()
-                    append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", CLAN_COMPONENT_BAR_COLOR))
+                    append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", Colors.INFO))
                     append(clanComponent(clan, clanPlayerService))
                     appendNewline()
 
@@ -82,13 +81,13 @@ class ClanMembersCommand(
                             append(
                                 Component.text(
                                     "| ",
-                                    CLAN_COMPONENT_BAR_COLOR,
+                                    Colors.INFO,
                                     TextDecoration.BOLD
                                 )
                             )
                             append(Component.text(memberName, NamedTextColor.WHITE))
                             append(Component.text(" (", NamedTextColor.GRAY))
-                            append(Component.text(member.role.toString(), CLAN_COMPONENT_BAR_COLOR))
+                            append(Component.text(member.role.toString(), Colors.INFO))
                             append(Component.text(")", NamedTextColor.GRAY))
                         })
 
