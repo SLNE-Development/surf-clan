@@ -35,6 +35,29 @@ class ClanInviteMemberCommand(
 
         playerExecutor { player, args ->
             plugin.container.launch {
+                val playerClan = player.findClan(clanService)
+
+                if (playerClan == null) {
+                    player.sendMessage(Messages.notInClanComponent)
+
+                    return@launch
+                }
+
+                if (!playerClan.hasPermission(player, ClanPermission.INVITE)) {
+                    player.sendMessage(buildText {
+                        append(
+                            Component.text(
+                                "Du hast keine Berechtigung, Spieler in den Clan ",
+                                Colors.ERROR
+                            )
+                        )
+                        append(clanComponent(playerClan, clanPlayerService))
+                        append(Component.text(" einzuladen.", Colors.ERROR))
+                    })
+
+                    return@launch
+                }
+
                 val invitedPlayer = PlayerArgument.player(args)
 
                 if (invitedPlayer == null) {
@@ -56,29 +79,6 @@ class ClanInviteMemberCommand(
                         append(Component.text(" ist bereits im Clan ", Colors.ERROR))
                         append(clanComponent(invitedPlayerClan, clanPlayerService))
                         append(Component.text(".", Colors.ERROR))
-                    })
-
-                    return@launch
-                }
-
-                val playerClan = player.findClan(clanService)
-
-                if (playerClan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
-
-                    return@launch
-                }
-
-                if (!playerClan.hasPermission(player, ClanPermission.INVITE)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du hast keine Berechtigung, Spieler in den Clan ",
-                                Colors.ERROR
-                            )
-                        )
-                        append(clanComponent(playerClan, clanPlayerService))
-                        append(Component.text(" einzuladen.", Colors.ERROR))
                     })
 
                     return@launch
