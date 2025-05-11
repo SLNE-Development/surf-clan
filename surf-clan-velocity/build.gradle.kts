@@ -16,7 +16,7 @@ velocityPluginFile {
 dependencies {
     api(project(":surf-clan-core"))
     api(libs.kaml)
-    compileOnly("com.github.NEZNAMY:TAB-API:5.0.4")
+    compileOnly("com.github.NEZNAMY:TAB-API:5.2.0")
 }
 
 configurations {
