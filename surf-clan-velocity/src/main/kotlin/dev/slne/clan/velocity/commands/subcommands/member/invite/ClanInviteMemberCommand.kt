@@ -28,9 +28,6 @@ class ClanInviteMemberCommand(
     init {
         withPermission("surf.clan.invite")
 
-        withSubcommands(ClanInviteAcceptCommand(clanService, clanPlayerService))
-        withSubcommands(ClanInviteDenyCommand(clanService, clanPlayerService))
-
         playerArgument()
 
         playerExecutor { player, args ->
