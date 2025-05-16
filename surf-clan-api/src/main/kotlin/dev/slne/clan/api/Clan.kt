@@ -5,7 +5,7 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.clan.api.tag.ClanTagColor
+import dev.slne.surf.bitmap.bitmaps.Bitmaps
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.time.LocalDateTime
 import java.util.*
@@ -20,7 +20,7 @@ interface Clan {
 
     val description: String?
     var discordInvite: String?
-    var clanTagColor: ClanTagColor?
+    var clanTagColor: Bitmaps?
 
     val members: ObjectSet<ClanMember>
     val invites: ObjectSet<ClanInvite>

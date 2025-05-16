@@ -6,10 +6,9 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.clan.api.tag.ClanTagColor
 import dev.slne.clan.core.invite.CoreClanInvite
 import dev.slne.clan.core.member.CoreClanMember
-import dev.slne.clan.core.utils.tag.ClanTagColors
+import dev.slne.surf.bitmap.bitmaps.Bitmaps
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import it.unimi.dsi.fastutil.objects.ObjectSets
@@ -46,7 +45,7 @@ data class CoreClan(
 
     @Column(name = "clan_tag_color", nullable = true)
     @Enumerated(EnumType.STRING)
-    override var clanTagColor: ClanTagColor? = null,
+    override var clanTagColor: Bitmaps? = null,
 
     @Column(name = "description", nullable = true, length = 255)
     @JdbcTypeCode(SqlTypes.VARCHAR)
@@ -126,7 +125,15 @@ data class CoreClan(
     override fun getMember(clanPlayer: ClanPlayer): ClanMember? =
         members.find { it.uuid == clanPlayer.uuid }
 
-    override fun getTranslatedClanTag() = ClanTagColors.translateClanTag(this)
+    override fun getTranslatedClanTag(): String {
+        val provider = if (clanTagColor == null) {
+            Bitmaps.CLAN_CLOUDSHIFT.provider
+        } else {
+            clanTagColor!!.provider
+        }
+
+        return provider.translateToString(tag)
+    }
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true

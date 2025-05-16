@@ -6,13 +6,12 @@ import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.multiLiteralArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.api.tag.ClanTagColor
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.utils.tag.ClanTagColors
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.bitmap.bitmaps.Bitmaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanTagOptionTagColorCommand(
@@ -23,12 +22,15 @@ class ClanTagOptionTagColorCommand(
 
         multiLiteralArgument(
             "color",
-            literals = ClanTagColors.colors.map { it.clanTagColor.name }.toTypedArray()
+            literals = Bitmaps.entries
+                .filter { it.name.startsWith("CLAN_") }
+                .map { it.name }
+                .toTypedArray()
         )
 
         playerExecutor { player, args ->
             val color: String by args
-            val tagColor = runCatching { ClanTagColor.valueOf(color) }.getOrNull()
+            val tagColor = runCatching { Bitmaps.valueOf(color) }.getOrNull()
                 ?: run {
                     player.sendText {
                         appendPrefix()

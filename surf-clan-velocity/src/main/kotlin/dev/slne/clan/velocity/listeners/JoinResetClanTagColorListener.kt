@@ -4,9 +4,9 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import dev.slne.clan.core.service.ClanService
-import dev.slne.clan.core.utils.tag.ClanTagColors
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
+import dev.slne.surf.bitmap.bitmaps.Bitmaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class JoinResetClanTagColorListener(
@@ -27,7 +27,7 @@ class JoinResetClanTagColorListener(
                 return@launch
             }
 
-            val defaultTagColor = ClanTagColors.DEFAULT.clanTagColor
+            val defaultTagColor = Bitmaps.CLAN_CLOUDSHIFT
 
             if (clan.clanTagColor != defaultTagColor) {
                 clan.clanTagColor = defaultTagColor
