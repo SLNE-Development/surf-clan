@@ -4,7 +4,6 @@ import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.results.ClanCreateResult
 import dev.slne.surf.clan.core.common.ClanImpl
 import dev.slne.surf.clan.core.common.netty.packets.server.ServerboundCreateClanPacket
-import dev.slne.surf.clan.core.common.player.ClanPlayerImpl
 import dev.slne.surf.clan.standalone.entities.ClanEntity
 import dev.slne.surf.cloud.api.common.util.freeze
 import dev.slne.surf.cloud.api.common.util.mutableObjectSetOf
@@ -30,7 +29,7 @@ class ClanService {
 
     fun findClanByTag(tag: String) = clans.find { it.tag == tag }
 
-    fun findClanByMember(clanPlayer: ClanPlayer) =
+    fun findClanByPlayer(clanPlayer: ClanPlayer) =
         clans.find { it.members.any { member -> member.uuid == clanPlayer.uuid } }
 
     fun generateClanUuid(): UUID {
@@ -46,7 +45,7 @@ class ClanService {
     suspend fun createClan(
         name: String,
         tag: String,
-        createdBy: ClanPlayerImpl
+        createdBy: ClanPlayer
     ): Pair<ClanCreateResult, ClanImpl?> {
         if (clans.any { it.name == name }) {
             return ClanCreateResult.NAME_TAKEN to null
@@ -64,7 +63,7 @@ class ClanService {
             return ClanCreateResult.TAG_LENGTH to null
         }
 
-        if (findClanByMember(createdBy) != null) {
+        if (findClanByPlayer(createdBy) != null) {
             return ClanCreateResult.ALREADY_IN_CLAN to null
         }
 

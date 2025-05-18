@@ -4,6 +4,7 @@ import dev.slne.surf.clan.core.common.netty.packets.bidirectional.BiDirectionalG
 import dev.slne.surf.clan.core.common.netty.packets.client.ClientboundCreateClanResponsePacket
 import dev.slne.surf.clan.core.common.netty.packets.server.ServerboundCreateClanPacket
 import dev.slne.surf.clan.core.common.netty.packets.server.ServerboundFindClanByNamePacket
+import dev.slne.surf.clan.core.common.netty.packets.server.ServerboundFindClanByPlayerPacket
 import dev.slne.surf.clan.core.common.netty.packets.server.ServerboundFindClanByTagPacket
 import dev.slne.surf.clan.standalone.ClanService
 import dev.slne.surf.cloud.api.common.meta.SurfNettyPacketHandler
@@ -22,6 +23,10 @@ class ClanPacketListener(
     @SurfNettyPacketHandler
     suspend fun onFindClanByTag(packet: ServerboundFindClanByTagPacket) {
         packet.respond(BiDirectionalGenericClanResponsePacket(clanService.findClanByTag(packet.tag)))
+    }
+
+    suspend fun onFindClanByPlayer(packet: ServerboundFindClanByPlayerPacket) {
+        packet.respond(BiDirectionalGenericClanResponsePacket(clanService.findClanByPlayer(packet.player)))
     }
 
     @SurfNettyPacketHandler
