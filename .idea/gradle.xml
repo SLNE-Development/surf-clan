@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="C:/Gradle/gradle-8.5" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/surf-clan-api" />
+            <option value="$PROJECT_DIR$/surf-clan-api/surf-clan-api-client" />
+            <option value="$PROJECT_DIR$/surf-clan-api/surf-clan-api-common" />
+            <option value="$PROJECT_DIR$/surf-clan-api/surf-clan-api-server" />
+            <option value="$PROJECT_DIR$/surf-clan-core" />
+            <option value="$PROJECT_DIR$/surf-clan-core/surf-clan-core-client" />
+            <option value="$PROJECT_DIR$/surf-clan-core/surf-clan-core-common" />
+            <option value="$PROJECT_DIR$/surf-clan-paper" />
+            <option value="$PROJECT_DIR$/surf-clan-standalone" />
+            <option value="$PROJECT_DIR$/surf-clan-velocity" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

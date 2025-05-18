@@ -1,0 +1,12 @@
+[versions]
+surf-cloud = "1.21.1-1.0.0-SNAPSHOT"
+
+bitmaps = "1.0.0-SNAPSHOT"
+
+[libraries]
+surf-cloud-bom = { module = "dev.slne.surf.cloud:surf-cloud-bom", version.ref = "surf-cloud" }
+surf-cloud-api-client-common = { module = "dev.slne.surf.cloud:surf-cloud-api-client-common", version.ref = "surf-cloud" }
+surf-cloud-api-common = { module = "dev.slne.surf.cloud:surf-cloud-api-common", version.ref = "surf-cloud" }
+surf-cloud-api-server = { module = "dev.slne.surf.cloud:surf-cloud-api-server", version.ref = "surf-cloud" }
+
+bitmaps = { module = "dev.slne.surf:surf-bitmap-provider-bitmaps", version.ref = "bitmaps" }
