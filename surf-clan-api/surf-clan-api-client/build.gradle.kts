@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     compileOnlyApi(libs.surf.cloud.api.client.common)
+    api(project(":surf-clan-api:surf-clan-api-common"))
 }
