@@ -6,17 +6,16 @@ velocityPluginFile {
     main = "dev.slne.clan.velocity.VelocityClanPlugin"
 
     pluginDependencies {
-        register("surf-api-velocity")
         register("surf-data-velocity")
         register("commandapi")
-        register("tab")
+        register("miniplaceholders")
     }
 }
 
 dependencies {
     api(project(":surf-clan-core"))
     api(libs.kaml)
-    compileOnly("com.github.NEZNAMY:TAB-API:5.2.0")
+    compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.3.0")
 }
 
 configurations {
