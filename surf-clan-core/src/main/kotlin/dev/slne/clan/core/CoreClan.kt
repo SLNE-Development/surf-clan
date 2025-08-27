@@ -127,7 +127,7 @@ data class CoreClan(
 
     override fun getTranslatedClanTag(): String {
         val provider = if (clanTagColor == null) {
-            Bitmaps.CLAN_CLOUDSHIFT.provider
+            Bitmaps.CLAN_DEFAULT.provider
         } else {
             clanTagColor!!.provider
         }

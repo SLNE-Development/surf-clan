@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api("dev.slne.surf:surf-bitmap-provider-bitmaps:1.0.0-SNAPSHOT")
+    api("dev.slne.surf:surf-bitmap-provider-bitmaps:1.2.0-SNAPSHOT")
 }

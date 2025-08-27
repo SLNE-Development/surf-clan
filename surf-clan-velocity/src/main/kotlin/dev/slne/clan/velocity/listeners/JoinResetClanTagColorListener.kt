@@ -27,7 +27,7 @@ class JoinResetClanTagColorListener(
                 return@launch
             }
 
-            val defaultTagColor = Bitmaps.CLAN_CLOUDSHIFT
+            val defaultTagColor = Bitmaps.CLAN_DEFAULT
 
             if (clan.clanTagColor != defaultTagColor) {
                 clan.clanTagColor = defaultTagColor
