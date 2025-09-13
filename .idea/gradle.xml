@@ -10,7 +10,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/surf-clan-api" />
+            <option value="$PROJECT_DIR$/surf-clan-api/surf-clan-api-common" />
             <option value="$PROJECT_DIR$/surf-clan-core" />
+            <option value="$PROJECT_DIR$/surf-clan-core/surf-clan-core-client" />
+            <option value="$PROJECT_DIR$/surf-clan-core/surf-clan-core-common" />
+            <option value="$PROJECT_DIR$/surf-clan-paper" />
+            <option value="$PROJECT_DIR$/surf-clan-server" />
             <option value="$PROJECT_DIR$/surf-clan-velocity" />
           </set>
         </option>
