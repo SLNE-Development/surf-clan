@@ -7,6 +7,7 @@ import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.invite.ClanInvite
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
+import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.InternalClanApi
@@ -72,6 +73,12 @@ class ClanCommon(
 
     override suspend fun setDiscordInvite(discordInvite: String?, setBy: ClanPlayer) =
         clanManager.setDiscordInvite(this, discordInvite, setBy)
+
+    override fun hasPermission(clanPlayer: ClanPlayer, permission: ClanPermission): Boolean {
+        val member = getMember(clanPlayer) ?: return false
+
+        return member.hasPermission(permission)
+    }
 
     override fun asComponent() = buildText {
         variableValue(name)

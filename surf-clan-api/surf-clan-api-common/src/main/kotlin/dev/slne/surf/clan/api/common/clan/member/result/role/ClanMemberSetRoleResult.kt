@@ -12,6 +12,8 @@ import net.kyori.adventure.text.Component
 sealed class ClanMemberSetRoleResult {
     protected abstract suspend fun SurfComponentBuilder.buildMessage()
 
+    val isSuccess get() = this is Success
+
     suspend fun asComponent(): Component {
         val componentBuilder = SurfComponentBuilder.builder()
         componentBuilder.buildMessage()
@@ -58,6 +60,26 @@ sealed class ClanMemberSetRoleResult {
             error("Der Spieler ")
             append(player.asComponent())
             error(" konnte nicht gefunden werden.")
+        }
+    }
+
+    data class HasLowestRole(val clan: Clan, val member: ClanMember) : ClanMemberSetRoleResult() {
+        override suspend fun SurfComponentBuilder.buildMessage() {
+            error("Die Rolle von ")
+            append(member.asComponent())
+            error(" im Clan ")
+            append(clan)
+            error(" ist bereits die niedrigste Rolle und kann nicht weiter herabgestuft werden.")
+        }
+    }
+
+    data class HasHighestRole(val clan: Clan, val member: ClanMember) : ClanMemberSetRoleResult() {
+        override suspend fun SurfComponentBuilder.buildMessage() {
+            error("Die Rolle von ")
+            append(member.asComponent())
+            error(" im Clan ")
+            append(clan)
+            error(" ist bereits die höchste Rolle und kann nicht weiter aufgestuft werden.")
         }
     }
 

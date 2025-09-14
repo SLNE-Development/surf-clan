@@ -6,7 +6,9 @@ import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberAddResult
 import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberRemoveResult
 import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberInviteResult
 import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberUninviteResult
+import dev.slne.surf.clan.api.common.clan.member.result.role.ClanMemberSetRoleResult
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
+import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.clan.result.ClanSetDiscordInviteResult
 import dev.slne.surf.clan.api.common.clan.result.ClanSetNameResult
 import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
@@ -55,6 +57,12 @@ interface Clan : ComponentLike {
 
     fun getMember(player: ClanPlayer): ClanMember?
     fun isMember(player: ClanPlayer): Boolean
+
+    fun hasPermission(clanPlayer: ClanPlayer, permission: ClanPermission): Boolean
+
+    fun canPromote(clanMember: ClanPlayer, other: ClanPlayer): ClanMemberSetRoleResult
+    fun canDemote(clanMember: ClanPlayer, other: ClanPlayer): ClanMemberSetRoleResult
+    fun canKick(clanMember: ClanPlayer, other: ClanPlayer): Boolean
 
     suspend fun addMember(
         player: ClanPlayer,
