@@ -8,6 +8,12 @@ import dev.slne.surf.clan.api.common.util.InternalClanApi
 import org.springframework.beans.factory.getBean
 import java.util.*
 
+const val CLAN_TAG_MIN_LENGTH = 4
+const val CLAN_TAG_MAX_LENGTH = 4
+
+const val CLAN_NAME_MIN_LENGTH = 4
+const val CLAN_NAME_MAX_LENGTH = 16
+
 interface ClanManager {
 
     fun getClanByUuid(uuid: UUID): Clan?

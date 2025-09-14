@@ -1,5 +1,9 @@
 package dev.slne.surf.clan.server.clan
 
+import dev.slne.surf.clan.api.common.clan.CLAN_NAME_MAX_LENGTH
+import dev.slne.surf.clan.api.common.clan.CLAN_NAME_MIN_LENGTH
+import dev.slne.surf.clan.api.common.clan.CLAN_TAG_MAX_LENGTH
+import dev.slne.surf.clan.api.common.clan.CLAN_TAG_MIN_LENGTH
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberAddResult
 import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberRemoveResult
@@ -15,12 +19,6 @@ import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import org.springframework.stereotype.Component
-
-const val CLAN_TAG_MIN_LENGTH = 4
-const val CLAN_TAG_MAX_LENGTH = 4
-
-const val CLAN_NAME_MIN_LENGTH = 4
-const val CLAN_NAME_MAX_LENGTH = 16
 
 @Component
 class ClanManagerServer(
