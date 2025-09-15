@@ -7,6 +7,8 @@ import dev.slne.surf.clan.api.common.clan.CLAN_NAME_MIN_LENGTH
 import dev.slne.surf.clan.api.common.clan.CLAN_TAG_MIN_LENGTH
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
+import dev.slne.surf.clan.paper.dialogs.create.buttons.createConfirmButton
+import dev.slne.surf.clan.paper.dialogs.create.buttons.createDenyButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
@@ -46,7 +48,7 @@ fun CreateClanDialog.createDialog(
                     variableValue("Tag", TextDecoration.UNDERLINED, TextDecoration.BOLD)
 
                     hoverEvent(buildText {
-                        spacer("Der Clan-Tag ist ein Kürzel deines Clans, das im Spiel angezeigt wird.")
+                        spacer("Der Clan-Tag ist das Kürzel deines Clans, das im Spiel angezeigt wird.")
                     })
                 }
                 info(" deines Clans muss zwischen ")
@@ -73,7 +75,10 @@ fun CreateClanDialog.createDialog(
         }
     }
     type {
-        confirmation()
+        confirmation(
+            CreateClanDialog.createDenyButton(selfClanPlayer, clanPlayer),
+            CreateClanDialog.createConfirmButton(selfClanPlayer, clanPlayer)
+        )
     }
 
 

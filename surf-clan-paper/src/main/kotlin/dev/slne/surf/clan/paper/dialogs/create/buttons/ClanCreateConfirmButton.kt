@@ -31,7 +31,7 @@ fun CreateClanDialog.createConfirmButton(
             errors.addIf(!nameResult.isSuccess, nameResult)
             errors.addIf(!tagResult.isSuccess, tagResult)
 
-            // CREAT CLAN IN DB
+            // CREATE CLAN IN DB
 
             player.showDialog(
                 CreateClanDialog.createClanCreationNoticeDialog(
