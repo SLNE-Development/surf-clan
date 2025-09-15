@@ -2,16 +2,11 @@ package dev.slne.surf.clan.core.common.clan
 
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.ClanManager
-import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberAddResult
-import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberRemoveResult
-import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberInviteResult
 import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberUninviteResult
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
-import dev.slne.surf.clan.api.common.clan.result.ClanSetDiscordInviteResult
-import dev.slne.surf.clan.api.common.clan.result.ClanSetNameResult
-import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.cloud.api.common.sync.SyncSet
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.util.*
@@ -30,46 +25,145 @@ abstract class ClanManagerCommon : ClanManager {
 
     abstract suspend fun findAllClans(): ObjectSet<ClanCommon>
 
+    suspend fun internalInviteMember(
+        clan: Clan,
+        player: ClanPlayer,
+        target: ClanPlayer
+    ): ComponentResult {
+        val result = clan.canInvite(target, player)
+
+        if (result.isError) {
+            return result
+        }
+
+        return inviteMember(clan, player, target)
+    }
+
     abstract suspend fun inviteMember(
         clan: Clan,
         player: ClanPlayer,
-        invitedBy: ClanPlayer
-    ): ClanMemberInviteResult
+        target: ClanPlayer
+    ): ComponentResult
+
+    suspend fun internalUninviteMember(
+        clan: Clan,
+        player: ClanPlayer,
+        target: ClanPlayer
+    ): ComponentResult {
+        val result = clan.canUninvite(target, player)
+
+        if (result.isError) {
+            return result as ClanMemberUninviteResult
+        }
+
+        return uninviteMember(clan, player, target)
+    }
 
     abstract suspend fun uninviteMember(
         clan: Clan,
         player: ClanPlayer,
-        uninvitedBy: ClanPlayer
-    ): ClanMemberUninviteResult
+        target: ClanPlayer
+    ): ComponentResult
+
+    suspend fun internalAddMember(
+        clan: Clan,
+        player: ClanPlayer,
+        target: ClanPlayer,
+        role: ClanMemberRole,
+    ): ComponentResult {
+        val result = clan.canAddMember(player, target, role)
+
+        if (result.isError) {
+            return result
+        }
+
+        return addMember(clan, player, target, role)
+    }
 
     abstract suspend fun addMember(
         clan: Clan,
         player: ClanPlayer,
+        target: ClanPlayer,
         role: ClanMemberRole,
-        addedBy: ClanPlayer
-    ): ClanMemberAddResult
+    ): ComponentResult
+
+    suspend fun internalRemoveMember(
+        clan: Clan,
+        player: ClanPlayer,
+        target: ClanPlayer
+    ): ComponentResult {
+        val result = clan.canRemoveMember(player, target)
+
+        if (result.isError) {
+            return result
+        }
+
+        return removeMember(clan, player, target)
+    }
 
     abstract suspend fun removeMember(
         clan: Clan,
-        clanPlayer: ClanPlayer,
-        removedBy: ClanPlayer
-    ): ClanMemberRemoveResult
+        player: ClanPlayer,
+        target: ClanPlayer
+    ): ComponentResult
+
+    suspend fun internalSetName(
+        clan: Clan,
+        player: ClanPlayer,
+        name: String,
+    ): ComponentResult {
+        val result = clan.canSetName(player, name)
+
+        if (result.isError) {
+            return result
+        }
+
+        return setName(clan, player, name)
+    }
 
     abstract suspend fun setName(
         clan: Clan,
+        player: ClanPlayer,
         name: String,
-        setBy: ClanPlayer
-    ): ClanSetNameResult
+    ): ComponentResult
+
+    suspend fun internalSetTag(
+        clan: Clan,
+        player: ClanPlayer,
+        tag: ClanTag,
+    ): ComponentResult {
+        val result = clan.canSetTag(player, tag)
+
+        if (result.isError) {
+            return result
+        }
+
+        return setTag(clan, player, tag)
+    }
 
     abstract suspend fun setTag(
         clan: Clan,
+        player: ClanPlayer,
         tag: ClanTag,
-        setBy: ClanPlayer
-    ): ClanSetTagResult
+    ): ComponentResult
+
+    suspend fun internalSetDiscordInvite(
+        clan: Clan,
+        player: ClanPlayer,
+        invite: String?,
+    ): ComponentResult {
+        val result = clan.canSetDiscordInvite(player, invite)
+
+        if (result.isError) {
+            return result
+        }
+
+        return setDiscordInvite(clan, player, invite)
+    }
 
     abstract suspend fun setDiscordInvite(
         clan: Clan,
-        discordInvite: String?,
-        setBy: ClanPlayer
-    ): ClanSetDiscordInviteResult
+        player: ClanPlayer,
+        invite: String?,
+    ): ComponentResult
 }

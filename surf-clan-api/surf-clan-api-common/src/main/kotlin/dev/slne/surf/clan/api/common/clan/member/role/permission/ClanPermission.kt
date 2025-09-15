@@ -1,17 +1,49 @@
 package dev.slne.surf.clan.api.common.clan.member.role.permission
 
-enum class ClanPermission {
-    DISBAND,
+import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import net.kyori.adventure.text.Component
 
-    INVITE,
-    KICK,
+enum class ClanPermission(val failedMessage: SurfComponentBuilder.(ClanPlayer) -> Unit) {
+    DISBAND({ player ->
+        error("Du hast keine Berechtigung, um den Clan aufzulösen.")
+    }),
 
-    PROMOTE,
-    DEMOTE,
+    MEMBER_INVITE({ player ->
+        error("Du hast keine Berechtigung, um Mitglieder einzuladen.")
+    }),
 
-    OPTIONS_DISCORD,
+    MEMBER_REMOVE({ player ->
+        error("Du hast keine Berechtigung, um Mitglieder zu entfernen.")
+    }),
 
-    OPTIONS_TAG,
-    OPTIONS_TAG_COLOR,
-    OPTIONS_NAME,
+    MEMBER_PROMOTE({ player ->
+        error("Du hast keine Berechtigung, um Mitglieder heraufzustufen.")
+    }),
+
+    MEMBER_DEMOTE({ player ->
+        error("Du hast keine Berechtigung, um Mitglieder herabzustufen.")
+    }),
+
+    OPTIONS_DISCORD({ player ->
+        error("Du hast keine Berechtigung, um den Discord-Einladungslink zu ändern.")
+    }),
+
+    OPTIONS_TAG_COLOR({ player ->
+        error("Du hast keine Berechtigung, um die Tag-Farbe zu ändern.")
+    }),
+
+    OPTIONS_TAG_TAG({ player ->
+        error("Du hast keine Berechtigung, um den Tag zu ändern.")
+    }),
+
+    OPTIONS_NAME({ player ->
+        error("Du hast keine Berechtigung, um den Namen zu ändern.")
+    });
+
+    fun asComponent(player: ClanPlayer): Component {
+        val builder = SurfComponentBuilder.builder()
+        failedMessage(builder, player)
+        return builder.build()
+    }
 }

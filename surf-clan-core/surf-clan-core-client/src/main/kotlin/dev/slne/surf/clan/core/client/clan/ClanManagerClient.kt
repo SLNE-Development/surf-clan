@@ -24,53 +24,53 @@ class ClanManagerClient : ClanManagerCommon() {
     override suspend fun inviteMember(
         clan: Clan,
         player: ClanPlayer,
-        invitedBy: ClanPlayer
+        target: ClanPlayer
     ) = ServerboundInviteMemberPacket(
         clan.uuid,
         player.uuid,
-        invitedBy.uuid
+        target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun uninviteMember(
         clan: Clan,
         player: ClanPlayer,
-        uninvitedBy: ClanPlayer
+        target: ClanPlayer
     ) = ServerboundUninviteMemberPacket(
         clan.uuid,
         player.uuid,
-        uninvitedBy.uuid
+        target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun addMember(
         clan: Clan,
         player: ClanPlayer,
         role: ClanMemberRole,
-        addedBy: ClanPlayer
+        target: ClanPlayer
     ) = ServerboundAddMemberPacket(
         clan.uuid,
         player.uuid,
-        addedBy.uuid,
+        target.uuid,
         role
     ).fireAndAwaitOrThrow().result
 
     override suspend fun removeMember(
         clan: Clan,
-        clanPlayer: ClanPlayer,
-        removedBy: ClanPlayer
+        player: ClanPlayer,
+        target: ClanPlayer
     ) = ServerboundRemoveMemberPacket(
         clan.uuid,
-        clanPlayer.uuid,
-        removedBy.uuid
+        player.uuid,
+        target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setName(
         clan: Clan,
         name: String,
-        setBy: ClanPlayer
+        player: ClanPlayer
     ) = ServerboundSetClanNamePacket(
         clan.uuid,
         name,
-        setBy.uuid
+        player.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setTag(
@@ -85,10 +85,10 @@ class ClanManagerClient : ClanManagerCommon() {
 
     override suspend fun setDiscordInvite(
         clan: Clan,
-        discordInvite: String?,
-        setBy: ClanPlayer
+        invite: String?,
+        player: ClanPlayer
     ) = ServerboundSetClanDiscordInvitePacket(
         clan.uuid,
-        discordInvite
+        invite
     ).fireAndAwaitOrThrow().result
 }

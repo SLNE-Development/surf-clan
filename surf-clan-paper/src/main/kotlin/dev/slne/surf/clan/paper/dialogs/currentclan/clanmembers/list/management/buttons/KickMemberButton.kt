@@ -27,7 +27,7 @@ fun ClanMemberManagementDialog.createKickMemberButton(
         playerCallback { player ->
 
             plugin.launch {
-                val result = clan.canKick(selfClanPlayer, clanPlayer)
+                val result = clan.canRemove(selfClanPlayer, clanPlayer)
 
                 player.showDialog(
                     createClanMemberKickNoticeDialog(

@@ -42,4 +42,14 @@ class ClanMemberCommon(
     override suspend fun setRole(role: ClanMemberRole, setBy: ClanPlayer) = clan()?.let { clan ->
         playerManager.setMemberRole(clan, this, role, setBy)
     } ?: error("Clan is not set for member $uuid, this should never happen")
+
+    override fun compareTo(other: ClanMember): Int {
+        val selfOwner = role == ClanMemberRole.OWNER
+        val otherOwner = other.role == ClanMemberRole.OWNER
+
+        if (selfOwner && !otherOwner) return -1
+        if (!selfOwner && otherOwner) return 1
+
+        return other.role.compareTo(role)
+    }
 }
