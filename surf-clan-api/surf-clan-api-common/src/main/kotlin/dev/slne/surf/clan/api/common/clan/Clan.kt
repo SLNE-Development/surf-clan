@@ -64,6 +64,8 @@ interface Clan : ComponentLike {
     fun canDemote(clanMember: ClanPlayer, other: ClanPlayer): ClanMemberSetRoleResult
     fun canKick(clanMember: ClanPlayer, other: ClanPlayer): Boolean
 
+    fun canDisband(clan: Clan, disbandingPlayer: ClanPlayer): Boolean
+
     suspend fun addMember(
         player: ClanPlayer,
         role: ClanMemberRole,
@@ -71,6 +73,8 @@ interface Clan : ComponentLike {
     ): ClanMemberAddResult
 
     suspend fun removeMember(member: ClanMember, removedBy: ClanPlayer): ClanMemberRemoveResult
+
+    suspend fun disbandClan(clan: Clan, disbandedBy: ClanPlayer): Boolean
 
     companion object {
         operator fun get(uuid: UUID) = ClanManager.getClanByUuid(uuid)
