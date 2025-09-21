@@ -12,6 +12,6 @@ import java.util.*
 @SurfNettyPacket(id = "clan:set_clan_name", flow = PacketFlow.SERVERBOUND)
 class ServerboundSetClanNamePacket(
     val clanUuid: @Contextual UUID,
+    val playerUuid: @Contextual UUID,
     val name: String,
-    val setByUuid: @Contextual UUID
 ) : RespondingNettyPacket<ClientboundSetClanNameResultPacket>()

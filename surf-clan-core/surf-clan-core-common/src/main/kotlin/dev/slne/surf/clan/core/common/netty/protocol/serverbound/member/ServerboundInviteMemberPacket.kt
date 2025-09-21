@@ -13,5 +13,5 @@ import java.util.*
 class ServerboundInviteMemberPacket(
     val clanUuid: @Contextual UUID,
     val playerUuid: @Contextual UUID,
-    val invitedByUuid: @Contextual UUID
+    val targetUuid: @Contextual UUID
 ) : RespondingNettyPacket<ClientboundInviteMemberResultPacket>()

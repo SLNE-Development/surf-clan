@@ -13,5 +13,5 @@ import java.util.*
 class ServerboundRemoveMemberPacket(
     val clanUuid: @Contextual UUID,
     val playerUuid: @Contextual UUID,
-    val removedByUuid: @Contextual UUID
+    val targetUuid: @Contextual UUID
 ) : RespondingNettyPacket<ClientboundRemoveMemberResultPacket>()

@@ -29,7 +29,7 @@ fun ClanDisbandDialog.createClanDisbandConfirmButton(
                         )
                     ) error("Player ${selfClanPlayer.uuid} tried to disband clan ${clan.uuid} but has no permission to do so.")
 
-                    val result = clan.disbandClan(clan, selfClanPlayer)
+                    val result = clan.disbandClan(, clan)
 
                     player.showDialog(
                         ClanDisbandDialog.createClanDisbandNoticeDialog(

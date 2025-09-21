@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component
 import java.time.ZonedDateTime
 import java.util.*
 
-interface ClanMember {
+interface ClanMember: Comparable<ClanMember> {
 
     val uuid: UUID
     suspend fun clanPlayer(): ClanPlayer = ClanPlayer[uuid]
@@ -25,5 +25,4 @@ interface ClanMember {
     fun hasPermission(permission: ClanPermission): Boolean = role.hasPermission(permission)
 
     suspend fun asComponent(): Component
-
 }

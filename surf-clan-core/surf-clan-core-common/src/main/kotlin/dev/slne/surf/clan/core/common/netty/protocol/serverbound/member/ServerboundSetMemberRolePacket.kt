@@ -14,6 +14,6 @@ import java.util.*
 class ServerboundSetMemberRolePacket(
     val clanUuid: @Contextual UUID,
     val memberUuid: @Contextual UUID,
-    val setByUuid: @Contextual UUID,
+    val targetUuid: @Contextual UUID,
     val role: ClanMemberRole,
 ) : RespondingNettyPacket<ClientboundSetMemberRoleResultPacket>()

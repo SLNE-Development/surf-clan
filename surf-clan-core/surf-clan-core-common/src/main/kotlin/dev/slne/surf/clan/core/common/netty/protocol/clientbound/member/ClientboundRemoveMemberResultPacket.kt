@@ -13,6 +13,6 @@ import java.util.*
 class ClientboundRemoveMemberResultPacket(
     val clanUuid: @Contextual UUID,
     val playerUuid: @Contextual UUID,
-    val removedByUuid: @Contextual UUID,
+    val targetUuid: @Contextual UUID,
     val result: ClanMemberRemoveResult
 ) : ResponseNettyPacket()

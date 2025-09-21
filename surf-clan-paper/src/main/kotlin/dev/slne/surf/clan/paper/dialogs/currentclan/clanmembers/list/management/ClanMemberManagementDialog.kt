@@ -41,7 +41,12 @@ suspend fun ClanMemberManagementDialog.createDialog(
 
         base {
             afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
-            title { appendClanDialogTitle(buildText { variableValue(clan.name) }, clanMemberDisplayName) }
+            title {
+                appendClanDialogTitle(
+                    buildText { variableValue(clan.name) },
+                    clanMemberDisplayName
+                )
+            }
             body {
                 plainMessage {
                     spacer("- ")
@@ -94,8 +99,16 @@ suspend fun ClanMemberManagementDialog.createDialog(
                     )
                 }
 
-                if (clan.canKick(selfClanPlayer, clanPlayer)) {
-                    action(createKickMemberButton(selfClanPlayer, clanMember, clanMemberDisplayName, clanPlayer, clan))
+                if (clan.canRemove(selfClanPlayer, clanPlayer)) {
+                    action(
+                        createKickMemberButton(
+                            selfClanPlayer,
+                            clanMember,
+                            clanMemberDisplayName,
+                            clanPlayer,
+                            clan
+                        )
+                    )
                 }
 
                 exitAction {
@@ -106,7 +119,13 @@ suspend fun ClanMemberManagementDialog.createDialog(
                     action {
                         playerCallback { player ->
                             plugin.launch {
-                                player.showDialog(ClanMemberListDialog.createDialog(selfClanPlayer, clanPlayer, clan))
+                                player.showDialog(
+                                    ClanMemberListDialog.createDialog(
+                                        selfClanPlayer,
+                                        clanPlayer,
+                                        clan
+                                    )
+                                )
                             }
                         }
                     }
