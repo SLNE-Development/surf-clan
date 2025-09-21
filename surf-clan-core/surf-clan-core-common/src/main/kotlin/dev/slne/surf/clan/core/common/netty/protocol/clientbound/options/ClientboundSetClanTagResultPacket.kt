@@ -11,6 +11,6 @@ import java.util.*
 @Serializable
 @SurfNettyPacket(id = "clan:set_clan_tag_result", flow = PacketFlow.CLIENTBOUND)
 class ClientboundSetClanTagResultPacket(
-    val setByUuid: @Contextual UUID,
+    val playerUuid: @Contextual UUID,
     val result: ClanSetTagResult
 ) : ResponseNettyPacket()

@@ -24,18 +24,15 @@ interface Clan : HasAuthorization, ComponentLike {
 
     val name: String
     suspend fun setName(player: ClanPlayer, name: String): ComponentResult
-    fun canSetName(player: ClanPlayer, name: String): ComponentResult
 
     val fullTag: ClanTag
     suspend fun setTag(player: ClanPlayer, tag: ClanTag): ComponentResult
-    fun canSetTag(player: ClanPlayer, tag: ClanTag): ComponentResult
 
     val createdByUuid: UUID
     suspend fun createdBy(): ClanPlayer = ClanPlayer[createdByUuid]
 
     val discordInvite: String?
     suspend fun setDiscordInvite(player: ClanPlayer, invite: String?): ComponentResult
-    fun canSetDiscordInvite(player: ClanPlayer, invite: String?): ComponentResult
 
     val members: ObjectSet<ClanMember>
     val invites: ObjectSet<ClanInvite>
@@ -44,10 +41,7 @@ interface Clan : HasAuthorization, ComponentLike {
     val updatedAt: ZonedDateTime
 
     suspend fun invite(player: ClanPlayer, target: ClanPlayer): ComponentResult
-    fun canInvite(player: ClanPlayer, target: ClanPlayer): ComponentResult
-
     suspend fun uninvite(player: ClanPlayer, target: ClanPlayer): ComponentResult
-    fun canUninvite(player: ClanPlayer, target: ClanPlayer): ComponentResult
 
     fun isInvited(player: ClanPlayer): Boolean
 
@@ -58,16 +52,12 @@ interface Clan : HasAuthorization, ComponentLike {
     suspend fun addMember(
         player: ClanPlayer,
         role: ClanMemberRole,
-        addedBy: ClanPlayer
+        target: ClanPlayer
     ): ComponentResult
 
-    fun canAddMember(player: ClanPlayer, target: ClanPlayer, role: ClanMemberRole): ComponentResult
+    suspend fun removeMember(player: ClanPlayer, member: ClanMember): ComponentResult
 
-    suspend fun removeMember(member: ClanMember, removedBy: ClanPlayer): ComponentResult
-    fun canRemoveMember(player: ClanPlayer, member: ClanPlayer): ComponentResult
-
-    suspend fun disbandClan(clan: Clan, disbandedBy: ClanPlayer): ComponentResult
-    fun canDisbandClan(player: ClanPlayer): ComponentResult
+    suspend fun disbandClan(plyer: ClanPlayer, clan: Clan): ComponentResult
 
     companion object {
         operator fun get(uuid: UUID) = ClanManager.getClanByUuid(uuid)

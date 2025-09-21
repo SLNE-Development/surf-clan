@@ -40,20 +40,15 @@ sealed class ClanMemberSetRoleResult : ComponentResult {
         val clan: Clan,
         val self: ClanMember,
         val other: ClanMember,
-        val operation: Boolean
     ) : ClanMemberSetRoleResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du kannst ")
-            append(other.clanPlayer().asComponent())
-            error(" nicht ")
-
-            if (operation) {
-                error("heraufstufen")
-            } else {
-                error("herabstufen")
-            }
-
-            error(", da du entweder die selbe oder eine niedrigere Rolle hast.")
+            error("Du kannst die Rolle von ")
+            append(other.asComponent())
+            error(" nicht ändern, da diese Person die gleiche oder eine höhere Rolle (")
+            append(other.role.displayName)
+            error(") als du (")
+            append(self.role.displayName)
+            error(") hat.")
         }
     }
 }

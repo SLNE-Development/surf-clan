@@ -39,7 +39,7 @@ interface ComponentResult {
     data class NoPolicyFound(
         val clan: Clan,
         val playerUuid: UUID,
-        val actionClass: KClass<out ClanAction>,
+        val actionClass: KClass<out ClanAction<*>>,
     ) : ComponentResult {
         override val isSuccess = false
 
