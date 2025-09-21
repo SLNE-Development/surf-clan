@@ -16,10 +16,10 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.format.TextDecoration
 
-object CreateClanDialog
-
-fun CreateClanDialog.nameInputFieldName() = "clan_name"
-fun CreateClanDialog.tagInputFieldName() = "clan_tag"
+object CreateClanDialog {
+    const val NAME_INPUT_FIELD_NAME = "clan_name"
+    const val TAG_INPUT_FIELD_NAME = "clan_tag"
+}
 
 fun CreateClanDialog.createDialog(
     selfClanPlayer: ClanPlayer,
@@ -59,12 +59,12 @@ fun CreateClanDialog.createDialog(
                 appendNewline()
 
                 input {
-                    text(nameInputFieldName()) {
+                    text(NAME_INPUT_FIELD_NAME) {
                         width(300)
                         initial(name ?: "")
                         maxLength(CLAN_NAME_MAX_LENGTH)
                     }
-                    text(tagInputFieldName()) {
+                    text(TAG_INPUT_FIELD_NAME) {
                         width(300)
                         initial(tag ?: "")
                         maxLength(CLAN_TAG_MIN_LENGTH)
