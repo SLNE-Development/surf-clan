@@ -11,7 +11,7 @@ class ClanTagBlacklistManager {
     private val _blacklist = mutableObjectSetOf<ClanTagBlacklistDto>()
     val blacklist get() = _blacklist.freeze()
 
-    fun fetch() {
+    suspend fun fetch() {
         _blacklist.clear()
         _blacklist.addAll(ClanTagBlacklistRepository().fetchAllBlacklistedTags())
     }
