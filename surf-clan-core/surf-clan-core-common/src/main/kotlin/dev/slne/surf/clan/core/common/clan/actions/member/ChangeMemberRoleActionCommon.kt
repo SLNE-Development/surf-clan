@@ -51,5 +51,10 @@ class ChangeMemberRoleActionCommon : ClanActionCommon<ChangeMemberRoleArguments>
         clan: Clan,
         player: ClanPlayer,
         arguments: ChangeMemberRoleArguments
-    ) = playerManager.setMemberRole(clan, arguments.targetMember, arguments.newRole, player)
+    ) = playerManager.setMemberRole(
+        clan,
+        player,
+        arguments.targetMember,
+        arguments.newRole
+    )
 }

@@ -155,11 +155,11 @@ class ClanCommon(
     }
 
     override suspend fun disbandClan(
-        plyer: ClanPlayer,
+        player: ClanPlayer,
         clan: Clan
     ) = clanActionProcessor.execute<DisbandClanAction, ClanAction.EmptyArguments>(
         this,
-        plyer,
+        player,
         ClanAction.EmptyArguments()
     )
 

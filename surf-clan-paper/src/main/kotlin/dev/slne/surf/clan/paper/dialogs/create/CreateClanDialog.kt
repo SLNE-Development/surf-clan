@@ -22,8 +22,8 @@ object CreateClanDialog {
 }
 
 fun CreateClanDialog.createDialog(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     name: String? = null,
     tag: String? = null
 ) = dialog {
@@ -76,8 +76,14 @@ fun CreateClanDialog.createDialog(
     }
     type {
         confirmation(
-            CreateClanDialog.createDenyButton(selfClanPlayer, clanPlayer),
-            CreateClanDialog.createConfirmButton(selfClanPlayer, clanPlayer)
+            CreateClanDialog.createDenyButton(
+                selfPlayer = selfPlayer,
+                executorPlayer = executorPlayer
+            ),
+            CreateClanDialog.createConfirmButton(
+                selfPlayer = selfPlayer,
+                executorPlayer = executorPlayer
+            )
         )
     }
 

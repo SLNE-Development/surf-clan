@@ -18,24 +18,26 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.DialogBase
 
 object CurrentClanDialog
 
 suspend fun CurrentClanDialog.createDialog(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ): Dialog {
-    val member = clan.getMember(clanPlayer)
-        ?: return error("Clan member ${clanPlayer.uuid} not found in their own clan ${clan.uuid}")
-    
+    val member = clan.getMember(executorPlayer)
+        ?: return error("Clan member ${executorPlayer.uuid} not found in their own clan ${clan.uuid}")
+
     val canDisband = clan.authorize<DisbandClanAction, ClanAction.EmptyArguments>(
-        selfClanPlayer,
+        selfPlayer,
         ClanAction.EmptyArguments()
     )
 
     return dialog {
         base {
+            afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             title { appendClanDialogTitle(buildText { variableValue(clan.name) }) }
             body {
                 plainMessage {
@@ -55,13 +57,30 @@ suspend fun CurrentClanDialog.createDialog(
         type {
             multiAction {
                 columns(1)
-                action(createClanMembersButton(selfClanPlayer, clanPlayer, clan))
+                action(
+                    CurrentClanDialog.createClanMembersButton(
+                        selfPlayer = selfPlayer,
+                        executorPlayer = executorPlayer,
+                        clan = clan
+                    )
+                )
 
                 if (canDisband.isSuccess) {
-                    action(createClanDisbandButton(selfClanPlayer, clanPlayer, clan))
+                    action(
+                        CurrentClanDialog.createClanDisbandButton(
+                            selfPlayer = selfPlayer,
+                            executorPlayer = executorPlayer,
+                            clan = clan
+                        )
+                    )
                 }
 
-                exitAction(MainClanDialog.createMainMenuButton(selfClanPlayer, clanPlayer))
+                exitAction(
+                    MainClanDialog.createMainMenuButton(
+                        selfPlayer = selfPlayer,
+                        targetPlayer = executorPlayer
+                    )
+                )
             }
         }
     }

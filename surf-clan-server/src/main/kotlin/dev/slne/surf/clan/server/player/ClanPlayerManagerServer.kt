@@ -17,10 +17,10 @@ class ClanPlayerManagerServer(
 
     override suspend fun setMemberRole(
         clan: Clan,
-        member: ClanMember,
+        player: ClanPlayer,
+        targetMember: ClanMember,
         role: ClanMemberRole,
-        setBy: ClanPlayer
-    ) = clanPlayerRepository.setMemberRole(clan, member, role)
+    ) = clanPlayerRepository.setMemberRole(clan, player, targetMember, role)
 
     override suspend fun setAcceptsClanInvites(
         player: ClanPlayer,

@@ -4,15 +4,14 @@ package dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.clan.api.common.clan.Clan
+import dev.slne.surf.clan.api.common.clan.actions.member.RemoveMemberArguments
+import dev.slne.surf.clan.api.common.clan.authorize
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.core.common.utils.formatComponent
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.ClanMemberListDialog
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.createDialog
-import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management.buttons.createDemoteMemberButton
-import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management.buttons.createKickMemberButton
-import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management.buttons.createPromoteMemberButton
 import dev.slne.surf.clan.paper.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
@@ -28,40 +27,48 @@ import net.kyori.adventure.text.Component
 object ClanMemberManagementDialog
 
 suspend fun ClanMemberManagementDialog.createDialog(
-    selfClanPlayer: ClanPlayer,
-    clanMember: ClanMember,
-    clanMemberDisplayName: Component,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
+    targetPlayer: ClanPlayer,
+    targetMember: ClanMember,
+    targetDisplayName: Component,
     clan: Clan
 ): Dialog {
-    val lastseen = clanPlayer.offlineCloudPlayer.lastSeen()?.formatComponent()
+    val lastseen = targetPlayer.offlineCloudPlayer.lastSeen()?.formatComponent()
         ?: text("Unbekannt", Colors.VARIABLE_VALUE)
 
-    return dialog {
+    val canRemove = clan.authorize(
+        executorPlayer,
+        RemoveMemberArguments(
+            target = targetPlayer,
+            targetMember = targetMember
+        )
+    )
 
+    return dialog {
         base {
             afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             title {
                 appendClanDialogTitle(
                     buildText { variableValue(clan.name) },
-                    clanMemberDisplayName
+                    targetDisplayName
                 )
             }
             body {
                 plainMessage {
                     spacer("- ")
                     primary("Spieler: ")
-                    append(clanMemberDisplayName)
+                    append(targetDisplayName)
                     appendNewline(2)
 
                     spacer("- ")
                     primary("Rang: ")
-                    append(clanMember.role)
+                    append(targetMember.role)
                     appendNewline(2)
 
                     spacer("- ")
                     primary("Beigetreten am: ")
-                    append(clanMember.createdAt.formatComponent())
+                    append(targetMember.createdAt.formatComponent())
                     appendNewline(2)
 
                     spacer("- ")
@@ -75,41 +82,7 @@ suspend fun ClanMemberManagementDialog.createDialog(
             multiAction {
                 columns(1)
 
-                if (clan.canPromote(selfClanPlayer, clanPlayer).isSuccess) {
-                    action(
-                        createPromoteMemberButton(
-                            selfClanPlayer,
-                            clanMember,
-                            clanMemberDisplayName,
-                            clanPlayer,
-                            clan
-                        )
-                    )
-                }
-
-                if (clan.canDemote(selfClanPlayer, clanPlayer).isSuccess) {
-                    action(
-                        createDemoteMemberButton(
-                            selfClanPlayer,
-                            clanMember,
-                            clanMemberDisplayName,
-                            clanPlayer,
-                            clan
-                        )
-                    )
-                }
-
-                if (clan.canRemove(selfClanPlayer, clanPlayer)) {
-                    action(
-                        createKickMemberButton(
-                            selfClanPlayer,
-                            clanMember,
-                            clanMemberDisplayName,
-                            clanPlayer,
-                            clan
-                        )
-                    )
-                }
+                // FIXME: 30.09.2025 13:32 Add role button
 
                 exitAction {
                     label { text("Zurück") }
@@ -121,9 +94,9 @@ suspend fun ClanMemberManagementDialog.createDialog(
                             plugin.launch {
                                 player.showDialog(
                                     ClanMemberListDialog.createDialog(
-                                        selfClanPlayer,
-                                        clanPlayer,
-                                        clan
+                                        selfPlayer = executorPlayer,
+                                        executorPlayer = targetPlayer,
+                                        clan = clan
                                     )
                                 )
                             }

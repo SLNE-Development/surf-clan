@@ -2,6 +2,7 @@
 
 package dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
@@ -9,6 +10,7 @@ import dev.slne.surf.clan.paper.dialogs.currentclan.CurrentClanDialog
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.buttons.createMemberListButton
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.buttons.createSearchForMemberButton
 import dev.slne.surf.clan.paper.dialogs.currentclan.createDialog
+import dev.slne.surf.clan.paper.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
@@ -18,13 +20,13 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 object ClanMemberDialog
 
 fun ClanMemberDialog.createDialog(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ) = dialog {
     base {
         title { appendClanDialogTitle(buildText { variableValue(clan.name) }) }
-        afterAction(DialogBase.DialogAfterAction.NONE)
+        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
     }
 
     type {
@@ -32,8 +34,20 @@ fun ClanMemberDialog.createDialog(
             columns(2)
 
 
-            action(createMemberListButton(selfClanPlayer, clanPlayer, clan))
-            action(createSearchForMemberButton(selfClanPlayer, clanPlayer, clan))
+            action(
+                ClanMemberDialog.createMemberListButton(
+                    selfPlayer = selfPlayer,
+                    executorPlayer = executorPlayer,
+                    clan = clan
+                )
+            )
+            action(
+                ClanMemberDialog.createSearchForMemberButton(
+                    selfPlayer = selfPlayer,
+                    executorPlayer = executorPlayer,
+                    clan = clan
+                )
+            )
 
             exitAction {
                 label { text("Zurück") }
@@ -42,7 +56,15 @@ fun ClanMemberDialog.createDialog(
 
                 action {
                     playerCallback { player ->
-                        player.showDialog(CurrentClanDialog.createDialog(selfClanPlayer, clanPlayer, clan))
+                        plugin.launch {
+                            player.showDialog(
+                                CurrentClanDialog.createDialog(
+                                    selfPlayer = selfPlayer,
+                                    executorPlayer = executorPlayer,
+                                    clan = clan
+                                )
+                            )
+                        }
                     }
                 }
             }

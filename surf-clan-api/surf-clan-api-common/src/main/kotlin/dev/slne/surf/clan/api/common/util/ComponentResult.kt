@@ -27,10 +27,12 @@ interface ComponentResult {
         override suspend fun SurfComponentBuilder.buildMessage() {}
     }
 
-    data class PlayerNotFound(val player: ClanPlayer) : ComponentResult {
+    data class PlayerNotFound(val playerUuid: UUID) : ComponentResult {
         override val isSuccess = false
 
         override suspend fun SurfComponentBuilder.buildMessage() {
+            val player = ClanPlayer[playerUuid]
+
             append(player.asComponent())
             error(" konnte nicht gefunden werden.")
         }

@@ -10,8 +10,8 @@ import dev.slne.surf.clan.paper.dialogs.currentclan.disband.createDialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 
 fun CurrentClanDialog.createClanDisbandButton(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ) =
     actionButton {
@@ -21,7 +21,13 @@ fun CurrentClanDialog.createClanDisbandButton(
 
         action {
             playerCallback { player ->
-                player.showDialog(ClanDisbandDialog.createDialog(selfClanPlayer, clanPlayer, clan))
+                player.showDialog(
+                    ClanDisbandDialog.createDialog(
+                        selfPlayer = selfPlayer,
+                        executorPlayer = executorPlayer,
+                        clan = clan
+                    )
+                )
             }
         }
     }

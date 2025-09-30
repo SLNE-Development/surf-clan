@@ -27,28 +27,38 @@ class ClanActionProcessor : BeanPostProcessor {
         return bean
     }
 
+    @Suppress("UNCHECKED_CAST")
     suspend fun <Action : ClanAction<out Arguments>, Arguments : Any> authorize(
         action: KClass<out Action>,
         clan: Clan,
         player: ClanPlayer,
         arguments: Arguments
     ): ComponentResult {
-        val action = actions.firstOrNull {
+        val action = (actions.firstOrNull {
             it::class.java.isAssignableFrom(action.java)
-        } ?: return ComponentResult.NoPolicyFound(clan, player.uuid, action)
+        } ?: return ComponentResult.NoPolicyFound(
+            clan,
+            player.uuid,
+            action
+        )) as ClanActionCommon<Arguments>
 
         return action.authorize(clan, player, arguments)
     }
 
+    @Suppress("UNCHECKED_CAST")
     suspend fun <Action : ClanAction<out Arguments>, Arguments : Any> execute(
         action: KClass<out Action>,
         clan: Clan,
         player: ClanPlayer,
         arguments: Arguments
     ): ComponentResult {
-        val action = actions.firstOrNull {
+        val action = (actions.firstOrNull {
             it::class.java.isAssignableFrom(action.java)
-        } ?: return ComponentResult.NoPolicyFound(clan, player.uuid, action)
+        } ?: return ComponentResult.NoPolicyFound(
+            clan,
+            player.uuid,
+            action
+        )) as ClanActionCommon<Arguments>
 
         return action.execute(clan, player, arguments)
     }

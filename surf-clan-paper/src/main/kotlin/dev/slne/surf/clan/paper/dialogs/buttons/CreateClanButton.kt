@@ -9,8 +9,8 @@ import dev.slne.surf.clan.paper.dialogs.create.createDialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 
 fun MainClanDialog.createCreateClanButton(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
 ) = actionButton {
     label { success("Clan erstellen") }
     tooltip { info("Klicke, um einen Clan zu erstellen.") }
@@ -18,7 +18,12 @@ fun MainClanDialog.createCreateClanButton(
 
     action {
         playerCallback { player ->
-            player.showDialog(CreateClanDialog.createDialog(selfClanPlayer, clanPlayer))
+            player.showDialog(
+                CreateClanDialog.createDialog(
+                    selfPlayer = selfPlayer,
+                    executorPlayer = executorPlayer
+                )
+            )
         }
     }
 }

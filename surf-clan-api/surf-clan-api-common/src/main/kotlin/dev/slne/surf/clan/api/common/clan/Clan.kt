@@ -57,7 +57,7 @@ interface Clan : HasAuthorization, ComponentLike {
 
     suspend fun removeMember(player: ClanPlayer, member: ClanMember): ComponentResult
 
-    suspend fun disbandClan(plyer: ClanPlayer, clan: Clan): ComponentResult
+    suspend fun disbandClan(player: ClanPlayer, clan: Clan): ComponentResult
 
     companion object {
         operator fun get(uuid: UUID) = ClanManager.getClanByUuid(uuid)

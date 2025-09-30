@@ -39,8 +39,8 @@ class ClanMemberCommon(
         primary(" TODO")
     }
 
-    override suspend fun setRole(role: ClanMemberRole, setBy: ClanPlayer) = clan()?.let { clan ->
-        playerManager.setMemberRole(clan, this, role, setBy)
+    override suspend fun setRole(role: ClanMemberRole, player: ClanPlayer) = clan()?.let { clan ->
+        playerManager.setMemberRole(clan, player, this, role)
     } ?: error("Clan is not set for member $uuid, this should never happen")
 
     override fun compareTo(other: ClanMember): Int {

@@ -19,14 +19,14 @@ class ClanPlayerManagerClient : ClanPlayerManagerCommon() {
 
     override suspend fun setMemberRole(
         clan: Clan,
-        member: ClanMember,
-        role: ClanMemberRole,
-        setBy: ClanPlayer
+        player: ClanPlayer,
+        targetMember: ClanMember,
+        role: ClanMemberRole
     ) = ServerboundSetMemberRolePacket(
-        clan.uuid,
-        member.uuid,
-        setBy.uuid,
-        role
+        clanUuid = clan.uuid,
+        memberUuid = targetMember.uuid,
+        targetUuid = player.uuid,
+        role = role
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setAcceptsClanInvites(

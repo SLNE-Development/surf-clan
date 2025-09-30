@@ -37,20 +37,26 @@ fun SurfComponentBuilder.appendClanDialogTitle(vararg parts: Component) {
 
 object MainClanDialog
 
-suspend fun MainClanDialog.createDialog(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer): Dialog {
+suspend fun MainClanDialog.createDialog(
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer
+): Dialog {
     val selfOfflinePlayer = selfPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
-    val offlinePlayer = targetPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
+    val executorOfflinePlayer = executorPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
 
-    return createDialog(selfOfflinePlayer, offlinePlayer)
+    return createDialog(selfOfflinePlayer, executorOfflinePlayer)
 }
 
-suspend fun MainClanDialog.createDialog(selfPlayer: OfflinePlayer, targetPlayer: OfflinePlayer): Dialog {
+suspend fun MainClanDialog.createDialog(
+    selfPlayer: OfflinePlayer,
+    executorPlayer: OfflinePlayer
+): Dialog {
     val selfCloudPlayer = selfPlayer.toCloudOfflinePlayer()
     val selfClanPlayer = selfCloudPlayer.clanPlayer()
 
-    val cloudPlayer = targetPlayer.toCloudOfflinePlayer()
-    val clanPlayer = cloudPlayer.clanPlayer()
-    val clan = clanPlayer.clan
+    val executorCloudPlayer = executorPlayer.toCloudOfflinePlayer()
+    val executorClanPlayer = executorCloudPlayer.clanPlayer()
+    val clan = executorClanPlayer.clan
 
     return dialog {
         base {
@@ -62,9 +68,20 @@ suspend fun MainClanDialog.createDialog(selfPlayer: OfflinePlayer, targetPlayer:
                 columns(1)
 
                 if (clan != null) {
-                    action(createCurrentClanButton(selfClanPlayer, clanPlayer, clan))
+                    action(
+                        createCurrentClanButton(
+                            selfPlayer = selfClanPlayer,
+                            executorPlayer = executorClanPlayer,
+                            clan = clan
+                        )
+                    )
                 } else {
-                    action(createCreateClanButton())
+                    action(
+                        createCreateClanButton(
+                            selfPlayer = selfClanPlayer,
+                            executorPlayer = executorClanPlayer
+                        )
+                    )
                 }
 
 
@@ -84,16 +101,22 @@ suspend fun MainClanDialog.createDialog(selfPlayer: OfflinePlayer, targetPlayer:
     }
 }
 
-fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer) = actionButton {
-    label { text("Hauptmenü") }
-    tooltip { info("Klicke, um zum Hauptmenü zurückzukehren.") }
-    width(200)
+fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer) =
+    actionButton {
+        label { text("Hauptmenü") }
+        tooltip { info("Klicke, um zum Hauptmenü zurückzukehren.") }
+        width(200)
 
-    action {
-        playerCallback { player ->
-            plugin.launch {
-                player.showDialog(createDialog(selfPlayer, targetPlayer))
+        action {
+            playerCallback { player ->
+                plugin.launch {
+                    player.showDialog(
+                        MainClanDialog.createDialog(
+                            selfPlayer = selfPlayer,
+                            executorPlayer = targetPlayer
+                        )
+                    )
+                }
             }
         }
     }
-}

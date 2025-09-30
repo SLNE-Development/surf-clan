@@ -14,13 +14,14 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import net.kyori.adventure.text.Component
 
 fun ClanMemberListDialog.createClanMemberButton(
-    selfClanPlayer: ClanPlayer,
-    clanMember: ClanMember,
-    clanMemberDisplayName: Component,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
+    targetPlayer: ClanPlayer,
+    targetMember: ClanMember,
+    targetDisplayName: Component,
     clan: Clan
 ) = actionButton {
-    label(clanMemberDisplayName)
+    label(targetDisplayName)
     tooltip { info("Klicke, um dir das Mitglied anzusehen.") }
     width(200)
 
@@ -29,11 +30,12 @@ fun ClanMemberListDialog.createClanMemberButton(
             plugin.launch {
                 player.showDialog(
                     ClanMemberManagementDialog.createDialog(
-                        selfClanPlayer,
-                        clanMember,
-                        clanMemberDisplayName,
-                        clanPlayer,
-                        clan
+                        selfPlayer = selfPlayer,
+                        executorPlayer = executorPlayer,
+                        targetPlayer = targetPlayer,
+                        targetMember = targetMember,
+                        targetDisplayName = targetDisplayName,
+                        clan = clan
                     )
                 )
             }

@@ -12,8 +12,8 @@ import dev.slne.surf.clan.paper.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 
 fun ClanMemberDialog.createMemberListButton(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ) = actionButton {
     label { text("Mitgliederliste") }
@@ -23,7 +23,13 @@ fun ClanMemberDialog.createMemberListButton(
     action {
         playerCallback { player ->
             plugin.launch {
-                player.showDialog(ClanMemberListDialog.createDialog(selfClanPlayer, clanPlayer, clan))
+                player.showDialog(
+                    ClanMemberListDialog.createDialog(
+                        selfPlayer = selfPlayer,
+                        executorPlayer = executorPlayer,
+                        clan = clan
+                    )
+                )
             }
         }
     }

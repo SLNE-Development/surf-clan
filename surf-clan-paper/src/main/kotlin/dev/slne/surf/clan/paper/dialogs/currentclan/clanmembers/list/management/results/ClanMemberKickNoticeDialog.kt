@@ -5,8 +5,8 @@ package dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
-import dev.slne.surf.clan.api.common.clan.member.result.role.ClanMemberSetRoleResult
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management.ClanMemberManagementDialog
 import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.list.management.createDialog
@@ -20,12 +20,13 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import net.kyori.adventure.text.Component
 
 suspend fun ClanMemberManagementDialog.createClanMemberKickNoticeDialog(
-    result: ClanMemberSetRoleResult,
-    selfClanPlayer: ClanPlayer,
-    clanMember: ClanMember,
-    clanMemberDisplayName: Component,
-    clanPlayer: ClanPlayer,
-    clan: Clan
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
+    targetPlayer: ClanPlayer,
+    targetMember: ClanMember,
+    targetDisplayName: Component,
+    clan: Clan,
+    result: ComponentResult,
 ): Dialog {
     val resultMessage = result.asComponent()
 
@@ -33,7 +34,7 @@ suspend fun ClanMemberManagementDialog.createClanMemberKickNoticeDialog(
         base {
             afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
             title {
-                appendClanDialogTitle(buildText { variableValue(clan.name) }, clanMemberDisplayName)
+                appendClanDialogTitle(buildText { variableValue(clan.name) }, targetDisplayName)
             }
             body {
                 plainMessage {
@@ -54,11 +55,12 @@ suspend fun ClanMemberManagementDialog.createClanMemberKickNoticeDialog(
                             plugin.launch {
                                 player.showDialog(
                                     ClanMemberManagementDialog.createDialog(
-                                        selfClanPlayer,
-                                        clanMember,
-                                        clanMemberDisplayName,
-                                        clanPlayer,
-                                        clan
+                                        selfPlayer = selfPlayer,
+                                        executorPlayer = executorPlayer,
+                                        targetPlayer = targetPlayer,
+                                        targetMember = targetMember,
+                                        targetDisplayName = targetDisplayName,
+                                        clan = clan
                                     )
                                 )
                             }
