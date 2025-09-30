@@ -2,15 +2,18 @@ package dev.slne.surf.clan.server.clan
 
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
+import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import org.springframework.stereotype.Component
 
 @Component
 class ClanManagerServer(
-    private val clanRepository: ClanRepository
+    private val clanRepository: ClanRepository,
+    private val blacklistManager: ClanTagBlacklistManager
 ) : ClanManagerCommon() {
 
     suspend fun cacheAllClans() {
@@ -58,7 +61,21 @@ class ClanManagerServer(
         clan: Clan,
         player: ClanPlayer,
         tag: ClanTag
-    ) = clanRepository.setTag(clan, player, tag)
+    ): ComponentResult {
+        val blacklist = blacklistManager.getTagBlacklist(tag.tag)
+
+        if (blacklist != null) {
+            val (category, tag, description) = blacklist
+
+            return ClanSetTagResult.BlacklistedTag(
+                category = category,
+                tag = tag,
+                description = description
+            )
+        }
+
+        return clanRepository.setTag(clan, player, tag)
+    }
 
     override suspend fun setDiscordInvite(
         clan: Clan,

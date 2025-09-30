@@ -34,6 +34,24 @@ abstract class ClanSetTagResult : ComponentResult {
         }
     }
 
+    data class BlacklistedTag(
+        val tag: String,
+        val category: String,
+        val description: String?
+    ) : ClanSetTagResult() {
+        override suspend fun SurfComponentBuilder.buildMessage() {
+            error("Der Clan-Tag ")
+            variableValue("$category:$tag")
+            error(" ist nicht erlaubt.")
+
+            description?.let {
+                appendSpace()
+                error("Grund:  ")
+                variableValue(it)
+            }
+        }
+    }
+
     data class TagDoesntMatchLength(
         val tag: String, val minLength: Int, val maxLength: Int
     ) : ClanSetTagResult() {
