@@ -13,6 +13,6 @@ import java.util.*
 class ClientboundInviteMemberResultPacket(
     val clanUuid: @Contextual UUID,
     val playerUuid: @Contextual UUID,
-    val invitedByUuid: @Contextual UUID,
+    val targetUuid: @Contextual UUID,
     val result: ClanMemberInviteResult
 ) : ResponseNettyPacket()

@@ -12,5 +12,6 @@ import java.util.*
 @SurfNettyPacket(id = "clan:set_clan_discord_invite", flow = PacketFlow.SERVERBOUND)
 class ServerboundSetClanDiscordInvitePacket(
     val clanUuid: @Contextual UUID,
-    val discordInvite: String?
+    val playerUuid: @Contextual UUID,
+    val invite: String?
 ) : RespondingNettyPacket<ClientboundSetDiscordInviteResultPacket>()

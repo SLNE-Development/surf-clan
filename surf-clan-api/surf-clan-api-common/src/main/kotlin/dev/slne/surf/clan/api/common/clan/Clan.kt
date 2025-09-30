@@ -2,16 +2,10 @@ package dev.slne.surf.clan.api.common.clan
 
 import dev.slne.surf.clan.api.common.clan.invite.ClanInvite
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
-import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberAddResult
-import dev.slne.surf.clan.api.common.clan.member.result.ClanMemberRemoveResult
-import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberInviteResult
-import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberUninviteResult
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
-import dev.slne.surf.clan.api.common.clan.result.ClanSetDiscordInviteResult
-import dev.slne.surf.clan.api.common.clan.result.ClanSetNameResult
-import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.cloud.api.common.netty.network.codec.kotlinx.java.UUIDSerializer
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import kotlinx.serialization.KSerializer
@@ -24,24 +18,21 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Serializable(with = ClanSerializer::class)
-interface Clan : ComponentLike {
+interface Clan : HasAuthorization, ComponentLike {
 
     val uuid: UUID
 
     val name: String
-    suspend fun setName(name: String, setBy: ClanPlayer): ClanSetNameResult
+    suspend fun setName(player: ClanPlayer, name: String): ComponentResult
 
     val fullTag: ClanTag
-    suspend fun setTag(tag: ClanTag, setBy: ClanPlayer): ClanSetTagResult
+    suspend fun setTag(player: ClanPlayer, tag: ClanTag): ComponentResult
 
     val createdByUuid: UUID
     suspend fun createdBy(): ClanPlayer = ClanPlayer[createdByUuid]
 
     val discordInvite: String?
-    suspend fun setDiscordInvite(
-        discordInvite: String?,
-        setBy: ClanPlayer
-    ): ClanSetDiscordInviteResult
+    suspend fun setDiscordInvite(player: ClanPlayer, invite: String?): ComponentResult
 
     val members: ObjectSet<ClanMember>
     val invites: ObjectSet<ClanInvite>
@@ -49,25 +40,28 @@ interface Clan : ComponentLike {
     val createdAt: ZonedDateTime
     val updatedAt: ZonedDateTime
 
-    suspend fun invite(player: ClanPlayer, invitedBy: ClanPlayer): ClanMemberInviteResult
-    suspend fun uninvite(player: ClanPlayer, uninvitedBy: ClanPlayer): ClanMemberUninviteResult
+    suspend fun invite(player: ClanPlayer, target: ClanPlayer): ComponentResult
+    suspend fun uninvite(player: ClanPlayer, target: ClanPlayer): ComponentResult
+
     fun isInvited(player: ClanPlayer): Boolean
 
+    fun getMembersWithRole(role: ClanMemberRole): ObjectSet<ClanMember>
     fun getMember(player: ClanPlayer): ClanMember?
     fun isMember(player: ClanPlayer): Boolean
 
     suspend fun addMember(
         player: ClanPlayer,
         role: ClanMemberRole,
-        addedBy: ClanPlayer
-    ): ClanMemberAddResult
+        target: ClanPlayer
+    ): ComponentResult
 
-    suspend fun removeMember(member: ClanMember, removedBy: ClanPlayer): ClanMemberRemoveResult
+    suspend fun removeMember(player: ClanPlayer, member: ClanMember): ComponentResult
+
+    suspend fun disbandClan(plyer: ClanPlayer, clan: Clan): ComponentResult
 
     companion object {
         operator fun get(uuid: UUID) = ClanManager.getClanByUuid(uuid)
     }
-
 }
 
 internal object ClanSerializer : KSerializer<Clan> {
