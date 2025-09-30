@@ -9,7 +9,7 @@ import dev.slne.surf.clan.api.common.player.clanPlayer
 import dev.slne.surf.clan.paper.dialogs.buttons.createCreateClanButton
 import dev.slne.surf.clan.paper.dialogs.buttons.createCurrentClanButton
 import dev.slne.surf.clan.paper.plugin
-import dev.slne.surf.cloud.api.client.paper.player.toBukkitOfflinePlayer
+import dev.slne.surf.clan.paper.utils.toBukkitOfflinePlayer
 import dev.slne.surf.cloud.api.client.paper.player.toCloudOfflinePlayer
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
@@ -35,74 +35,74 @@ fun SurfComponentBuilder.appendClanDialogTitle(vararg parts: Component) {
     }
 }
 
-object MainClanDialog
+object MainClanDialog {
+    suspend fun createDialog(
+        selfPlayer: ClanPlayer,
+        executorPlayer: ClanPlayer
+    ): Dialog {
+        val selfOfflinePlayer = selfPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
+        val executorOfflinePlayer = executorPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
 
-suspend fun MainClanDialog.createDialog(
-    selfPlayer: ClanPlayer,
-    executorPlayer: ClanPlayer
-): Dialog {
-    val selfOfflinePlayer = selfPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
-    val executorOfflinePlayer = executorPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
+        return createDialog(selfOfflinePlayer, executorOfflinePlayer)
+    }
 
-    return createDialog(selfOfflinePlayer, executorOfflinePlayer)
-}
+    suspend fun createDialog(
+        selfPlayer: OfflinePlayer,
+        executorPlayer: OfflinePlayer
+    ): Dialog {
+        val selfCloudPlayer = selfPlayer.toCloudOfflinePlayer()
+        val selfClanPlayer = selfCloudPlayer.clanPlayer()
 
-suspend fun MainClanDialog.createDialog(
-    selfPlayer: OfflinePlayer,
-    executorPlayer: OfflinePlayer
-): Dialog {
-    val selfCloudPlayer = selfPlayer.toCloudOfflinePlayer()
-    val selfClanPlayer = selfCloudPlayer.clanPlayer()
+        val executorCloudPlayer = executorPlayer.toCloudOfflinePlayer()
+        val executorClanPlayer = executorCloudPlayer.clanPlayer()
+        val clan = executorClanPlayer.clan
 
-    val executorCloudPlayer = executorPlayer.toCloudOfflinePlayer()
-    val executorClanPlayer = executorCloudPlayer.clanPlayer()
-    val clan = executorClanPlayer.clan
+        return dialog {
+            base {
+                title { appendClanDialogTitle() }
+            }
 
-    return dialog {
-        base {
-            title { appendClanDialogTitle() }
-        }
+            type {
+                multiAction {
+                    columns(1)
 
-        type {
-            multiAction {
-                columns(1)
-
-                if (clan != null) {
-                    action(
-                        createCurrentClanButton(
-                            selfPlayer = selfClanPlayer,
-                            executorPlayer = executorClanPlayer,
-                            clan = clan
+                    if (clan != null) {
+                        action(
+                            MainClanDialog.createCurrentClanButton(
+                                selfPlayer = selfClanPlayer,
+                                executorPlayer = executorClanPlayer,
+                                clan = clan
+                            )
                         )
-                    )
-                } else {
-                    action(
-                        createCreateClanButton(
-                            selfPlayer = selfClanPlayer,
-                            executorPlayer = executorClanPlayer
+                    } else {
+                        action(
+                            MainClanDialog.createCreateClanButton(
+                                selfPlayer = selfClanPlayer,
+                                executorPlayer = executorClanPlayer
+                            )
                         )
-                    )
-                }
+                    }
+                    
+                    exitAction {
+                        label { text("Schließen") }
+                        tooltip { info("Klicke, um das Menü zu schließen.") }
+                        width(200)
 
-
-                exitAction {
-                    label { text("Schließen") }
-                    tooltip { info("Klicke, um das Menü zu schließen.") }
-                    width(200)
-
-                    action {
-                        playerCallback { player ->
-                            player.clearDialogs(true)
+                        action {
+                            playerCallback { player ->
+                                player.clearDialogs(true)
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
-fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer) =
-    actionButton {
+    fun createMainMenuButton(
+        selfPlayer: ClanPlayer,
+        targetPlayer: ClanPlayer
+    ) = actionButton {
         label { text("Hauptmenü") }
         tooltip { info("Klicke, um zum Hauptmenü zurückzukehren.") }
         width(200)
@@ -111,7 +111,7 @@ fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: Cl
             playerCallback { player ->
                 plugin.launch {
                     player.showDialog(
-                        MainClanDialog.createDialog(
+                        createDialog(
                             selfPlayer = selfPlayer,
                             executorPlayer = targetPlayer
                         )
@@ -120,3 +120,4 @@ fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: Cl
             }
         }
     }
+}

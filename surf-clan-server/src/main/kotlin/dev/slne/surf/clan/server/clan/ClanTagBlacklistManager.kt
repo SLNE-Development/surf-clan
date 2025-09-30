@@ -13,7 +13,7 @@ class ClanTagBlacklistManager {
 
     suspend fun fetch() {
         _blacklist.clear()
-        _blacklist.addAll(ClanTagBlacklistRepository().fetchAllBlacklistedTags())
+//        _blacklist.addAll(ClanTagBlacklistRepository().fetchAllBlacklistedTags())
     }
 
     fun getTagBlacklist(tag: String) = _blacklist.find { it.tag == tag }

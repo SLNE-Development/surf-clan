@@ -9,7 +9,6 @@ import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ClanAction
 import dev.slne.surf.clan.paper.dialogs.MainClanDialog
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
-import dev.slne.surf.clan.paper.dialogs.createMainMenuButton
 import dev.slne.surf.clan.paper.dialogs.currentclan.buttons.createClanDisbandButton
 import dev.slne.surf.clan.paper.dialogs.currentclan.buttons.createClanMembersButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
