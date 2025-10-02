@@ -10,10 +10,6 @@ surfPaperPluginApi {
     generateLibraryLoader(false)
     mainClass("dev.slne.surf.clan.paper.PaperMain")
     bootstrapper("dev.slne.surf.clan.paper.PaperBootstrap")
-
-    serverDependencies {
-        registerRequired("surf-cloud-bukkit")
-    }
 }
 
 dependencies {

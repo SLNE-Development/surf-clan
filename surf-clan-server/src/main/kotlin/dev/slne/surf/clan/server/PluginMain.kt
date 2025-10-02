@@ -7,7 +7,6 @@ import dev.slne.surf.cloud.api.server.plugin.utils.bean
 
 class PluginMain : StandalonePlugin() {
     override suspend fun load() {
-
     }
 
     override suspend fun enable() {
@@ -16,7 +15,6 @@ class PluginMain : StandalonePlugin() {
     }
 
     override suspend fun disable() {
-
     }
 }
 

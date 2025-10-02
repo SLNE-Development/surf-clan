@@ -12,6 +12,7 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import io.papermc.paper.registry.data.dialog.ActionButton
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.ShadowColor
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -50,7 +51,7 @@ fun CreateClanDialog.createConfirmButton(
                 fullTag = ClanTag(
                     tag = tagInput,
                     foregroundColor = NamedTextColor.WHITE,
-                    shadowColor = NamedTextColor.GRAY,
+                    shadowColor = ShadowColor.shadowColor(NamedTextColor.GRAY.value()),
                     backgroundColor = NamedTextColor.BLACK
                 ),
                 createdByUuid = executorPlayer.uuid,

@@ -20,8 +20,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class ClanManagerClient : ClanManagerCommon() {
-    override suspend fun findAllClans() = ServerboundAllClansPacket().fireAndAwaitOrThrow().clans
-        .map { it as ClanCommon }
+    override suspend fun findAllClans() = ServerboundAllClansPacket()
+        .fireAndAwaitOrThrow()
+        .clans
+        .filterIsInstance<ClanCommon>()
         .toObjectSet()
 
     override suspend fun addMember(
@@ -61,9 +63,9 @@ class ClanManagerClient : ClanManagerCommon() {
         player: ClanPlayer,
         target: ClanPlayer
     ) = ServerboundRemoveMemberPacket(
-        clan.uuid,
-        player.uuid,
-        target.uuid
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetUuid = target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setName(

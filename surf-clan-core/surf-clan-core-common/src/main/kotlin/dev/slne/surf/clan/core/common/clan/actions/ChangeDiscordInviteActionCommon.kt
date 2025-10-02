@@ -7,6 +7,7 @@ import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.clan.result.ClanSetDiscordInviteResult
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
+import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.clan.core.common.utils.ClanActionCommon
 import org.springframework.stereotype.Component
 
@@ -16,8 +17,9 @@ private val discordInviteLinkPattern = Regex(
 )
 
 @Component
-class ChangeDiscordInviteActionCommon : ClanActionCommon<ChangeDiscordInviteArguments>(),
-    ChangeDiscordInviteAction {
+class ChangeDiscordInviteActionCommon(
+    private val clanManager: ClanManagerCommon
+) : ClanActionCommon<ChangeDiscordInviteArguments>(), ChangeDiscordInviteAction {
     override val permission = ClanPermission.OPTIONS_DISCORD
 
     override suspend fun action(

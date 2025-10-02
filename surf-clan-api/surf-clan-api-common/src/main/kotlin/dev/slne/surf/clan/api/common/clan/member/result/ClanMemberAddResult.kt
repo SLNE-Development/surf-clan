@@ -5,6 +5,7 @@ import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberUninvit
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.*
 
@@ -12,10 +13,11 @@ import java.util.*
 sealed class ClanMemberAddResult : ComponentResult {
     override val isSuccess get() = this is Success
 
+    @Serializable
     data class Success(
         val clan: Clan,
-        val playerUuid: UUID,
-        val targetUuid: UUID,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
     ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             val target = ClanPlayer[targetUuid]
@@ -28,10 +30,11 @@ sealed class ClanMemberAddResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class InviteRemoveFailed(
         val clan: Clan,
-        val playerUuid: UUID,
-        val targetUuid: UUID,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
         val result: ClanMemberUninviteResult
     ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
@@ -47,10 +50,11 @@ sealed class ClanMemberAddResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class AlreadyMember(
         val clan: Clan,
-        val playerUuid: UUID,
-        val targetUuid: UUID,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
     ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             val target = ClanPlayer[targetUuid]

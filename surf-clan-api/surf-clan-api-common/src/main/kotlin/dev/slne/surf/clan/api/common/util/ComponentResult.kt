@@ -21,6 +21,7 @@ interface ComponentResult {
         return componentBuilder.build()
     }
 
+
     data object EmptySuccess : ComponentResult {
         override val isSuccess = true
 
@@ -41,7 +42,7 @@ interface ComponentResult {
     data class NoPolicyFound(
         val clan: Clan,
         val playerUuid: UUID,
-        val actionClass: KClass<out ClanAction<*>>,
+        val actionClass: Class<out ClanAction<*>>,
     ) : ComponentResult {
         override val isSuccess = false
 

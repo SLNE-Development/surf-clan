@@ -27,7 +27,7 @@ suspend fun CurrentClanDialog.createDialog(
     clan: Clan
 ): Dialog {
     val member = clan.getMember(executorPlayer)
-        ?: return error("Clan member ${executorPlayer.uuid} not found in their own clan ${clan.uuid}")
+        ?: error("Clan member ${executorPlayer.uuid} not found in their own clan ${clan.uuid}")
 
     val canDisband = clan.authorize<DisbandClanAction, ClanAction.EmptyArguments>(
         selfPlayer,

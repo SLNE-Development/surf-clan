@@ -9,7 +9,7 @@ import dev.slne.surf.clan.api.common.player.clanPlayer
 import dev.slne.surf.clan.paper.dialogs.buttons.createCreateClanButton
 import dev.slne.surf.clan.paper.dialogs.buttons.createCurrentClanButton
 import dev.slne.surf.clan.paper.plugin
-import dev.slne.surf.clan.paper.utils.toBukkitOfflinePlayer
+import dev.slne.surf.cloud.api.client.paper.player.toBukkitOfflinePlayer
 import dev.slne.surf.cloud.api.client.paper.player.toCloudOfflinePlayer
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton

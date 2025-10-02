@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Serializable
-class ClanInviteCommon(
+data class ClanInviteCommon(
     override val invitedUuid: @Contextual UUID,
     override val invitedByUuid: @Contextual UUID,
     override val createdAt: @Contextual ZonedDateTime,

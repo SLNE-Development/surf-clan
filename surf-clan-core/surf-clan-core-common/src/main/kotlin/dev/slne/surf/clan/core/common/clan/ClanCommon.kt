@@ -13,11 +13,11 @@ import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ClanAction
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.api.common.util.InternalClanApi
 import dev.slne.surf.clan.core.common.clan.actions.ChangeClanTagActionCommon
 import dev.slne.surf.clan.core.common.clan.actions.ChangeDiscordInviteActionCommon
-import dev.slne.surf.clan.core.common.clan.actions.ClanActionProcessor
-import dev.slne.surf.clan.core.common.clan.actions.execute
+import dev.slne.surf.clan.core.common.clan.actions.ClanActionManager
 import dev.slne.surf.cloud.api.common.util.freeze
 import dev.slne.surf.cloud.api.common.util.toObjectSet
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
@@ -25,10 +25,9 @@ import it.unimi.dsi.fastutil.objects.ObjectSet
 import org.springframework.beans.factory.getBean
 import java.time.ZonedDateTime
 import java.util.*
-import kotlin.reflect.KClass
 
-private val clanActionProcessor
-    get() = InternalContextHolder.context.getBean<ClanActionProcessor>()
+private val clanActionManager
+    get() = InternalContextHolder.context.getBean<ClanActionManager>()
 
 class ClanCommon(
     override val uuid: UUID,
@@ -42,15 +41,15 @@ class ClanCommon(
     override val updatedAt: ZonedDateTime
 ) : Clan {
     private val _members = members
-    override val members get() = _members.freeze()
+    override val members = _members.freeze()
 
     private val _invites = invites
-    override val invites get() = _invites.freeze()
+    override val invites = _invites.freeze()
 
     override suspend fun invite(
         player: ClanPlayer,
         target: ClanPlayer
-    ) = clanActionProcessor.execute<InviteMemberAction, InviteMemberArguments>(
+    ) = clanActionManager.execute<InviteMemberAction, InviteMemberArguments>(
         this,
         player,
         InviteMemberArguments(
@@ -61,7 +60,7 @@ class ClanCommon(
     override suspend fun uninvite(
         player: ClanPlayer,
         target: ClanPlayer
-    ) = clanActionProcessor.execute<UninviteMemberAction, UninviteMemberArguments>(
+    ) = clanActionManager.execute<UninviteMemberAction, UninviteMemberArguments>(
         this,
         player,
         UninviteMemberArguments(
@@ -81,7 +80,7 @@ class ClanCommon(
         player: ClanPlayer,
         role: ClanMemberRole,
         target: ClanPlayer,
-    ) = clanActionProcessor.execute<AddMemberAction, AddMemberArguments>(
+    ) = clanActionManager.execute<AddMemberAction, AddMemberArguments>(
         this,
         player,
         AddMemberArguments(
@@ -92,7 +91,7 @@ class ClanCommon(
     override suspend fun removeMember(
         player: ClanPlayer,
         member: ClanMember,
-    ) = clanActionProcessor.execute<RemoveMemberAction, RemoveMemberArguments>(
+    ) = clanActionManager.execute<RemoveMemberAction, RemoveMemberArguments>(
         this,
         player,
         RemoveMemberArguments(
@@ -104,7 +103,7 @@ class ClanCommon(
     override suspend fun setName(
         player: ClanPlayer,
         name: String,
-    ) = clanActionProcessor.execute<RenameClanAction, RenameClanArguments>(
+    ) = clanActionManager.execute<RenameClanAction, RenameClanArguments>(
         this,
         player,
         RenameClanArguments(
@@ -116,7 +115,7 @@ class ClanCommon(
     override suspend fun setTag(
         player: ClanPlayer,
         tag: ClanTag,
-    ) = clanActionProcessor.execute<ChangeClanTagActionCommon, ChangeClanTagArguments>(
+    ) = clanActionManager.execute<ChangeClanTagActionCommon, ChangeClanTagArguments>(
         this,
         player,
         ChangeClanTagArguments(
@@ -128,7 +127,7 @@ class ClanCommon(
     override suspend fun setDiscordInvite(
         player: ClanPlayer,
         invite: String?,
-    ) = clanActionProcessor.execute<ChangeDiscordInviteActionCommon, ChangeDiscordInviteArguments>(
+    ) = clanActionManager.execute<ChangeDiscordInviteActionCommon, ChangeDiscordInviteArguments>(
         this,
         player,
         ChangeDiscordInviteArguments(
@@ -137,27 +136,27 @@ class ClanCommon(
         )
     )
 
-    override suspend fun <Action : ClanAction<Arguments>, Arguments : Any> authorize(
-        actionClass: KClass<out Action>,
-        player: ClanPlayer,
-        arguments: Arguments
-    ) = clanActionProcessor.authorize(
-        actionClass,
-        this,
-        player,
-        arguments
-    )
-
     override fun hasPermission(clanPlayer: ClanPlayer, permission: ClanPermission): Boolean {
         val member = getMember(clanPlayer) ?: return false
 
         return member.hasPermission(permission)
     }
 
+    override suspend fun <Action : ClanAction<Arguments>, Arguments> authorize(
+        actionClass: Class<Action>,
+        player: ClanPlayer,
+        arguments: Arguments
+    ): ComponentResult = clanActionManager.authorize(
+        actionClass,
+        this,
+        player,
+        arguments
+    )
+
     override suspend fun disbandClan(
         player: ClanPlayer,
         clan: Clan
-    ) = clanActionProcessor.execute<DisbandClanAction, ClanAction.EmptyArguments>(
+    ) = clanActionManager.execute<DisbandClanAction, ClanAction.EmptyArguments>(
         this,
         player,
         ClanAction.EmptyArguments()

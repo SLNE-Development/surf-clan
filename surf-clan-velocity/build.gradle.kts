@@ -11,12 +11,6 @@ surfVelocityApi {
 velocityPluginFile {
     main = "dev.slne.surf.clan.velocity.VelocityMain"
     authors = listOf("Ammo", "Jo_field")
-
-    pluginDependencies {
-        register("surf-cloud-velocity") {
-            optional = false
-        }
-    }
 }
 
 dependencies {

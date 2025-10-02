@@ -24,12 +24,14 @@ class ClanMemberCommon(
     override val createdAt: @Contextual ZonedDateTime,
     override val updatedAt: @Contextual ZonedDateTime
 ) : ClanMember {
-    private val clanManager by lazy {
-        InternalContextHolder.context.getBean<ClanManagerCommon>()
-    }
+    companion object {
+        private val clanManager by lazy {
+            InternalContextHolder.context.getBean<ClanManagerCommon>()
+        }
 
-    private val playerManager by lazy {
-        InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+        private val playerManager by lazy {
+            InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+        }
     }
 
     suspend fun clan() = clanManager.getClanByPlayer(ClanPlayer[uuid])

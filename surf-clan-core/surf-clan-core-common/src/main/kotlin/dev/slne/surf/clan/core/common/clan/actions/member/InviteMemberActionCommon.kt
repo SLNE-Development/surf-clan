@@ -8,11 +8,14 @@ import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberInviteR
 import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
+import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.clan.core.common.utils.ClanActionCommon
 import org.springframework.stereotype.Component
 
 @Component
-class InviteMemberActionCommon : ClanActionCommon<InviteMemberArguments>(), InviteMemberAction {
+class InviteMemberActionCommon(
+    private val clanManager: ClanManagerCommon
+) : ClanActionCommon<InviteMemberArguments>(), InviteMemberAction {
     override val permission = ClanPermission.MEMBER_INVITE
 
     override suspend fun action(

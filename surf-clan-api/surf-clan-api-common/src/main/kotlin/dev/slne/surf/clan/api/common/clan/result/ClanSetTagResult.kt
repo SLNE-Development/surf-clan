@@ -4,16 +4,18 @@ import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-abstract class ClanSetTagResult : ComponentResult {
+sealed class ClanSetTagResult : ComponentResult {
     override val isSuccess get() = this is Success
 
+    @Serializable
     data class Success(
         val clan: Clan,
-        val playerUuid: UUID,
+        val playerUuid: @Contextual UUID,
         val oldTag: ClanTag,
         val newTag: ClanTag
     ) : ClanSetTagResult() {
@@ -26,6 +28,7 @@ abstract class ClanSetTagResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class InvalidTag(val tag: String) : ClanSetTagResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Der Clan-Tag ")
@@ -34,6 +37,7 @@ abstract class ClanSetTagResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class BlacklistedTag(
         val tag: String,
         val category: String,
@@ -52,6 +56,7 @@ abstract class ClanSetTagResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class TagDoesntMatchLength(
         val tag: String, val minLength: Int, val maxLength: Int
     ) : ClanSetTagResult() {
@@ -66,6 +71,7 @@ abstract class ClanSetTagResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class TagAlreadyInUse(val tag: String) : ClanSetTagResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Der Clan-Tag ")

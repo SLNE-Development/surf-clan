@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 sealed class ClanMemberSetRoleResult : ComponentResult {
     override val isSuccess get() = this is Success
 
+    @Serializable
     data class Success(
         val clan: Clan,
         val member: ClanMember,
@@ -30,12 +31,14 @@ sealed class ClanMemberSetRoleResult : ComponentResult {
         }
     }
 
+    @Serializable
     data class CannotChangeOwnRole(val clan: Clan) : ClanMemberSetRoleResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Du kannst deine eigene Rolle nicht ändern.")
         }
     }
 
+    @Serializable
     data class OtherSameOrHigherRole(
         val clan: Clan,
         val self: ClanMember,

@@ -49,7 +49,11 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
             this.invited = targetEntity
         }
 
-        return ClanMemberInviteResult.Success(clan, player.uuid)
+        return ClanMemberInviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun uninviteMember(
@@ -66,14 +70,18 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
             (ClanInvitesTable.clan eq clanEntity.id) and
                     (ClanInvitesTable.invited eq playerEntity.id)
         }.firstOrNull() ?: return ClanMemberUninviteResult.NotInvited(
-            clan,
-            player.uuid,
-            target.uuid
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
         )
 
         inviteEntity.delete()
 
-        return ClanMemberUninviteResult.Success(clan, player.uuid, target.uuid)
+        return ClanMemberUninviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun addMember(
@@ -95,7 +103,11 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
             this.role = role
         }
 
-        return ClanMemberAddResult.Success(clan, player.uuid, target.uuid)
+        return ClanMemberAddResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun removeMember(
@@ -116,7 +128,7 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
         memberEntity.delete()
 
         return ClanMemberRemoveResult.Success(
-            clan, player.uuid, target.uuid
+            clan = clan, playerUuid = player.uuid, targetUuid = target.uuid
         )
     }
 
@@ -130,7 +142,11 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
 
         clanEntity.discordInvite = invite
 
-        return ClanSetDiscordInviteResult.Success(clan, player.uuid, invite)
+        return ClanSetDiscordInviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            discordInvite = invite
+        )
     }
 
     suspend fun setName(
@@ -144,7 +160,12 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
         val oldName = clan.name
         clanEntity.name = name
 
-        return ClanSetNameResult.Success(clan, player.uuid, oldName, name)
+        return ClanSetNameResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            oldName = oldName,
+            newName = name
+        )
     }
 
     suspend fun setTag(
@@ -158,6 +179,11 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
         val oldTag = clan.fullTag
         clanEntity.clanTag = tag
 
-        return ClanSetTagResult.Success(clan, player.uuid, oldTag, tag)
+        return ClanSetTagResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            oldTag = oldTag,
+            newTag = tag
+        )
     }
 }

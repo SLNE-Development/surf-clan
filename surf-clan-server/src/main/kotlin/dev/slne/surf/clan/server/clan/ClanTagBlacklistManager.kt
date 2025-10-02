@@ -6,14 +6,14 @@ import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import org.springframework.stereotype.Component
 
 @Component
-class ClanTagBlacklistManager {
+class ClanTagBlacklistManager(private val clanTagBlacklistRepository: ClanTagBlacklistRepository) {
 
     private val _blacklist = mutableObjectSetOf<ClanTagBlacklistDto>()
     val blacklist get() = _blacklist.freeze()
 
     suspend fun fetch() {
         _blacklist.clear()
-//        _blacklist.addAll(ClanTagBlacklistRepository().fetchAllBlacklistedTags())
+        _blacklist.addAll(clanTagBlacklistRepository.fetchAllBlacklistedTags())
     }
 
     fun getTagBlacklist(tag: String) = _blacklist.find { it.tag == tag }

@@ -13,7 +13,7 @@ import java.util.*
 @SurfNettyPacket(id = "clan:member_set_role", flow = PacketFlow.SERVERBOUND)
 class ServerboundSetMemberRolePacket(
     val clanUuid: @Contextual UUID,
-    val memberUuid: @Contextual UUID,
-    val targetUuid: @Contextual UUID,
+    val playerUuid: @Contextual UUID,
+    val targetMemberUuid: @Contextual UUID,
     val role: ClanMemberRole,
 ) : RespondingNettyPacket<ClientboundSetMemberRoleResultPacket>()

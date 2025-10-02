@@ -9,11 +9,12 @@ import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.clan.result.ClanSetNameResult
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
+import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.clan.core.common.utils.ClanActionCommon
 import org.springframework.stereotype.Component
 
 @Component
-class RenameClanActionCommon : ClanActionCommon<RenameClanArguments>(), RenameClanAction {
+class RenameClanActionCommon(private val clanManager: ClanManagerCommon) : ClanActionCommon<RenameClanArguments>(), RenameClanAction {
     override val permission = ClanPermission.OPTIONS_NAME
 
     override suspend fun action(

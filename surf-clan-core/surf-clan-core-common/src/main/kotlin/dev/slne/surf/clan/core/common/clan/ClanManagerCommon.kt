@@ -8,8 +8,10 @@ import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.cloud.api.common.sync.SyncSet
 import it.unimi.dsi.fastutil.objects.ObjectSet
+import org.springframework.stereotype.Component
 import java.util.*
 
+@Component("clanManager")
 abstract class ClanManagerCommon : ClanManager {
     private val _clans = SyncSet<Clan>("clan:clans")
     val clans get() = _clans.snapshot()

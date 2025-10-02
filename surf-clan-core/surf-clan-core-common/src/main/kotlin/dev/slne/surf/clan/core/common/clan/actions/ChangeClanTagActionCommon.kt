@@ -5,11 +5,14 @@ import dev.slne.surf.clan.api.common.clan.actions.ChangeClanTagAction
 import dev.slne.surf.clan.api.common.clan.actions.ChangeClanTagArguments
 import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.clan.core.common.utils.ClanActionCommon
 import org.springframework.stereotype.Component
 
 @Component
-class ChangeClanTagActionCommon : ClanActionCommon<ChangeClanTagArguments>(), ChangeClanTagAction {
+class ChangeClanTagActionCommon(
+    private val clanManager: ClanManagerCommon
+) : ClanActionCommon<ChangeClanTagArguments>(), ChangeClanTagAction {
     override val permission = ClanPermission.OPTIONS_TAG_TAG
 
     override suspend fun action(
