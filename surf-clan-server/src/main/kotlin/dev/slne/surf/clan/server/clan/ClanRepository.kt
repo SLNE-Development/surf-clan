@@ -12,6 +12,7 @@ import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.ComponentResult
+import dev.slne.surf.clan.core.common.clan.ClanCommon
 import dev.slne.surf.clan.server.db.entities.ClanEntity
 import dev.slne.surf.clan.server.db.entities.ClanInviteEntity
 import dev.slne.surf.clan.server.db.entities.ClanMemberEntity
@@ -30,7 +31,14 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
         ClansTable.uuid eq uuid
     }.firstOrNull()
 
-    suspend fun findAllClans() = ClanEntity.all().map { it.toDto() }
+    suspend fun findAllClans(): List<ClanCommon> {
+        println("1")
+        return ClanEntity.all()
+            .map {
+                println("2")
+                it.toDto()
+            }
+    }
 
     suspend fun inviteMember(
         clan: Clan,

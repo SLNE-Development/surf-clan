@@ -13,7 +13,7 @@ import java.util.*
 
 @Component("clanManager")
 abstract class ClanManagerCommon : ClanManager {
-    private val _clans = SyncSet<Clan>("clan:clans")
+    private val _clans = SyncSet<ClanCommon>("clan:clans")
     val clans get() = _clans.snapshot()
 
     override fun getClanByUuid(uuid: UUID) = _clans.find { it.uuid == uuid }
@@ -22,7 +22,7 @@ abstract class ClanManagerCommon : ClanManager {
     override fun getClanByPlayer(player: ClanPlayer) = _clans.find { it.isMember(player) }
 
     protected fun clearCache() = _clans.clear()
-    protected fun addAllToCache(clans: Collection<Clan>) = this._clans.addAll(clans)
+    protected fun addAllToCache(clans: Collection<ClanCommon>) = this._clans.addAll(clans)
 
     abstract suspend fun findAllClans(): ObjectSet<ClanCommon>
 

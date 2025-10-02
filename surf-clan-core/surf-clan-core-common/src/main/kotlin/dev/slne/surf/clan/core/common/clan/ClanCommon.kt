@@ -6,7 +6,6 @@ import dev.slne.surf.clan.api.common.InternalContextHolder
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.actions.*
 import dev.slne.surf.clan.api.common.clan.actions.member.*
-import dev.slne.surf.clan.api.common.clan.invite.ClanInvite
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
 import dev.slne.surf.clan.api.common.clan.member.role.permission.ClanPermission
@@ -18,10 +17,12 @@ import dev.slne.surf.clan.api.common.util.InternalClanApi
 import dev.slne.surf.clan.core.common.clan.actions.ChangeClanTagActionCommon
 import dev.slne.surf.clan.core.common.clan.actions.ChangeDiscordInviteActionCommon
 import dev.slne.surf.clan.core.common.clan.actions.ClanActionManager
-import dev.slne.surf.cloud.api.common.util.freeze
+import dev.slne.surf.clan.core.common.clan.invite.ClanInviteCommon
+import dev.slne.surf.clan.core.common.clan.member.ClanMemberCommon
 import dev.slne.surf.cloud.api.common.util.toObjectSet
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import it.unimi.dsi.fastutil.objects.ObjectSet
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import org.springframework.beans.factory.getBean
 import java.time.ZonedDateTime
 import java.util.*
@@ -29,22 +30,20 @@ import java.util.*
 private val clanActionManager
     get() = InternalContextHolder.context.getBean<ClanActionManager>()
 
+@Serializable
 class ClanCommon(
-    override val uuid: UUID,
+    override val uuid: @Contextual UUID,
     override val name: String,
     override val fullTag: ClanTag,
-    override val createdByUuid: UUID,
+    override val createdByUuid: @Contextual UUID,
     override var discordInvite: String? = null,
-    members: ObjectSet<ClanMember>,
-    invites: ObjectSet<ClanInvite>,
-    override val createdAt: ZonedDateTime,
-    override val updatedAt: ZonedDateTime
+    private val _members: Set<ClanMemberCommon>,
+    private val _invites: Set<ClanInviteCommon>,
+    override val createdAt: @Contextual ZonedDateTime,
+    override val updatedAt: @Contextual ZonedDateTime
 ) : Clan {
-    private val _members = members
-    override val members = _members.freeze()
-
-    private val _invites = invites
-    override val invites = _invites.freeze()
+    override val members get() = _members.toObjectSet()
+    override val invites get() = _invites.toObjectSet()
 
     override suspend fun invite(
         player: ClanPlayer,

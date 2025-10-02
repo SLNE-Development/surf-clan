@@ -34,8 +34,8 @@ interface Clan : HasAuthorization, ComponentLike {
     val discordInvite: String?
     suspend fun setDiscordInvite(player: ClanPlayer, invite: String?): ComponentResult
 
-    val members: ObjectSet<ClanMember>
-    val invites: ObjectSet<ClanInvite>
+    val members: ObjectSet<out ClanMember>
+    val invites: ObjectSet<out ClanInvite>
 
     val createdAt: ZonedDateTime
     val updatedAt: ZonedDateTime
@@ -45,7 +45,7 @@ interface Clan : HasAuthorization, ComponentLike {
 
     fun isInvited(player: ClanPlayer): Boolean
 
-    fun getMembersWithRole(role: ClanMemberRole): ObjectSet<ClanMember>
+    fun getMembersWithRole(role: ClanMemberRole): ObjectSet<out ClanMember>
     fun getMember(player: ClanPlayer): ClanMember?
     fun isMember(player: ClanPlayer): Boolean
 

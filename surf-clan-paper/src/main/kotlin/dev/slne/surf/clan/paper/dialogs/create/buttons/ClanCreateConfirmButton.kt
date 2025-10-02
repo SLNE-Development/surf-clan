@@ -56,8 +56,8 @@ fun CreateClanDialog.createConfirmButton(
                 ),
                 createdByUuid = executorPlayer.uuid,
                 discordInvite = null,
-                members = objectSetOf(),
-                invites = objectSetOf(),
+                _members = objectSetOf(),
+                _invites = objectSetOf(),
                 createdAt = ZonedDateTime.now(),
                 updatedAt = ZonedDateTime.now(),
             )

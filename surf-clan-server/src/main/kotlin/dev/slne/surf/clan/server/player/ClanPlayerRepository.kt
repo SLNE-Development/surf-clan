@@ -11,20 +11,24 @@ import dev.slne.surf.clan.server.db.entities.ClanMemberEntity
 import dev.slne.surf.clan.server.db.entities.ClanPlayerEntity
 import dev.slne.surf.clan.server.db.tables.ClanMembersTable
 import dev.slne.surf.clan.server.db.tables.ClanPlayersTable
+import dev.slne.surf.cloud.api.common.util.singleOrNullOrThrow
 import dev.slne.surf.cloud.api.server.plugin.CoroutineTransactional
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.upsertReturning
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 @CoroutineTransactional
 class ClanPlayerRepository {
-    suspend fun findOrCreatePlayerRaw(uuid: UUID) =
-        ClanPlayersTable.upsertReturning(where = { ClanPlayersTable.uuid eq uuid }) {
-            it[ClanPlayersTable.uuid] = uuid
-        }.single().let { ClanPlayerEntity.wrapRow(it) }
+    suspend fun findOrCreatePlayerRaw(uuid: UUID): ClanPlayerEntity {
+        val existing = ClanPlayerEntity.find { ClanPlayersTable.uuid eq uuid }.singleOrNullOrThrow()
+        if (existing != null) return existing
+
+        return ClanPlayerEntity.new {
+            this.uuid = uuid
+        }
+    }
 
     suspend fun findOrCreatePlayer(uuid: UUID) =
         findOrCreatePlayerRaw(uuid).toDto()
