@@ -6,7 +6,6 @@ import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.playerArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.surf.clan.paper.dialogs.MainClanDialog
-import dev.slne.surf.clan.paper.dialogs.createDialog
 import dev.slne.surf.clan.paper.permissions.Permissions
 import dev.slne.surf.clan.paper.plugin
 import org.bukkit.entity.Player

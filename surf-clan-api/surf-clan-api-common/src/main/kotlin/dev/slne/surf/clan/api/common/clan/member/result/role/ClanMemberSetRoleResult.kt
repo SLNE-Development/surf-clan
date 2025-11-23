@@ -3,23 +3,15 @@ package dev.slne.surf.clan.api.common.clan.member.result.role
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
-import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
 
 @Serializable
-sealed class ClanMemberSetRoleResult {
-    protected abstract suspend fun SurfComponentBuilder.buildMessage()
+sealed class ClanMemberSetRoleResult : ComponentResult {
+    override val isSuccess get() = this is Success
 
-    val isSuccess get() = this is Success
-
-    suspend fun asComponent(): Component {
-        val componentBuilder = SurfComponentBuilder.builder()
-        componentBuilder.buildMessage()
-        return componentBuilder.build()
-    }
-
+    @Serializable
     data class Success(
         val clan: Clan,
         val member: ClanMember,
@@ -39,57 +31,27 @@ sealed class ClanMemberSetRoleResult {
         }
     }
 
-    data class NoPermissions(val clan: Clan) : ClanMemberSetRoleResult() {
+    @Serializable
+    data class CannotChangeOwnRole(val clan: Clan) : ClanMemberSetRoleResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du hast keine Berechtigung, um die Rolle von Mitgliedern im Clan ")
-            append(clan)
-            error(" zu ändern.")
+            error("Du kannst deine eigene Rolle nicht ändern.")
         }
     }
 
-    data class ClanNotFound(val clan: Clan) : ClanMemberSetRoleResult() {
+    @Serializable
+    data class OtherSameOrHigherRole(
+        val clan: Clan,
+        val self: ClanMember,
+        val other: ClanMember,
+    ) : ClanMemberSetRoleResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Clan ")
-            append(clan)
-            error(" konnte nicht gefunden werden.")
-        }
-    }
-
-    data class PlayerNotFound(val player: ClanPlayer) : ClanMemberSetRoleResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Spieler ")
-            append(player.asComponent())
-            error(" konnte nicht gefunden werden.")
-        }
-    }
-
-    data class HasLowestRole(val clan: Clan, val member: ClanMember) : ClanMemberSetRoleResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Die Rolle von ")
-            append(member.asComponent())
-            error(" im Clan ")
-            append(clan)
-            error(" ist bereits die niedrigste Rolle und kann nicht weiter herabgestuft werden.")
-        }
-    }
-
-    data class HasHighestRole(val clan: Clan, val member: ClanMember) : ClanMemberSetRoleResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Die Rolle von ")
-            append(member.asComponent())
-            error(" im Clan ")
-            append(clan)
-            error(" ist bereits die höchste Rolle und kann nicht weiter aufgestuft werden.")
-        }
-    }
-
-    data class MemberNotFound(val clan: Clan, val member: ClanMember) : ClanMemberSetRoleResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Das Mitglied ")
-            append(member.asComponent())
-            error(" ist kein Mitglied des Clans ")
-            append(clan)
-            error(".")
+            error("Du kannst die Rolle von ")
+            append(other.asComponent())
+            error(" nicht ändern, da diese Person die gleiche oder eine höhere Rolle (")
+            append(other.role.displayName)
+            error(") als du (")
+            append(self.role.displayName)
+            error(") hat.")
         }
     }
 }

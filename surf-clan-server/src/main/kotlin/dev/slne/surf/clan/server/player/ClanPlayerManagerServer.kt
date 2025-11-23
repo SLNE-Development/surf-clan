@@ -4,6 +4,7 @@ import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.core.common.player.ClanPlayerManagerCommon
 import org.springframework.stereotype.Component
 import java.util.*
@@ -17,10 +18,15 @@ class ClanPlayerManagerServer(
 
     override suspend fun setMemberRole(
         clan: Clan,
-        member: ClanMember,
-        role: ClanMemberRole,
-        setBy: ClanPlayer
-    ) = clanPlayerRepository.setMemberRole(clan, member, role)
+        player: ClanPlayer,
+        targetMember: ClanMember,
+        role: ClanMemberRole
+    ): ComponentResult = clanPlayerRepository.setMemberRole(
+        clan = clan,
+        player = player,
+        target = targetMember,
+        role = role
+    )
 
     override suspend fun setAcceptsClanInvites(
         player: ClanPlayer,

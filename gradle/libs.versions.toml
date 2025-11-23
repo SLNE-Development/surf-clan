@@ -1,5 +1,5 @@
 [versions]
-surf-bitmap-common = "2.0.0-SNAPSHOT"
+surf-bitmap-common = "2.1.3-SNAPSHOT"
 
 [libraries]
 surf-bitmap-common = { module = "dev.slne.surf.bitmap:surf-bitmap-provider-common", version.ref = "surf-bitmap-common" }

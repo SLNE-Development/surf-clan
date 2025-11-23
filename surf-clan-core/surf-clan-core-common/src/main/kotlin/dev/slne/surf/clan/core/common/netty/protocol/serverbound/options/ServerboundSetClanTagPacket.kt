@@ -13,6 +13,6 @@ import java.util.*
 @SurfNettyPacket(id = "clan:set_clan_tag", flow = PacketFlow.SERVERBOUND)
 class ServerboundSetClanTagPacket(
     val clanUuid: @Contextual UUID,
+    val playerUuid: @Contextual UUID,
     val clanTag: ClanTag,
-    val setByUuid: @Contextual UUID
 ) : RespondingNettyPacket<ClientboundSetClanTagResultPacket>()

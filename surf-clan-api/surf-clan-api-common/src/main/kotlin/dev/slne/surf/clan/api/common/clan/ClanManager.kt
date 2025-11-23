@@ -6,6 +6,7 @@ import dev.slne.surf.clan.api.common.InternalContextHolder
 import dev.slne.surf.clan.api.common.player.ClanPlayer
 import dev.slne.surf.clan.api.common.util.InternalClanApi
 import org.springframework.beans.factory.getBean
+import org.springframework.stereotype.Component
 import java.util.*
 
 const val CLAN_TAG_MIN_LENGTH = 4

@@ -11,6 +11,8 @@ import dev.slne.surf.clan.api.common.clan.result.ClanSetNameResult
 import dev.slne.surf.clan.api.common.clan.result.ClanSetTagResult
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
+import dev.slne.surf.clan.core.common.clan.ClanCommon
 import dev.slne.surf.clan.server.db.entities.ClanEntity
 import dev.slne.surf.clan.server.db.entities.ClanInviteEntity
 import dev.slne.surf.clan.server.db.entities.ClanMemberEntity
@@ -29,120 +31,167 @@ class ClanRepository(private val clanPlayerRepository: ClanPlayerRepository) {
         ClansTable.uuid eq uuid
     }.firstOrNull()
 
-    suspend fun findAllClans() = ClanEntity.all().map { it.toDto() }
+    suspend fun findAllClans(): List<ClanCommon> {
+        println("1")
+        return ClanEntity.all()
+            .map {
+                println("2")
+                it.toDto()
+            }
+    }
 
     suspend fun inviteMember(
         clan: Clan,
         player: ClanPlayer,
-        invitedBy: ClanPlayer
-    ): ClanMemberInviteResult {
+        target: ClanPlayer
+    ): ComponentResult {
         val clanEntity = findClanByUuid(clan.uuid)
-            ?: return ClanMemberInviteResult.ClanNotFound(clan)
+            ?: return ComponentResult.ClanNotFound(clan)
 
         val playerEntity = clanPlayerRepository.findOrCreatePlayerRaw(player.uuid)
-        val invitedByEntity = clanPlayerRepository.findOrCreatePlayerRaw(invitedBy.uuid)
+        val targetEntity = clanPlayerRepository.findOrCreatePlayerRaw(target.uuid)
 
         ClanInviteEntity.new {
             this.clan = clanEntity
-            this.invited = playerEntity
-            this.invitedBy = invitedByEntity
+            this.invitedBy = playerEntity
+            this.invited = targetEntity
         }
 
-        return ClanMemberInviteResult.Success(clan, player.uuid)
+        return ClanMemberInviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun uninviteMember(
         clan: Clan,
         player: ClanPlayer,
-    ): ClanMemberUninviteResult {
+        target: ClanPlayer,
+    ): ComponentResult {
         val clanEntity = findClanByUuid(clan.uuid)
-            ?: return ClanMemberUninviteResult.ClanNotFound(clan)
+            ?: return ComponentResult.ClanNotFound(clan)
 
         val playerEntity = clanPlayerRepository.findOrCreatePlayerRaw(player.uuid)
 
         val inviteEntity = ClanInviteEntity.find {
             (ClanInvitesTable.clan eq clanEntity.id) and
                     (ClanInvitesTable.invited eq playerEntity.id)
-        }.firstOrNull() ?: return ClanMemberUninviteResult.NotInvited(clan, player.uuid)
+        }.firstOrNull() ?: return ClanMemberUninviteResult.NotInvited(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
 
         inviteEntity.delete()
 
-        return ClanMemberUninviteResult.Success(clan, player.uuid)
+        return ClanMemberUninviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun addMember(
         clan: Clan,
         player: ClanPlayer,
-        addedBy: ClanPlayer,
+        target: ClanPlayer,
         role: ClanMemberRole
-    ): ClanMemberAddResult {
-        val clanEntity = findClanByUuid(clan.uuid) ?: return ClanMemberAddResult.ClanNotFound(clan)
+    ): ComponentResult {
+        val clanEntity = findClanByUuid(clan.uuid)
+            ?: return ComponentResult.ClanNotFound(clan)
 
         val playerEntity = clanPlayerRepository.findOrCreatePlayerRaw(player.uuid)
-        val addedByEntity = clanPlayerRepository.findOrCreatePlayerRaw(addedBy.uuid)
+        val targetEntity = clanPlayerRepository.findOrCreatePlayerRaw(target.uuid)
 
         ClanMemberEntity.new {
             this.clan = clanEntity
-            this.player = playerEntity
-            this.addedBy = addedByEntity
+            this.player = targetEntity
+            this.addedBy = playerEntity
             this.role = role
         }
 
-        return ClanMemberAddResult.Success(clan, player.uuid)
+        return ClanMemberAddResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            targetUuid = target.uuid
+        )
     }
 
     suspend fun removeMember(
         clan: Clan,
-        player: ClanPlayer
-    ): ClanMemberRemoveResult {
-        val clanEntity =
-            findClanByUuid(clan.uuid) ?: return ClanMemberRemoveResult.ClanNotFound(clan)
+        player: ClanPlayer,
+        target: ClanPlayer
+    ): ComponentResult {
+        val clanEntity = findClanByUuid(clan.uuid)
+            ?: return ComponentResult.ClanNotFound(clan)
 
-        val playerEntity = clanPlayerRepository.findOrCreatePlayerRaw(player.uuid)
+        val targetEntity = clanPlayerRepository.findOrCreatePlayerRaw(target.uuid)
 
         val memberEntity = ClanMemberEntity.find {
             (ClanInvitesTable.clan eq clanEntity.id) and
-                    (ClanInvitesTable.invited eq playerEntity.id)
-        }.firstOrNull() ?: return ClanMemberRemoveResult.NotClanMember(clan, player.uuid)
+                    (ClanInvitesTable.invited eq targetEntity.id)
+        }.firstOrNull() ?: return ComponentResult.OtherNotClanMember(clan, player.uuid, target.uuid)
 
         memberEntity.delete()
 
-        return ClanMemberRemoveResult.Success(clan, player.uuid)
+        return ClanMemberRemoveResult.Success(
+            clan = clan, playerUuid = player.uuid, targetUuid = target.uuid
+        )
     }
 
     suspend fun setDiscordInvite(
         clan: Clan,
-        discordInvite: String?
-    ): ClanSetDiscordInviteResult {
-        val clanEntity =
-            findClanByUuid(clan.uuid) ?: return ClanSetDiscordInviteResult.ClanNotFound(clan)
+        player: ClanPlayer,
+        invite: String?
+    ): ComponentResult {
+        val clanEntity = findClanByUuid(clan.uuid)
+            ?: return ComponentResult.ClanNotFound(clan)
 
-        clanEntity.discordInvite = discordInvite
+        clanEntity.discordInvite = invite
 
-        return ClanSetDiscordInviteResult.Success(clan, discordInvite)
+        return ClanSetDiscordInviteResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            discordInvite = invite
+        )
     }
 
     suspend fun setName(
         clan: Clan,
+        player: ClanPlayer,
         name: String
-    ): ClanSetNameResult {
-        val clanEntity = findClanByUuid(clan.uuid) ?: return ClanSetNameResult.ClanNotFound(clan)
+    ): ComponentResult {
+        val clanEntity = findClanByUuid(clan.uuid)
+            ?: return ComponentResult.ClanNotFound(clan)
 
         val oldName = clan.name
         clanEntity.name = name
 
-        return ClanSetNameResult.Success(clan, oldName, name)
+        return ClanSetNameResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            oldName = oldName,
+            newName = name
+        )
     }
 
     suspend fun setTag(
         clan: Clan,
+        player: ClanPlayer,
         tag: ClanTag
-    ): ClanSetTagResult {
-        val clanEntity = findClanByUuid(clan.uuid) ?: return ClanSetTagResult.ClanNotFound(clan)
+    ): ComponentResult {
+        val clanEntity = findClanByUuid(clan.uuid)
+            ?: return ComponentResult.ClanNotFound(clan)
 
         val oldTag = clan.fullTag
         clanEntity.clanTag = tag
 
-        return ClanSetTagResult.Success(clan, oldTag, tag)
+        return ClanSetTagResult.Success(
+            clan = clan,
+            playerUuid = player.uuid,
+            oldTag = oldTag,
+            newTag = tag
+        )
     }
 }

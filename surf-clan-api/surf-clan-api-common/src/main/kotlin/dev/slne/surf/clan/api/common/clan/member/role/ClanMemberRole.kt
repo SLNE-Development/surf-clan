@@ -22,8 +22,8 @@ enum class ClanMemberRole(
             text("Offizier", Colors.GOLD)
         },
         permissions = listOf(
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
+            ClanPermission.MEMBER_INVITE,
+            ClanPermission.MEMBER_REMOVE,
         ),
     ),
     LEADER(
@@ -31,11 +31,11 @@ enum class ClanMemberRole(
             text("Anführer", Colors.RED)
         },
         permissions = listOf(
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
+            ClanPermission.MEMBER_INVITE,
+            ClanPermission.MEMBER_REMOVE,
 
-            ClanPermission.DEMOTE,
-            ClanPermission.PROMOTE,
+            ClanPermission.MEMBER_DEMOTE,
+            ClanPermission.MEMBER_PROMOTE,
 
             ClanPermission.OPTIONS_DISCORD
         ),
@@ -47,15 +47,15 @@ enum class ClanMemberRole(
         permissions = listOf(
             ClanPermission.DISBAND,
 
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
+            ClanPermission.MEMBER_INVITE,
+            ClanPermission.MEMBER_REMOVE,
 
-            ClanPermission.DEMOTE,
-            ClanPermission.PROMOTE,
+            ClanPermission.MEMBER_DEMOTE,
+            ClanPermission.MEMBER_PROMOTE,
 
             ClanPermission.OPTIONS_DISCORD,
             ClanPermission.OPTIONS_NAME,
-            ClanPermission.OPTIONS_TAG,
+            ClanPermission.OPTIONS_TAG_TAG,
             ClanPermission.OPTIONS_TAG_COLOR
         )
     );

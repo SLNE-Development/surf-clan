@@ -1,7 +1,7 @@
 name: surf-clan-server
 main: 'dev.slne.surf.clan.server.PluginMain'
 bootstrapper: 'dev.slne.surf.clan.server.PluginBootstrap'
-version: 1.21.8-2.0.0
+version: 1.21.7-2.0.0
 description: 'Clan Plugin'
 authors:
   - 'Ammo'

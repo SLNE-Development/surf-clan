@@ -1,22 +1,22 @@
 package dev.slne.surf.clan.api.common.clan.result
 
 import dev.slne.surf.clan.api.common.clan.Clan
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
+import java.util.*
 
 @Serializable
-abstract class ClanSetNameResult {
-    protected abstract suspend fun SurfComponentBuilder.buildMessage()
+sealed class ClanSetNameResult : ComponentResult {
+    override val isSuccess get() = this is Success
 
-    suspend fun asComponent(): Component {
-        val componentBuilder = SurfComponentBuilder.builder()
-        componentBuilder.buildMessage()
-        return componentBuilder.build()
-    }
-
+    @Serializable
     data class Success(
-        val clan: Clan, val oldName: String, val newName: String
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val oldName: String,
+        val newName: String
     ) : ClanSetNameResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             success("Du hast den Clan-Namen von ")
@@ -27,22 +27,7 @@ abstract class ClanSetNameResult {
         }
     }
 
-    data class ClanNotFound(val clan: Clan) : ClanSetNameResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Clan ")
-            append(clan)
-            error(" wurde nicht in der Datenbank gefunden.")
-        }
-    }
-
-    data class NotClanMember(val clan: Clan) : ClanSetNameResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du bist kein Mitglied des Clans ")
-            append(clan)
-            error(" und kannst daher den Namen nicht ändern.")
-        }
-    }
-
+    @Serializable
     data class NameDoesntMatchLength(
         val name: String, val minLength: Int, val maxLength: Int
     ) : ClanSetNameResult() {
@@ -57,14 +42,7 @@ abstract class ClanSetNameResult {
         }
     }
 
-    data class NoPermission(val clan: Clan) : ClanSetNameResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du hast keine Berechtigung, um den Namen des Clans ")
-            append(clan)
-            error(" zu ändern.")
-        }
-    }
-
+    @Serializable
     data class NameAlreadyInUse(val name: String) : ClanSetNameResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Der Clan-Name ")

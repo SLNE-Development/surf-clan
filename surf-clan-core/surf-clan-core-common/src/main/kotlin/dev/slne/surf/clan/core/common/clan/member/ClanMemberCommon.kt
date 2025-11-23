@@ -24,12 +24,14 @@ class ClanMemberCommon(
     override val createdAt: @Contextual ZonedDateTime,
     override val updatedAt: @Contextual ZonedDateTime
 ) : ClanMember {
-    private val clanManager by lazy {
-        InternalContextHolder.context.getBean<ClanManagerCommon>()
-    }
+    companion object {
+        private val clanManager by lazy {
+            InternalContextHolder.context.getBean<ClanManagerCommon>()
+        }
 
-    private val playerManager by lazy {
-        InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+        private val playerManager by lazy {
+            InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+        }
     }
 
     suspend fun clan() = clanManager.getClanByPlayer(ClanPlayer[uuid])
@@ -39,7 +41,17 @@ class ClanMemberCommon(
         primary(" TODO")
     }
 
-    override suspend fun setRole(role: ClanMemberRole, setBy: ClanPlayer) = clan()?.let { clan ->
-        playerManager.setMemberRole(clan, this, role, setBy)
+    override suspend fun setRole(role: ClanMemberRole, player: ClanPlayer) = clan()?.let { clan ->
+        playerManager.setMemberRole(clan, player, this, role)
     } ?: error("Clan is not set for member $uuid, this should never happen")
+
+    override fun compareTo(other: ClanMember): Int {
+        val selfOwner = role == ClanMemberRole.OWNER
+        val otherOwner = other.role == ClanMemberRole.OWNER
+
+        if (selfOwner && !otherOwner) return -1
+        if (!selfOwner && otherOwner) return 1
+
+        return other.role.compareTo(role)
+    }
 }

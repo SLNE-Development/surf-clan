@@ -14,23 +14,26 @@ import java.util.*
 
 @Component
 class ClanPlayerManagerClient : ClanPlayerManagerCommon() {
-    override suspend fun findOrCreatePlayer(uuid: UUID) =
-        ServerboundFindClanPlayerPacket(uuid).fireAndAwaitOrThrow().clanPlayer
+    override suspend fun findOrCreatePlayer(uuid: UUID) = ServerboundFindClanPlayerPacket(uuid)
+        .fireAndAwaitOrThrow()
+        .clanPlayer
 
     override suspend fun setMemberRole(
         clan: Clan,
-        member: ClanMember,
-        role: ClanMemberRole,
-        setBy: ClanPlayer
+        player: ClanPlayer,
+        targetMember: ClanMember,
+        role: ClanMemberRole
     ) = ServerboundSetMemberRolePacket(
-        clan.uuid,
-        member.uuid,
-        setBy.uuid,
-        role
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetMemberUuid = targetMember.uuid,
+        role = role
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setAcceptsClanInvites(
         player: ClanPlayer,
         value: Boolean
-    ) = ServerboundSetAcceptsClanInvitesPacket(player.uuid, value).fireAndAwaitOrThrow().value
+    ) = ServerboundSetAcceptsClanInvitesPacket(player.uuid, value)
+        .fireAndAwaitOrThrow()
+        .value
 }

@@ -8,8 +8,8 @@ import dev.slne.surf.clan.paper.dialogs.currentclan.clanmembers.ClanMemberDialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 
 fun ClanMemberDialog.createSearchForMemberButton(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ) = actionButton {
     label { text("Nach Mitglied suchen") }

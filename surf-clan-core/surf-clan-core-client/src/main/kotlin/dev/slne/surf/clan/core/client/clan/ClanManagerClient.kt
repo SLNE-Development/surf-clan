@@ -4,6 +4,7 @@ import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.core.common.clan.ClanCommon
 import dev.slne.surf.clan.core.common.clan.ClanManagerCommon
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.ServerboundAllClansPacket
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.member.ServerboundAddMemberPacket
@@ -14,81 +15,86 @@ import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.Serverb
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.ServerboundSetClanNamePacket
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.ServerboundSetClanTagPacket
 import dev.slne.surf.cloud.api.client.netty.packet.fireAndAwaitOrThrow
+import dev.slne.surf.cloud.api.common.util.toObjectSet
 import org.springframework.stereotype.Component
 
 @Component
 class ClanManagerClient : ClanManagerCommon() {
-    override suspend fun findAllClans() =
-        ServerboundAllClansPacket().fireAndAwaitOrThrow().clans
+    override suspend fun findAllClans() = ServerboundAllClansPacket()
+        .fireAndAwaitOrThrow()
+        .clans
+        .filterIsInstance<ClanCommon>()
+        .toObjectSet()
+
+    override suspend fun addMember(
+        clan: Clan,
+        player: ClanPlayer,
+        target: ClanPlayer,
+        role: ClanMemberRole
+    ) = ServerboundAddMemberPacket(
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetUuid = target.uuid,
+        role
+    ).fireAndAwaitOrThrow().result
 
     override suspend fun inviteMember(
         clan: Clan,
         player: ClanPlayer,
-        invitedBy: ClanPlayer
+        target: ClanPlayer
     ) = ServerboundInviteMemberPacket(
-        clan.uuid,
-        player.uuid,
-        invitedBy.uuid
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetUuid = target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun uninviteMember(
         clan: Clan,
         player: ClanPlayer,
-        uninvitedBy: ClanPlayer
+        target: ClanPlayer
     ) = ServerboundUninviteMemberPacket(
-        clan.uuid,
-        player.uuid,
-        uninvitedBy.uuid
-    ).fireAndAwaitOrThrow().result
-
-    override suspend fun addMember(
-        clan: Clan,
-        player: ClanPlayer,
-        role: ClanMemberRole,
-        addedBy: ClanPlayer
-    ) = ServerboundAddMemberPacket(
-        clan.uuid,
-        player.uuid,
-        addedBy.uuid,
-        role
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetUuid = target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun removeMember(
         clan: Clan,
-        clanPlayer: ClanPlayer,
-        removedBy: ClanPlayer
+        player: ClanPlayer,
+        target: ClanPlayer
     ) = ServerboundRemoveMemberPacket(
-        clan.uuid,
-        clanPlayer.uuid,
-        removedBy.uuid
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        targetUuid = target.uuid
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setName(
         clan: Clan,
-        name: String,
-        setBy: ClanPlayer
+        player: ClanPlayer,
+        name: String
     ) = ServerboundSetClanNamePacket(
-        clan.uuid,
-        name,
-        setBy.uuid
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        name = name
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setTag(
         clan: Clan,
-        tag: ClanTag,
-        setBy: ClanPlayer
+        player: ClanPlayer,
+        tag: ClanTag
     ) = ServerboundSetClanTagPacket(
-        clan.uuid,
-        tag,
-        setBy.uuid
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        clanTag = tag
     ).fireAndAwaitOrThrow().result
 
     override suspend fun setDiscordInvite(
         clan: Clan,
-        discordInvite: String?,
-        setBy: ClanPlayer
+        player: ClanPlayer,
+        invite: String?
     ) = ServerboundSetClanDiscordInvitePacket(
-        clan.uuid,
-        discordInvite
+        clanUuid = clan.uuid,
+        playerUuid = player.uuid,
+        invite = invite
     ).fireAndAwaitOrThrow().result
 }

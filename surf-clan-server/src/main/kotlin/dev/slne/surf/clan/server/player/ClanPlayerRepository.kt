@@ -5,25 +5,30 @@ import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.member.result.role.ClanMemberSetRoleResult
 import dev.slne.surf.clan.api.common.clan.member.role.ClanMemberRole
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.server.db.entities.ClanEntity
 import dev.slne.surf.clan.server.db.entities.ClanMemberEntity
 import dev.slne.surf.clan.server.db.entities.ClanPlayerEntity
 import dev.slne.surf.clan.server.db.tables.ClanMembersTable
 import dev.slne.surf.clan.server.db.tables.ClanPlayersTable
+import dev.slne.surf.cloud.api.common.util.singleOrNullOrThrow
 import dev.slne.surf.cloud.api.server.plugin.CoroutineTransactional
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.upsertReturning
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 @CoroutineTransactional
 class ClanPlayerRepository {
-    suspend fun findOrCreatePlayerRaw(uuid: UUID) =
-        ClanPlayersTable.upsertReturning(where = { ClanPlayersTable.uuid eq uuid }) {
-            it[ClanPlayersTable.uuid] = uuid
-        }.single().let { ClanPlayerEntity.wrapRow(it) }
+    suspend fun findOrCreatePlayerRaw(uuid: UUID): ClanPlayerEntity {
+        val existing = ClanPlayerEntity.find { ClanPlayersTable.uuid eq uuid }.singleOrNullOrThrow()
+        if (existing != null) return existing
+
+        return ClanPlayerEntity.new {
+            this.uuid = uuid
+        }
+    }
 
     suspend fun findOrCreatePlayer(uuid: UUID) =
         findOrCreatePlayerRaw(uuid).toDto()
@@ -35,24 +40,25 @@ class ClanPlayerRepository {
 
     suspend fun setMemberRole(
         clan: Clan,
-        member: ClanMember,
+        player: ClanPlayer,
+        target: ClanMember,
         role: ClanMemberRole
-    ): ClanMemberSetRoleResult {
-        val oldRole = member.role
+    ): ComponentResult {
+        val oldRole = target.role
 
-        val player = member.clanPlayer()
-        val playerEntity = ClanPlayerEntity.find { ClanPlayersTable.uuid eq player.uuid }
-            .firstOrNull() ?: return ClanMemberSetRoleResult.PlayerNotFound(player)
+        val targetPlayer = target.clanPlayer()
+        val targetEntity = ClanPlayerEntity.find { ClanPlayersTable.uuid eq target.uuid }
+            .firstOrNull() ?: return ComponentResult.PlayerNotFound(targetPlayer.uuid)
+
         val clanEntity = ClanEntity.find { ClanPlayersTable.uuid eq clan.uuid }
-            .firstOrNull() ?: return ClanMemberSetRoleResult.ClanNotFound(clan)
+            .firstOrNull() ?: return ComponentResult.ClanNotFound(clan)
 
         val memberEntity = ClanMemberEntity.find {
-            (ClanMembersTable.clan eq clanEntity.id) and
-                    (ClanMembersTable.player eq playerEntity.id)
-        }.firstOrNull() ?: return ClanMemberSetRoleResult.MemberNotFound(clan, member)
+            (ClanMembersTable.clan eq clanEntity.id) and (ClanMembersTable.player eq targetEntity.id)
+        }.firstOrNull() ?: return ComponentResult.OtherNotClanMember(clan, player.uuid, target.uuid)
 
         memberEntity.role = role
 
-        return ClanMemberSetRoleResult.Success(clan, member, oldRole, role)
+        return ClanMemberSetRoleResult.Success(clan, target, oldRole, role)
     }
 }

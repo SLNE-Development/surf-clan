@@ -20,12 +20,16 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 object ClanMemberListDialog
 
 suspend fun ClanMemberListDialog.createDialog(
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
     clan: Clan
 ): Dialog {
     val members = clan.members
-    val membersWithDisplayName = members.associateWith { it.clanPlayer().offlineCloudPlayer.displayName() }
+    val membersWithDisplayName = members.map {
+        val memberClanPlayer = it.clanPlayer()
+
+        (it to memberClanPlayer) to memberClanPlayer.offlineCloudPlayer.displayName()
+    }
 
     return dialog {
         base {
@@ -47,8 +51,19 @@ suspend fun ClanMemberListDialog.createDialog(
             multiAction {
                 columns(1)
 
-                membersWithDisplayName.forEach { (member, displayName) ->
-                    action(createClanMemberButton(selfClanPlayer, member, displayName, clanPlayer, clan))
+                membersWithDisplayName.forEach { (targetMemberPair, targetDisplayName) ->
+                    val (targetMember, targetPlayer) = targetMemberPair
+
+                    action(
+                        createClanMemberButton(
+                            selfPlayer = selfPlayer,
+                            executorPlayer = executorPlayer,
+                            targetPlayer = targetPlayer,
+                            targetMember = targetMember,
+                            targetDisplayName = targetDisplayName,
+                            clan = clan
+                        )
+                    )
                 }
 
                 exitAction {
@@ -59,7 +74,13 @@ suspend fun ClanMemberListDialog.createDialog(
                     action {
                         playerCallback { player ->
                             plugin.launch {
-                                player.showDialog(CurrentClanDialog.createDialog(selfClanPlayer, clanPlayer, clan))
+                                player.showDialog(
+                                    CurrentClanDialog.createDialog(
+                                        selfPlayer = selfPlayer,
+                                        executorPlayer = executorPlayer,
+                                        clan = clan
+                                    )
+                                )
                             }
                         }
                     }

@@ -4,6 +4,7 @@ package dev.slne.surf.clan.paper.dialogs.currentclan.disband.results
 
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.clan.paper.dialogs.appendClanDialogTitle
 import dev.slne.surf.clan.paper.dialogs.currentclan.disband.ClanDisbandDialog
 import dev.slne.surf.clan.paper.dialogs.currentclan.disband.buttons.createClanDisbandErrorNoticeButton
@@ -16,17 +17,20 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 
 fun ClanDisbandDialog.createClanDisbandNoticeDialog(
-    isSuccess: Boolean,
-    selfClanPlayer: ClanPlayer,
-    clanPlayer: ClanPlayer,
-    clan: Clan
+    selfPlayer: ClanPlayer,
+    executorPlayer: ClanPlayer,
+    clan: Clan,
+    result: ComponentResult
 ): Dialog = dialog {
-
     base {
-        title { appendClanDialogTitle(buildText { variableValue(clan.name) }, buildText { warning("Clan auflösen") }) }
+        title {
+            appendClanDialogTitle(
+                buildText { variableValue(clan.name) },
+                buildText { warning("Clan auflösen") })
+        }
         body {
             plainMessage {
-                if (isSuccess) {
+                if (result.isSuccess) {
                     success("Du hast deinen Clan erfolgreich aufgelöst.")
                 } else {
                     warning("Es ist ein Fehler aufgetreten.")
@@ -38,10 +42,17 @@ fun ClanDisbandDialog.createClanDisbandNoticeDialog(
     }
     type {
         notice {
-            if (isSuccess) {
-                ClanDisbandDialog.createClanDisbandSuccessNoticeButton(selfClanPlayer, clanPlayer)
+            if (result.isSuccess) {
+                ClanDisbandDialog.createClanDisbandSuccessNoticeButton(
+                    selfPlayer = selfPlayer,
+                    executorPlayer = executorPlayer
+                )
             } else {
-                ClanDisbandDialog.createClanDisbandErrorNoticeButton(selfClanPlayer, clanPlayer, clan)
+                ClanDisbandDialog.createClanDisbandErrorNoticeButton(
+                    selfPlayer = selfPlayer,
+                    executorPlayer = executorPlayer,
+                    clan = clan
+                )
             }
         }
     }

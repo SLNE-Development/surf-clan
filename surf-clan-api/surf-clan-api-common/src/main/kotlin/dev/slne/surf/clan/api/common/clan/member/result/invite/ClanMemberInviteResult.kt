@@ -2,65 +2,46 @@ package dev.slne.surf.clan.api.common.clan.member.result.invite
 
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
 import java.util.*
 
 @Serializable
-sealed class ClanMemberInviteResult {
-    protected abstract suspend fun SurfComponentBuilder.buildMessage()
+sealed class ClanMemberInviteResult : ComponentResult {
+    override val isSuccess get() = this is Success
 
-    suspend fun asComponent(): Component {
-        val componentBuilder = SurfComponentBuilder.builder()
-        componentBuilder.buildMessage()
-        return componentBuilder.build()
-    }
-
-    data class Success(val clan: Clan, val playerUuid: UUID) : ClanMemberInviteResult() {
+    @Serializable
+    data class Success(
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID
+    ) : ClanMemberInviteResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            val player = ClanPlayer[playerUuid]
+            val target = ClanPlayer[targetUuid]
 
             success("Du hast ")
-            append(player.asComponent())
+            append(target.asComponent())
             success(" in den Clan ")
             append(clan)
             success(" eingeladen.")
         }
     }
 
-    data class ClanNotFound(val clan: Clan) : ClanMemberInviteResult() {
+    @Serializable
+    data class AlreadyInvited(
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID
+    ) : ClanMemberInviteResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Clan ")
-            append(clan)
-            error(" wurde nicht in der Datenbank gefunden.")
-        }
-    }
+            val target = ClanPlayer[targetUuid]
 
-    data class NotClanMember(val clan: Clan) : ClanMemberInviteResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du bist kein Mitglied des Clans ")
+            append(target.asComponent())
+            error(" wurde bereits in den Clan ")
             append(clan)
-            error(" und kannst daher keine Mitglieder einladen.")
-        }
-    }
-
-    data class NoPermissions(val clan: Clan) : ClanMemberInviteResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du hast keine Berechtigung, um Mitglieder in den Clan ")
-            append(clan)
-            error(" einzuladen.")
-        }
-    }
-
-    data class AlreadyMember(val clan: Clan, val playerUuid: UUID) : ClanMemberInviteResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            val player = ClanPlayer[playerUuid]
-
-            append(player.asComponent())
-            error(" ist bereits Mitglied des Clans ")
-            append(clan)
-            error(".")
+            error(" eingeladen.")
         }
     }
 }

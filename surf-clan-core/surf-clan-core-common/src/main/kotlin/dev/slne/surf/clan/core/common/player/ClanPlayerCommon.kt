@@ -23,9 +23,11 @@ class ClanPlayerCommon(
     override val createdAt: @Contextual ZonedDateTime,
     override val updatedAt: @Contextual ZonedDateTime
 ) : ClanPlayer {
-    
-    private val playerManager by lazy {
-        InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+
+    companion object {
+        private val playerManager by lazy {
+            InternalContextHolder.context.getBean<ClanPlayerManagerCommon>()
+        }
     }
 
     override val offlineCloudPlayer: OfflineCloudPlayer

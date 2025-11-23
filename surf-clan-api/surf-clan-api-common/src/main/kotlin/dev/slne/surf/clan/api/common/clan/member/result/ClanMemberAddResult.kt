@@ -3,51 +3,45 @@ package dev.slne.surf.clan.api.common.clan.member.result
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.member.result.invite.ClanMemberUninviteResult
 import dev.slne.surf.clan.api.common.player.ClanPlayer
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
 import java.util.*
 
 @Serializable
-sealed class ClanMemberAddResult {
-    protected abstract suspend fun SurfComponentBuilder.buildMessage()
+sealed class ClanMemberAddResult : ComponentResult {
+    override val isSuccess get() = this is Success
 
-    suspend fun asComponent(): Component {
-        val componentBuilder = SurfComponentBuilder.builder()
-        componentBuilder.buildMessage()
-        return componentBuilder.build()
-    }
-
-    data class Success(val clan: Clan, val playerUuid: UUID) : ClanMemberAddResult() {
+    @Serializable
+    data class Success(
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
+    ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            val player = ClanPlayer[playerUuid]
+            val target = ClanPlayer[targetUuid]
 
             success("Du hast ")
-            append(player.asComponent())
+            append(target.asComponent())
             success(" in den Clan ")
             append(clan)
             success(" aufgenommen.")
         }
     }
 
-    data class ClanNotFound(val clan: Clan) : ClanMemberAddResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Clan ")
-            append(clan)
-            error(" wurde nicht in der Datenbank gefunden.")
-        }
-    }
-
+    @Serializable
     data class InviteRemoveFailed(
         val clan: Clan,
-        val playerUuid: UUID,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
         val result: ClanMemberUninviteResult
     ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            val player = ClanPlayer[playerUuid]
+            val target = ClanPlayer[targetUuid]
 
             error("Die Einladung von ")
-            append(player.asComponent())
+            append(target.asComponent())
             error(" in den Clan ")
             append(clan)
             error(" konnte nicht entfernt werden: ")
@@ -56,11 +50,16 @@ sealed class ClanMemberAddResult {
         }
     }
 
-    data class AlreadyMember(val clan: Clan, val playerUuid: UUID) : ClanMemberAddResult() {
+    @Serializable
+    data class AlreadyMember(
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val targetUuid: @Contextual UUID,
+    ) : ClanMemberAddResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
-            val player = ClanPlayer[playerUuid]
+            val target = ClanPlayer[targetUuid]
 
-            append(player.asComponent())
+            append(target.asComponent())
             error(" ist bereits Mitglied des Clans ")
             append(clan)
             error(".")

@@ -14,7 +14,7 @@ import java.util.*
 class ClientboundAddMemberResultPacket(
     val clanUuid: @Contextual UUID,
     val playerUuid: @Contextual UUID,
-    val addedByUuid: @Contextual UUID,
+    val targetUuid: @Contextual UUID,
     val role: ClanMemberRole,
     val result: ClanMemberAddResult
 ) : ResponseNettyPacket()

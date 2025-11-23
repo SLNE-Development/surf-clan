@@ -35,64 +35,88 @@ fun SurfComponentBuilder.appendClanDialogTitle(vararg parts: Component) {
     }
 }
 
-object MainClanDialog
+object MainClanDialog {
+    suspend fun createDialog(
+        selfPlayer: ClanPlayer,
+        executorPlayer: ClanPlayer
+    ): Dialog {
+        val selfOfflinePlayer = selfPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
+        val executorOfflinePlayer = executorPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
 
-suspend fun MainClanDialog.createDialog(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer): Dialog {
-    val selfOfflinePlayer = selfPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
-    val offlinePlayer = targetPlayer.offlineCloudPlayer.toBukkitOfflinePlayer()
+        return createDialog(selfOfflinePlayer, executorOfflinePlayer)
+    }
 
-    return createDialog(selfOfflinePlayer, offlinePlayer)
-}
+    suspend fun createDialog(
+        selfPlayer: OfflinePlayer,
+        executorPlayer: OfflinePlayer
+    ): Dialog {
+        val selfCloudPlayer = selfPlayer.toCloudOfflinePlayer()
+        val selfClanPlayer = selfCloudPlayer.clanPlayer()
 
-suspend fun MainClanDialog.createDialog(selfPlayer: OfflinePlayer, targetPlayer: OfflinePlayer): Dialog {
-    val selfCloudPlayer = selfPlayer.toCloudOfflinePlayer()
-    val selfClanPlayer = selfCloudPlayer.clanPlayer()
+        val executorCloudPlayer = executorPlayer.toCloudOfflinePlayer()
+        val executorClanPlayer = executorCloudPlayer.clanPlayer()
+        val clan = executorClanPlayer.clan
 
-    val cloudPlayer = targetPlayer.toCloudOfflinePlayer()
-    val clanPlayer = cloudPlayer.clanPlayer()
-    val clan = clanPlayer.clan
+        return dialog {
+            base {
+                title { appendClanDialogTitle() }
+            }
 
-    return dialog {
-        base {
-            title { appendClanDialogTitle() }
-        }
+            type {
+                multiAction {
+                    columns(1)
 
-        type {
-            multiAction {
-                columns(1)
+                    if (clan != null) {
+                        action(
+                            MainClanDialog.createCurrentClanButton(
+                                selfPlayer = selfClanPlayer,
+                                executorPlayer = executorClanPlayer,
+                                clan = clan
+                            )
+                        )
+                    } else {
+                        action(
+                            MainClanDialog.createCreateClanButton(
+                                selfPlayer = selfClanPlayer,
+                                executorPlayer = executorClanPlayer
+                            )
+                        )
+                    }
+                    
+                    exitAction {
+                        label { text("Schließen") }
+                        tooltip { info("Klicke, um das Menü zu schließen.") }
+                        width(200)
 
-                if (clan != null) {
-                    action(createCurrentClanButton(selfClanPlayer, clanPlayer, clan))
-                } else {
-                    action(createCreateClanButton())
-                }
-
-
-                exitAction {
-                    label { text("Schließen") }
-                    tooltip { info("Klicke, um das Menü zu schließen.") }
-                    width(200)
-
-                    action {
-                        playerCallback { player ->
-                            player.clearDialogs(true)
+                        action {
+                            playerCallback { player ->
+                                player.clearDialogs(true)
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
-fun MainClanDialog.createMainMenuButton(selfPlayer: ClanPlayer, targetPlayer: ClanPlayer) = actionButton {
-    label { text("Hauptmenü") }
-    tooltip { info("Klicke, um zum Hauptmenü zurückzukehren.") }
-    width(200)
+    fun createMainMenuButton(
+        selfPlayer: ClanPlayer,
+        targetPlayer: ClanPlayer
+    ) = actionButton {
+        label { text("Hauptmenü") }
+        tooltip { info("Klicke, um zum Hauptmenü zurückzukehren.") }
+        width(200)
 
-    action {
-        playerCallback { player ->
-            plugin.launch {
-                player.showDialog(createDialog(selfPlayer, targetPlayer))
+        action {
+            playerCallback { player ->
+                plugin.launch {
+                    player.showDialog(
+                        createDialog(
+                            selfPlayer = selfPlayer,
+                            executorPlayer = targetPlayer
+                        )
+                    )
+                }
             }
         }
     }

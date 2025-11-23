@@ -2,22 +2,22 @@ package dev.slne.surf.clan.api.common.clan.result
 
 import dev.slne.surf.clan.api.common.clan.Clan
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
+import dev.slne.surf.clan.api.common.util.ComponentResult
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.Component
+import java.util.*
 
 @Serializable
-abstract class ClanSetTagResult {
-    protected abstract suspend fun SurfComponentBuilder.buildMessage()
+sealed class ClanSetTagResult : ComponentResult {
+    override val isSuccess get() = this is Success
 
-    suspend fun asComponent(): Component {
-        val componentBuilder = SurfComponentBuilder.builder()
-        componentBuilder.buildMessage()
-        return componentBuilder.build()
-    }
-
+    @Serializable
     data class Success(
-        val clan: Clan, val oldTag: ClanTag, val newTag: ClanTag
+        val clan: Clan,
+        val playerUuid: @Contextual UUID,
+        val oldTag: ClanTag,
+        val newTag: ClanTag
     ) : ClanSetTagResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             success("Du hast den Clan-Tag von ")
@@ -28,14 +28,7 @@ abstract class ClanSetTagResult {
         }
     }
 
-    data class ClanNotFound(val clan: Clan) : ClanSetTagResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Der Clan ")
-            append(clan)
-            error(" wurde nicht in der Datenbank gefunden.")
-        }
-    }
-
+    @Serializable
     data class InvalidTag(val tag: String) : ClanSetTagResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Der Clan-Tag ")
@@ -44,6 +37,26 @@ abstract class ClanSetTagResult {
         }
     }
 
+    @Serializable
+    data class BlacklistedTag(
+        val tag: String,
+        val category: String,
+        val description: String?
+    ) : ClanSetTagResult() {
+        override suspend fun SurfComponentBuilder.buildMessage() {
+            error("Der Clan-Tag ")
+            variableValue("$category:$tag")
+            error(" ist nicht erlaubt.")
+
+            description?.let {
+                appendSpace()
+                error("Grund:  ")
+                variableValue(it)
+            }
+        }
+    }
+
+    @Serializable
     data class TagDoesntMatchLength(
         val tag: String, val minLength: Int, val maxLength: Int
     ) : ClanSetTagResult() {
@@ -58,22 +71,7 @@ abstract class ClanSetTagResult {
         }
     }
 
-    data class NotClanMember(val clan: Clan) : ClanSetTagResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du bist kein Mitglied des Clans ")
-            append(clan)
-            error(" und kannst daher den Tag nicht ändern.")
-        }
-    }
-
-    data class NoPermission(val clan: Clan) : ClanSetTagResult() {
-        override suspend fun SurfComponentBuilder.buildMessage() {
-            error("Du hast keine Berechtigung, um den Tag des Clans ")
-            append(clan)
-            error(" zu ändern.")
-        }
-    }
-
+    @Serializable
     data class TagAlreadyInUse(val tag: String) : ClanSetTagResult() {
         override suspend fun SurfComponentBuilder.buildMessage() {
             error("Der Clan-Tag ")

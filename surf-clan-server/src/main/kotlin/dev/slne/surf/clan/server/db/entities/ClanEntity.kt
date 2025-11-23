@@ -1,5 +1,7 @@
 package dev.slne.surf.clan.server.db.entities
 
+import dev.slne.surf.clan.api.common.clan.invite.ClanInvite
+import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.core.common.clan.ClanCommon
 import dev.slne.surf.clan.server.db.tables.ClanInvitesTable
@@ -36,15 +38,20 @@ class ClanEntity(id: EntityID<Long>) : AuditableLongEntity(id, ClansTable) {
     val members by ClanMemberEntity referrersOn ClanMembersTable.clan
     val invites by ClanInviteEntity referrersOn ClanInvitesTable.clan
 
-    fun toDto() = ClanCommon(
-        uuid = uuid,
-        name = name,
-        fullTag = clanTag,
-        createdByUuid = createdBy.uuid,
-        discordInvite = discordInvite,
-        members = members.map { it.toDto() }.toObjectSet(),
-        invites = invites.map { it.toDto() }.toObjectSet(),
-        createdAt = createdAt,
-        updatedAt = updatedAt
-    )
+    fun toDto(): ClanCommon {
+        val members1 = members.map { it.toDto() }.toObjectSet()
+        val invites1 = invites.map { it.toDto() }.toObjectSet()
+
+        return ClanCommon(
+            uuid = uuid,
+            name = name,
+            fullTag = clanTag,
+            createdByUuid = createdBy.uuid,
+            discordInvite = discordInvite,
+            _members = members1,
+            _invites = invites1,
+            createdAt = createdAt,
+            updatedAt = updatedAt
+        )
+    }
 }

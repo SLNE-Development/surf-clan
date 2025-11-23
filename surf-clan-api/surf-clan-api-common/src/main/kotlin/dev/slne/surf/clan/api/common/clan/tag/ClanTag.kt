@@ -11,19 +11,20 @@ import it.unimi.dsi.fastutil.objects.ObjectList
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 
 @Serializable
 data class ClanTag(
     val tag: String,
     val foregroundColor: @Contextual TextColor,
-    val shadowColor: @Contextual TextColor?,
+    val shadowColor: @Contextual ShadowColor?,
     val backgroundColor: @Contextual TextColor
 ) : ComponentLike {
     override fun asComponent() = BitmapProvider.translateToComponent(
         input = tag,
         foregroundColor = foregroundColor,
-        shadowColor = shadowColor,
+        shadowColor = shadowColor ?: ShadowColor.none(),
         backgroundColor = backgroundColor,
     )
 
