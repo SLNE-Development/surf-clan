@@ -4,9 +4,9 @@ import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.clan.api.common.clan.CLAN_NAME_MAX_LENGTH
 import dev.slne.surf.clan.api.common.clan.CLAN_NAME_MIN_LENGTH
 import dev.slne.surf.clan.api.common.clan.CLAN_TAG_MIN_LENGTH
-import dev.slne.surf.cloud.api.common.util.objectListOf
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import dev.slne.surf.surfapi.core.api.util.objectListOf
 import it.unimi.dsi.fastutil.objects.ObjectList
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -76,7 +76,7 @@ data class ClanTag(
 
     sealed class ClanTagValidatorResult(val message: SurfComponentBuilder.() -> Unit) : ComponentLike {
         val isSuccess get() = this is Success
-        
+
         override fun asComponent() = buildText(message)
 
         data object Success : ClanTagValidatorResult({ success("Der Clan-Tag ist gültig.") })
