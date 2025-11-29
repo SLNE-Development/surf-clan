@@ -19,8 +19,8 @@ import dev.slne.surf.clan.core.common.clan.actions.ChangeDiscordInviteActionComm
 import dev.slne.surf.clan.core.common.clan.actions.ClanActionManager
 import dev.slne.surf.clan.core.common.clan.invite.ClanInviteCommon
 import dev.slne.surf.clan.core.common.clan.member.ClanMemberCommon
-import dev.slne.surf.cloud.api.common.util.toObjectSet
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.springframework.beans.factory.getBean

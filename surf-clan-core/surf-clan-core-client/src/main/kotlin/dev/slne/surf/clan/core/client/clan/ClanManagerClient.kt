@@ -15,7 +15,7 @@ import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.Serverb
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.ServerboundSetClanNamePacket
 import dev.slne.surf.clan.core.common.netty.protocol.serverbound.options.ServerboundSetClanTagPacket
 import dev.slne.surf.cloud.api.client.netty.packet.fireAndAwaitOrThrow
-import dev.slne.surf.cloud.api.common.util.toObjectSet
+import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import org.springframework.stereotype.Component
 
 @Component

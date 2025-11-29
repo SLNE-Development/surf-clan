@@ -1,15 +1,13 @@
 package dev.slne.surf.clan.server.db.entities
 
-import dev.slne.surf.clan.api.common.clan.invite.ClanInvite
-import dev.slne.surf.clan.api.common.clan.member.ClanMember
 import dev.slne.surf.clan.api.common.clan.tag.ClanTag
 import dev.slne.surf.clan.core.common.clan.ClanCommon
 import dev.slne.surf.clan.server.db.tables.ClanInvitesTable
 import dev.slne.surf.clan.server.db.tables.ClanMembersTable
 import dev.slne.surf.clan.server.db.tables.ClansTable
-import dev.slne.surf.cloud.api.common.util.toObjectSet
 import dev.slne.surf.cloud.api.server.exposed.table.AuditableLongEntity
 import dev.slne.surf.cloud.api.server.exposed.table.AuditableLongEntityClass
+import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import org.jetbrains.exposed.dao.id.EntityID
 
 class ClanEntity(id: EntityID<Long>) : AuditableLongEntity(id, ClansTable) {
