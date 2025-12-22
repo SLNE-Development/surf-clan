@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanPlayerService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
@@ -19,19 +19,16 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanPromoteMemberCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("promote") {
+class ClanPromoteMemberCommand : CommandAPICommand("promote") {
     init {
         withPermission("surf.clan.promote")
 
-        clanMemberArgument(clanService, clanPlayerService)
+        clanMemberArgument()
 
         playerExecutor { player, args ->
             plugin.container.launch {
                 val memberName = args[0] as String
-                val clan = player.findClan(clanService)
+                val clan = player.findClan()
 
                 if (clan == null) {
                     player.sendMessage(Messages.notInClanComponent)
@@ -39,14 +36,14 @@ class ClanPromoteMemberCommand(
                     return@launch
                 }
 
-                val member = ClanMemberArgument.clanMember(clanPlayerService, clan, args)
+                val member = ClanMemberArgument.clanMember(clan, args)
 
                 if (member == null) {
                     player.sendMessage(buildText {
                         append(Component.text("Der Spieler ", Colors.ERROR))
                         append(Component.text(memberName, Colors.VARIABLE_VALUE))
                         append(Component.text(" ist nicht im Clan ", Colors.ERROR))
-                        append(clanComponent(clan, clanPlayerService))
+                        append(clanComponent(clan))
                         append(Component.text(".", Colors.ERROR))
                     })
 
@@ -69,7 +66,7 @@ class ClanPromoteMemberCommand(
                         )
                         append(memberNameComponent)
                         append(Component.text(" im Clan ", Colors.ERROR))
-                        append(clanComponent(clan, clanPlayerService))
+                        append(clanComponent(clan))
                         append(Component.text(" zu befördern.", Colors.ERROR))
                     })
 
@@ -116,7 +113,7 @@ class ClanPromoteMemberCommand(
                                 Colors.ERROR
                             )
                         )
-                        append(clanComponent(clan, clanPlayerService))
+                        append(clanComponent(clan))
                         append(Component.text(".", Colors.ERROR))
                     })
 

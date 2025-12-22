@@ -7,16 +7,14 @@ import dev.jorel.commandapi.kotlindsl.multiLiteralArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.bitmap.bitmaps.Bitmaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
-class ClanTagOptionTagColorCommand(
-    clanService: ClanService
-) : CommandAPICommand("tagcolor") {
+class ClanTagOptionTagColorCommand : CommandAPICommand("tagcolor") {
     init {
         withPermission("surf.clan.options.tagcolor")
 
@@ -39,7 +37,7 @@ class ClanTagOptionTagColorCommand(
                     return@playerExecutor
                 }
 
-            val clan = player.findClan(clanService)
+            val clan = player.findClan()
 
             if (clan == null) {
                 player.sendMessage(Messages.notInClanComponent)

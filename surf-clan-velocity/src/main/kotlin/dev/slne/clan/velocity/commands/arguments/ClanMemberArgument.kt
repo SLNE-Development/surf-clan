@@ -8,8 +8,7 @@ import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.slne.clan.api.Clan
 import dev.slne.clan.api.member.ClanMember
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanPlayerService
 import dev.slne.clan.velocity.extensions.findClan
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
@@ -18,15 +17,13 @@ const val CLAN_MEMBER_ARGUMENT_NODE_NAME = "target"
 
 @OptIn(DelicateCoroutinesApi::class)
 class ClanMemberArgument(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService,
     nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
 ) : StringArgument(nodeName) {
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollectionAsync { info ->
             GlobalScope.future(Dispatchers.IO) {
                 val player = info.sender as? Player ?: return@future emptyList()
-                val clan = player.findClan(clanService) ?: return@future emptyList()
+                val clan = player.findClan() ?: return@future emptyList()
 
                 clan.members.map {
                     async {
@@ -40,7 +37,6 @@ class ClanMemberArgument(
 
     companion object {
         suspend fun clanMember(
-            clanPlayerService: ClanPlayerService,
             clan: Clan,
             args: CommandArguments,
             nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
@@ -55,11 +51,9 @@ class ClanMemberArgument(
 }
 
 inline fun CommandAPICommand.clanMemberArgument(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService,
     nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME,
     optional: Boolean = false,
     block: Argument<*>.() -> Unit = {}
 ): CommandAPICommand = withArguments(
-    ClanMemberArgument(clanService, clanPlayerService, nodeName).setOptional(optional).apply(block)
+    ClanMemberArgument(nodeName).setOptional(optional).apply(block)
 )

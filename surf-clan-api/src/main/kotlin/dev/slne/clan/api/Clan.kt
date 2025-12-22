@@ -6,44 +6,61 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
 import dev.slne.surf.bitmap.bitmaps.Bitmaps
+import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.time.LocalDateTime
 import java.util.*
 
-interface Clan {
+data class Clan(
+    val uuid: UUID,
+    val name: String,
+    val tag: String,
 
-    val uuid: UUID
-    val name: String
-    val tag: String
+    val createdBy: UUID,
 
-    val createdBy: UUID
+    val description: String? = null,
+    var discordInvite: String? = null,
+    var clanTagColor: Bitmaps? = null,
 
-    val description: String?
-    var discordInvite: String?
-    var clanTagColor: Bitmaps?
+    val members: ObjectSet<ClanMember> = mutableObjectSetOf(),
+    val invites: ObjectSet<ClanInvite> = mutableObjectSetOf(),
 
-    val members: ObjectSet<ClanMember>
-    val invites: ObjectSet<ClanInvite>
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime? = null,
+) {
+    fun invite(uuid: UUID, invitedBy: UUID) = invites.add(
+        ClanInvite(
+            invited = uuid,
+            invitedByUuid = invitedBy,
+            createdAt = LocalDateTime.now(),
+            updatedAt = null
+        )
+    )
 
-    val createdAt: LocalDateTime?
-    val updatedAt: LocalDateTime?
+    fun uninvite(uuid: UUID) = invites.removeIf { it.invited == uuid }
+    fun isMember(uuid: UUID) = members.any { it.uuid == uuid }
+    fun addMember(member: ClanMember) = members.add(member)
+    fun addMember(uuid: UUID, role: ClanMemberRole, addedBy: UUID?) = addMember(
+        ClanMember(
+            uuid = uuid,
+            addedBy = addedBy,
+            role = role,
+        )
+    )
 
-    fun invite(uuid: UUID, invitedBy: UUID): Boolean
-    fun uninvite(uuid: UUID): Boolean
+    fun removeMember(member: ClanMember) = members.remove(member)
+    fun hasPermission(clanMember: ClanMember, permission: ClanPermission) =
+        clanMember.role.hasPermission(permission)
 
-    fun isMember(uuid: UUID): Boolean
-    fun addMember(uuid: UUID, role: ClanMemberRole, addedBy: UUID): Boolean
-    fun addMember(member: ClanMember): Boolean
-    fun removeMember(member: ClanMember): Boolean
+    fun getMember(clanPlayer: ClanPlayer): ClanMember? = members.find { it.uuid == clanPlayer.uuid }
+    fun getTranslatedClanTag(): String {
+        val provider = if (clanTagColor == null) {
+            Bitmaps.CLAN_DEFAULT.provider
+        } else {
+            clanTagColor!!.provider
+        }
 
-    fun hasPermission(clanMember: ClanMember, permission: ClanPermission): Boolean
-    fun getMember(clanPlayer: ClanPlayer): ClanMember?
-
-    /**
-     * Translates the clan tag to the correct glyphs.
-     *
-     * @return the translated clan tag or null if the color the clan uses is not registered
-     */
-    fun getTranslatedClanTag(): String?
+        return provider.translateToString(tag)
+    }
 
 }

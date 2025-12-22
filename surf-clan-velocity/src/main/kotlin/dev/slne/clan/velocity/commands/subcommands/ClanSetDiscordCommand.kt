@@ -7,8 +7,7 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.greedyStringArgument
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
@@ -17,10 +16,7 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanSetDiscordCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("setdiscord") {
+class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
     init {
         withPermission("surf.clan.setdiscord")
 
@@ -35,7 +31,7 @@ class ClanSetDiscordCommand(
 
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
-                val playerClan = player.findClan(clanService)
+                val playerClan = player.findClan()
                 val discordFull = args.getUnchecked<String>("discord")
 
                 if (playerClan == null) {

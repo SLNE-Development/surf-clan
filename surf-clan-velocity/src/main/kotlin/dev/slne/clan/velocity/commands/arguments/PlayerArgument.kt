@@ -6,20 +6,20 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
-import dev.slne.clan.velocity.VelocityClanPlugin
+import dev.slne.clan.velocity.plugin
 
 class PlayerArgument(nodeName: String = "target") : StringArgument(nodeName) {
     init {
         replaceSuggestions(ArgumentSuggestions.strings { _ ->
-            VelocityClanPlugin.instance.server.allPlayers.map { it.username }
-                .toTypedArray() // TODO: Filter
+            plugin.server.allPlayers.map { it.username }
+                .toTypedArray()
         })
     }
 
     companion object {
         fun player(args: CommandArguments, nodeName: String = "target"): Player? =
             args.getOrDefaultUnchecked(nodeName, "")?.let {
-                VelocityClanPlugin.instance.server.getPlayer(it)
+                plugin.server.getPlayer(it)
             }?.orElse(null)
     }
 }

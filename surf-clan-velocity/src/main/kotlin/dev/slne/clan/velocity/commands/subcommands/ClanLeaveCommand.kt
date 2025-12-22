@@ -5,8 +5,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.player
@@ -21,10 +20,7 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
-class ClanLeaveCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("leave") {
+class ClanLeaveCommand : CommandAPICommand("leave") {
     init {
         withPermission("surf.clan.leave")
 
@@ -32,7 +28,7 @@ class ClanLeaveCommand(
 
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
-                val clan = player.findClan(clanService)
+                val clan = player.findClan()
 
                 if (clan == null) {
                     player.sendMessage(Messages.notInClanComponent)
@@ -44,7 +40,7 @@ class ClanLeaveCommand(
                 if (confirm.isNotEmpty() && confirm == "confirm") {
                     val clanDisbandedMessage = buildText {
                         append(Component.text("Der Clan ", Colors.INFO))
-                        append(clanComponent(clan, clanPlayerService))
+                        append(clanComponent(clan))
                         append(Component.text(" wurde aufgelöst, da der Anführer ", Colors.INFO))
                         append(player.realName())
                         append(Component.text(" den Clan verlassen hat.", Colors.INFO))
@@ -78,7 +74,7 @@ class ClanLeaveCommand(
 
                         player.sendMessage(buildText {
                             append(Component.text("Du hast den Clan ", Colors.SUCCESS))
-                            append(clanComponent(clan, clanPlayerService))
+                            append(clanComponent(clan))
                             append(Component.text(" verlassen.", Colors.SUCCESS))
                         })
                     }
@@ -88,7 +84,7 @@ class ClanLeaveCommand(
 
                 player.sendMessage(buildText {
                     append(Component.text("Möchtest du den Clan ", Colors.INFO))
-                    append(clanComponent(clan, clanPlayerService))
+                    append(clanComponent(clan))
                     append(Component.text(" wirklich verlassen? Klicke ", Colors.INFO))
                     append(buildText {
                         append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))

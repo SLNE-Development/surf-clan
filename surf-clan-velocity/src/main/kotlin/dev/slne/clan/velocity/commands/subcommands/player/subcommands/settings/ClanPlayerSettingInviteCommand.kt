@@ -5,17 +5,13 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanPlayerService
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanPlayerSettingInviteCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService,
-) : CommandAPICommand("invite") {
+class ClanPlayerSettingInviteCommand : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.player.settings.invite")
 

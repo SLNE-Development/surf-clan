@@ -6,8 +6,8 @@ import dev.jorel.commandapi.kotlindsl.integerArgument
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanPlayerService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.subcommands.includeClanTagSuggestions
 import dev.slne.clan.velocity.extensions.findClan
@@ -23,21 +23,18 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 private const val MEMBERS_PER_PAGE = 10
 
-class ClanMembersCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("members") {
+class ClanMembersCommand : CommandAPICommand("members") {
     init {
         withPermission("surf.clan.members")
 
         stringArgument("clan", optional = true) {
-            includeClanTagSuggestions(clanService)
+            includeClanTagSuggestions()
         }
         integerArgument("page", 1, optional = true)
 
         playerExecutor { player, args ->
             plugin.container.launch {
-                var clan = player.findClan(clanService)
+                var clan = player.findClan()
                 val clanTag = args.getUnchecked<String>("clan")
                 var page = args.getOrDefaultUnchecked("page", 1)
 
@@ -69,7 +66,7 @@ class ClanMembersCommand(
                 val clanInfoMessage = buildText {
                     appendNewline()
                     append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", Colors.INFO))
-                    append(clanComponent(clan, clanPlayerService))
+                    append(clanComponent(clan))
                     appendNewline()
 
                     pageMembers.forEach { member ->

@@ -69,5 +69,4 @@ enum class ClanMemberRole(
 
     fun hasPermission(permission: ClanPermission) =
         ObjectOpenHashSet(permissions).contains(permission)
-
 }

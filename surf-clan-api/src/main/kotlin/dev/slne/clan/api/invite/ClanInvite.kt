@@ -1,15 +1,12 @@
 package dev.slne.clan.api.invite
 
-import dev.slne.clan.api.member.ClanMember
 import java.time.LocalDateTime
 import java.util.*
 
-interface ClanInvite {
+data class ClanInvite(
+    val invited: UUID,
+    val invitedByUuid: UUID,
 
-    val invited: UUID
-    val invitedBy: ClanMember?
-    val invitedByUuid: UUID
-
-    val createdAt: LocalDateTime?
+    val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime?
-}
+)

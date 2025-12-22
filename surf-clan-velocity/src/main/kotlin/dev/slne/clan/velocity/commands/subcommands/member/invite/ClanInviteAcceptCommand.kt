@@ -4,9 +4,7 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.invite.CoreClanInvite
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
 import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
@@ -14,30 +12,27 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.util.clan
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanInviteAcceptCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("accept") {
+class ClanInviteAcceptCommand : CommandAPICommand("accept") {
     init {
         withPermission("surf.clan.invite.accept")
-
-        clanInviteArgument(clanService)
+        clanInviteArgument()
 
         playerExecutor { player, args ->
             plugin.container.launch {
                 val clanName = args.getUnchecked<String>("clan") ?: ""
-                val invite = ClanInviteArgument.clanInvite(clanService, player, args)
+                val invite = ClanInviteArgument.clanInvite(player, args)
 
-                val playerClan = player.findClan(clanService)
+                val playerClan = player.findClan()
 
                 if (playerClan != null) {
                     player.sendMessage(buildText {
                         append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
-                        append(clanComponent(playerClan, clanPlayerService))
+                        append(clanComponent(playerClan))
                         append(
                             Component.text(
                                 " und kannst keine weiteren Einladungen annehmen.",
@@ -59,7 +54,7 @@ class ClanInviteAcceptCommand(
                     return@launch
                 }
 
-                val invitedClan = (invite as CoreClanInvite).clan
+                val invitedClan = invite.clan
 
                 invitedClan.uninvite(player.uniqueId)
                 invitedClan.addMember(player.uniqueId, ClanMemberRole.MEMBER, invite.invitedByUuid)
@@ -71,7 +66,7 @@ class ClanInviteAcceptCommand(
                         append(Component.text("Der Spieler ", Colors.INFO))
                         append(player.realName())
                         append(Component.text(" ist dem Clan ", Colors.INFO))
-                        append(clanComponent(invitedClan, clanPlayerService))
+                        append(clanComponent(invitedClan))
                         append(Component.text(" beigetreten.", Colors.INFO))
                     })
                 }

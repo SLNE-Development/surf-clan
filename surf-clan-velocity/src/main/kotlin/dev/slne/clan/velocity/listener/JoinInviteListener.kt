@@ -1,11 +1,9 @@
-package dev.slne.clan.velocity.listeners
+package dev.slne.clan.velocity.listener
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.ServerConnectedEvent
-import dev.slne.clan.core.invite.CoreClanInvite
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.extensions.findClanInvites
 import dev.slne.clan.velocity.plugin
@@ -17,20 +15,14 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 
-@org.springframework.stereotype.Component
-class JoinInviteListener(
-    private val clanService: ClanService,
-    private val clanPlayerService: ClanPlayerService
-) {
-
+object JoinInviteListener {
     @Subscribe
-    suspend fun onLogin(event: ServerConnectedEvent) {
-
+    fun onLogin(event: ServerConnectedEvent) {
         plugin.container.launch {
             delay(1000L)
 
             val player = event.player
-            val invites = player.findClanInvites<CoreClanInvite>(clanService)
+            val invites = player.findClanInvites()
 
             if (invites.isEmpty()) {
                 return@launch
@@ -48,8 +40,7 @@ class JoinInviteListener(
             })
 
             for (invite in invites) {
-                val clan = invite.clan
-
+                val clan = clanService.findClanByInvite(invite) ?: return@launch
                 val acceptComponent = buildText {
                     append(Component.text(" [Annehmen]", Colors.SUCCESS))
                     hoverEvent(
@@ -60,7 +51,7 @@ class JoinInviteListener(
                             )
                         )
                     )
-                    clickEvent(ClickEvent.runCommand("/clan invite ${player.username} accept ${clan.name}"))
+                    clickEvent(ClickEvent.runCommand("/clan accept ${clan.name}"))
                 }
 
                 val denyComponent = buildText {
@@ -78,7 +69,7 @@ class JoinInviteListener(
 
                 player.sendMessage(buildText {
                     append(Component.text(" - ", Colors.INFO))
-                    append(clanComponent(clan, clanPlayerService))
+                    append(clanComponent(clan))
                     append(acceptComponent)
                     appendSpace()
                     append(denyComponent)

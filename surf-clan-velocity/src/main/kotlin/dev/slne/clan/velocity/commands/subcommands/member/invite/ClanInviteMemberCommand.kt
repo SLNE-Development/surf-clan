@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
+import dev.slne.clan.core.service.clanPlayerService
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.PlayerArgument
 import dev.slne.clan.velocity.commands.arguments.playerArgument
@@ -21,21 +21,17 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 
-class ClanInviteMemberCommand(
-    clanService: ClanService,
-    clanPlayerService: ClanPlayerService
-) : CommandAPICommand("invite") {
+class ClanInviteMemberCommand : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.invite")
 
-        withSubcommands(ClanInviteAcceptCommand(clanService, clanPlayerService))
-        withSubcommands(ClanInviteDenyCommand(clanService, clanPlayerService))
-
+        withSubcommands(ClanInviteAcceptCommand())
+        withSubcommands(ClanInviteDenyCommand())
         playerArgument()
 
         playerExecutor { player, args ->
             plugin.container.launch {
-                val playerClan = player.findClan(clanService)
+                val playerClan = player.findClan()
 
                 if (playerClan == null) {
                     player.sendMessage(Messages.notInClanComponent)
@@ -51,7 +47,7 @@ class ClanInviteMemberCommand(
                                 Colors.ERROR
                             )
                         )
-                        append(clanComponent(playerClan, clanPlayerService))
+                        append(clanComponent(playerClan))
                         append(Component.text(" einzuladen.", Colors.ERROR))
                     })
 
@@ -70,14 +66,14 @@ class ClanInviteMemberCommand(
                     return@launch
                 }
 
-                val invitedPlayerClan = invitedPlayer.findClan(clanService)
+                val invitedPlayerClan = invitedPlayer.findClan()
 
                 if (invitedPlayerClan != null) {
                     player.sendMessage(buildText {
                         append(Component.text("Der Spieler ", Colors.ERROR))
                         append(invitedPlayer.realName())
                         append(Component.text(" ist bereits im Clan ", Colors.ERROR))
-                        append(clanComponent(invitedPlayerClan, clanPlayerService))
+                        append(clanComponent(invitedPlayerClan))
                         append(Component.text(".", Colors.ERROR))
                     })
 
@@ -115,7 +111,7 @@ class ClanInviteMemberCommand(
                         append(Component.text("Du hast ", Colors.SUCCESS))
                         append(invitedPlayer.realName())
                         append(Component.text(" in den Clan ", Colors.SUCCESS))
-                        append(clanComponent(playerClan, clanPlayerService))
+                        append(clanComponent(playerClan))
                         append(Component.text(" eingeladen.", Colors.SUCCESS))
                     })
 
@@ -123,7 +119,7 @@ class ClanInviteMemberCommand(
                         append(Component.text("Du wurdest von ", Colors.INFO))
                         append(player.realName())
                         append(Component.text(" in den Clan ", Colors.INFO))
-                        append(clanComponent(playerClan, clanPlayerService))
+                        append(clanComponent(playerClan))
                         append(Component.text(" eingeladen. ", Colors.INFO))
 
                         val acceptComponent = buildText {

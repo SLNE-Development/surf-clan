@@ -10,40 +10,36 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
-import dev.slne.clan.core.ClanApplication
-import dev.slne.clan.core.dataDirectory
-import dev.slne.clan.core.getBean
-import dev.slne.clan.core.service.ClanPlayerService
-import dev.slne.clan.core.service.ClanService
 import dev.slne.clan.velocity.commands.ClanCommand
-import dev.slne.clan.velocity.listeners.ListenerProcessor
-import dev.slne.clan.velocity.placeholder.PlaceholderManager
+import dev.slne.clan.velocity.listener.ClanPlayerListener
+import dev.slne.clan.velocity.listener.JoinInviteListener
+import dev.slne.clan.velocity.listener.JoinResetClanTagColorListener
+import dev.slne.clan.velocity.placeholder.placeholderManager
 import java.nio.file.Path
 
-val plugin get() = VelocityClanPlugin.instance
+val plugin get() = VelocityMain.instance
 
-class VelocityClanPlugin @Inject constructor(
+class VelocityMain @Inject constructor(
     val server: ProxyServer,
     val eventManager: EventManager,
     val container: PluginContainer,
-    @DataDirectory val dataPath: Path,
+    @param:DataDirectory val dataPath: Path,
     suspendingPluginContainer: SuspendingPluginContainer
 ) {
 
     init {
         instance = this
         suspendingPluginContainer.initialize(this)
-
-        dataDirectory = dataPath
-
-        ClanApplication.run(this.javaClass.classLoader)
     }
 
     @Subscribe(order = PostOrder.LATE)
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        ClanCommand(getBean<ClanService>(), getBean<ClanPlayerService>()).register()
-        ListenerProcessor.registerListeners()
-        getBean<PlaceholderManager>().registerPlaceholders()
+        ClanCommand().register()
+        placeholderManager.registerPlaceholders()
+
+        plugin.server.eventManager.register(plugin, ClanPlayerListener)
+        plugin.server.eventManager.register(plugin, JoinInviteListener)
+        plugin.server.eventManager.register(plugin, JoinResetClanTagColorListener)
     }
 
     @Subscribe
@@ -52,7 +48,6 @@ class VelocityClanPlugin @Inject constructor(
     }
 
     companion object {
-        lateinit var instance: VelocityClanPlugin
+        lateinit var instance: VelocityMain
     }
-
 }

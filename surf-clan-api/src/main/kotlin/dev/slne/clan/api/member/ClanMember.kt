@@ -4,16 +4,14 @@ import dev.slne.clan.api.permission.ClanPermission
 import java.time.LocalDateTime
 import java.util.*
 
-interface ClanMember {
+data class ClanMember(
+    val uuid: UUID,
+    var role: ClanMemberRole,
 
-    val uuid: UUID
-    var role: ClanMemberRole
+    val addedBy: UUID?,
 
-    val addedBy: ClanMember?
-
-    val createdAt: LocalDateTime?
-    val updatedAt: LocalDateTime?
-
-    fun hasPermission(clanPermission: ClanPermission): Boolean
-
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime? = LocalDateTime.now()
+) {
+    fun hasPermission(clanPermission: ClanPermission) = role.hasPermission(clanPermission)
 }

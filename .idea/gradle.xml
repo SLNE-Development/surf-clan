@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/surf-clan-api" />
             <option value="$PROJECT_DIR$/surf-clan-core" />
+            <option value="$PROJECT_DIR$/surf-clan-fallback" />
             <option value="$PROJECT_DIR$/surf-clan-velocity" />
           </set>
         </option>

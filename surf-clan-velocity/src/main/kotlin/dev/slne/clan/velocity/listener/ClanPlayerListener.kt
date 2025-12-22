@@ -1,16 +1,11 @@
-package dev.slne.clan.velocity.listeners
+package dev.slne.clan.velocity.listener
 
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.connection.LoginEvent
-import dev.slne.clan.core.player.CoreClanPlayer
-import dev.slne.clan.core.service.ClanPlayerService
-import org.springframework.stereotype.Component
+import dev.slne.clan.api.player.ClanPlayer
+import dev.slne.clan.core.service.clanPlayerService
 
-@Component
-class ClanPlayerListener(
-    private val clanPlayerService: ClanPlayerService
-) {
-
+object ClanPlayerListener {
     @Subscribe
     suspend fun onLogin(event: LoginEvent) {
         val clanPlayer = clanPlayerService.findClanPlayerByUuid(event.player.uniqueId)
@@ -22,7 +17,7 @@ class ClanPlayerListener(
             clanPlayerService.save(clanPlayer)
         } else {
             clanPlayerService.save(
-                CoreClanPlayer(
+                ClanPlayer(
                     uuid = event.player.uniqueId,
                     username = event.player.username
                 )

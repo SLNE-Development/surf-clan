@@ -1,67 +1,24 @@
 package dev.slne.clan.core.service
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import dev.slne.clan.api.Clan
-import dev.slne.clan.core.CoreClan
-import dev.slne.clan.core.repository.ClanRepository
-import jakarta.annotation.PostConstruct
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import dev.slne.clan.api.invite.ClanInvite
+import dev.slne.surf.surfapi.core.api.util.requiredService
+import it.unimi.dsi.fastutil.objects.ObjectSet
 import java.util.*
 
-@Service
-class ClanService(
-    private val clanRepository: ClanRepository,
-) {
+val clanService = requiredService<ClanService>()
 
-    private val clanCache = Caffeine.newBuilder().build<UUID, CoreClan>()
+interface ClanService {
+    fun findClanByTag(tag: String): Clan?
+    fun findClanByName(name: String): Clan?
+    fun findClanByMember(uuid: UUID): Clan?
+    fun findInvitesByMember(memberUuid: UUID): ObjectSet<ClanInvite>
+    fun findClanByInvite(invite: ClanInvite): Clan?
 
-    val clans get() = clanCache.asMap().values
+    val clans: ObjectSet<Clan>
 
-    @PostConstruct
-    fun initializeCache() = runBlocking {
-        clanCache.invalidateAll()
-
-        clanRepository.findAll().forEach { clanCache.put(it.uuid, it) }
-    }
-
-    suspend fun refreshCache() = withContext(Dispatchers.IO) {
-        clanCache.invalidateAll()
-
-        clanRepository.findAll().forEach { clanCache.put(it.uuid, it) }
-    }
-
-    fun findClanByTag(tag: String) = clans.find { it.tag.equals(tag, ignoreCase = true) }
-
-    fun findClanByName(name: String) = clans.find { it.name.equals(name, ignoreCase = true) }
-
-    fun findClanByMember(uuid: UUID) =
-        clans.find { it.members.any { member -> member.uuid == uuid } }
-
-    fun findInvitesByMember(memberUuid: UUID) = clans
-        .flatMap { it.invites }.filter { it.invited == memberUuid }
-
-    @Transactional
-    suspend fun saveClan(clan: Clan) = withContext(Dispatchers.IO) {
-        clanRepository.save(clan as CoreClan).also { clanCache.put(it.uuid, it) }
-    }
-
-    suspend fun deleteClan(clan: Clan) = withContext(Dispatchers.IO) {
-        clanRepository.delete(clan as CoreClan)
-        clanCache.invalidate(clan.uuid)
-    }
-
-    suspend fun createUnusedClanUuid(): UUID {
-        var uuid: UUID
-
-        do {
-            uuid = UUID.randomUUID()
-        } while (clans.any { it.uuid == uuid })
-
-        return uuid
-    }
-
+    suspend fun saveClan(clan: Clan): Clan
+    suspend fun refreshCache()
+    suspend fun deleteClan(clan: Clan)
+    suspend fun createUnusedClanUuid(): UUID
 }
