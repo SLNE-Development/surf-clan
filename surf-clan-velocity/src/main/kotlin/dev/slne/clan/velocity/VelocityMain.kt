@@ -16,7 +16,6 @@ import dev.slne.clan.velocity.config.ClanConfig
 import dev.slne.clan.velocity.listener.ClanPlayerListener
 import dev.slne.clan.velocity.listener.JoinInviteListener
 import dev.slne.clan.velocity.listener.JoinResetClanTagColorListener
-import dev.slne.clan.velocity.placeholder.placeholderManager
 import java.nio.file.Path
 
 val plugin get() = VelocityMain.instance
@@ -40,7 +39,6 @@ class VelocityMain @Inject constructor(
         databaseLoader.createTables()
 
         ClanCommand().register()
-        placeholderManager.registerPlaceholders()
 
         plugin.server.eventManager.register(plugin, ClanPlayerListener)
         plugin.server.eventManager.register(plugin, JoinInviteListener)
