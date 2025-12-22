@@ -1,6 +1,7 @@
 package dev.slne.clan.velocity
 
 import com.github.shynixn.mccoroutine.velocity.SuspendingPluginContainer
+import com.github.shynixn.mccoroutine.velocity.launch
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.PostOrder
@@ -11,6 +12,7 @@ import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import dev.slne.clan.core.databaseLoader
+import dev.slne.clan.core.service.clanService
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.config.ClanConfig
 import dev.slne.clan.velocity.listener.ClanPlayerListener
@@ -43,6 +45,10 @@ class VelocityMain @Inject constructor(
         plugin.server.eventManager.register(plugin, ClanPlayerListener)
         plugin.server.eventManager.register(plugin, JoinInviteListener)
         plugin.server.eventManager.register(plugin, JoinResetClanTagColorListener)
+
+        container.launch {
+            clanService.refreshCache()
+        }
     }
 
     @Subscribe

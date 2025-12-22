@@ -95,26 +95,30 @@ class ClanRepository {
                 it[updatedAt] = clan.updatedAt
             }
 
-            ClanInvitesTable.upsert {
-                for (invite in clan.invites) {
-                    it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
-                        .first()[ClansTable.id].value
-                    it[invited] = invite.invited
-                    it[invitedBy] = invite.invitedByUuid
-                    it[createdAt] = invite.createdAt
-                    it[updatedAt] = invite.updatedAt
+            if (clan.invites.isNotEmpty()) {
+                ClanInvitesTable.upsert {
+                    for (invite in clan.invites) {
+                        it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
+                            .first()[ClansTable.id].value
+                        it[invited] = invite.invited
+                        it[invitedBy] = invite.invitedByUuid
+                        it[createdAt] = invite.createdAt
+                        it[updatedAt] = invite.updatedAt
+                    }
                 }
             }
 
-            ClanMembersTable.upsert {
-                for (member in clan.members) {
-                    it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
-                        .first()[ClansTable.id].value
-                    it[uuid] = member.uuid
-                    it[role] = member.role
-                    it[addedBy] = member.addedBy
-                    it[createdAt] = member.createdAt
-                    it[updatedAt] = member.updatedAt
+            if (clan.members.isNotEmpty()) {
+                ClanMembersTable.upsert {
+                    for (member in clan.members) {
+                        it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
+                            .first()[ClansTable.id].value
+                        it[uuid] = member.uuid
+                        it[role] = member.role
+                        it[addedBy] = member.addedBy
+                        it[createdAt] = member.createdAt
+                        it[updatedAt] = member.updatedAt
+                    }
                 }
             }
         }

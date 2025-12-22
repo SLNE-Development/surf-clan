@@ -13,6 +13,8 @@ import net.kyori.adventure.text.minimessage.tag.Tag
 class PlaceholderExpansion : ExpansionProvider {
     override fun provideExpansion(): Expansion =
         Expansion.builder("clan")
+            .author("Ammo & red")
+            .version("1.2.0")
             .audiencePlaceholder("name") { audience, _, _ ->
                 val player = audience as Player
                 val clan = surfClanApi.findClan(player)

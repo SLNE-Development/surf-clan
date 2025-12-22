@@ -6,6 +6,7 @@ import dev.slne.clan.api.Clan
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.core.service.ClanService
 import dev.slne.surf.clan.fallback.repository.clanRepository
+import dev.slne.surf.surfapi.core.api.util.logger
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import net.kyori.adventure.util.Services
 import java.util.*
@@ -41,6 +42,8 @@ class ClanServiceImpl : ClanService, Services.Fallback {
         clanRepository.findClans().forEach { clan ->
             clanCache.put(clan.uuid, clan)
         }
+
+        logger().atInfo().log("Loaded ${clanCache.asMap().size} clans into cache.")
     }
 
     override suspend fun deleteClan(clan: Clan) {
