@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands.member
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.clanPlayerService
@@ -25,7 +25,7 @@ class ClanKickMemberCommand : CommandAPICommand("kick") {
 
         clanMemberArgument()
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             plugin.container.launch {
                 val memberName = args[0] as String
                 val clan = player.findClan()
@@ -122,6 +122,6 @@ class ClanKickMemberCommand : CommandAPICommand("kick") {
 
                 member.playerOrNull?.sendMessage(memberKickedMessage)
             }
-        })
+        }
     }
 }

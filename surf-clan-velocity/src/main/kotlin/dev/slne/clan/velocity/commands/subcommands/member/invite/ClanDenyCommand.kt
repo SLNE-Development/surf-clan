@@ -2,7 +2,7 @@ package dev.slne.clan.velocity.commands.subcommands.member.invite
 
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
+import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
@@ -15,13 +15,13 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanInviteDenyCommand : CommandAPICommand("deny") {
+class ClanDenyCommand : CommandAPICommand("deny") {
     init {
         withPermission("surf.clan.invite.deny")
 
         clanInviteArgument()
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
+        playerExecutor { player, args ->
             val clanName = args.getOrDefaultUnchecked("clan", "")
             val invite = ClanInviteArgument.clanInvite(player, args)
 
@@ -32,7 +32,7 @@ class ClanInviteDenyCommand : CommandAPICommand("deny") {
                     append(Component.text(" erhalten.", Colors.ERROR))
                 })
 
-                return@PlayerCommandExecutor
+                return@playerExecutor
             }
 
             val invitedClan = invite.clan
@@ -58,6 +58,6 @@ class ClanInviteDenyCommand : CommandAPICommand("deny") {
                     append(Component.text(" abgelehnt.", Colors.SUCCESS))
                 })
             }
-        })
+        }
     }
 }

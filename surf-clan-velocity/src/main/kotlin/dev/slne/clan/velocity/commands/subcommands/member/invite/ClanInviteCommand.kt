@@ -21,12 +21,9 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 
-class ClanInviteMemberCommand : CommandAPICommand("invite") {
+class ClanInviteCommand : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.invite")
-
-        withSubcommands(ClanInviteAcceptCommand())
-        withSubcommands(ClanInviteDenyCommand())
         playerArgument()
 
         playerExecutor { player, args ->

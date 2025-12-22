@@ -17,7 +17,7 @@ import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import net.kyori.adventure.text.Component
 
-class ClanInviteAcceptCommand : CommandAPICommand("accept") {
+class ClanAcceptCommand : CommandAPICommand("accept") {
     init {
         withPermission("surf.clan.invite.accept")
         clanInviteArgument()
