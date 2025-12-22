@@ -10,6 +10,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import dev.slne.clan.core.databaseLoader
 import dev.slne.clan.velocity.commands.ClanCommand
 import dev.slne.clan.velocity.config.ClanConfig
 import dev.slne.clan.velocity.listener.ClanPlayerListener
@@ -35,6 +36,9 @@ class VelocityMain @Inject constructor(
 
     @Subscribe(order = PostOrder.LATE)
     fun onProxyInitialization(event: ProxyInitializeEvent) {
+        databaseLoader.connect(dataPath)
+        databaseLoader.createTables()
+
         ClanCommand().register()
         placeholderManager.registerPlaceholders()
 
@@ -46,6 +50,8 @@ class VelocityMain @Inject constructor(
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
         eventManager.unregisterListeners(this)
+
+        databaseLoader.disconnect()
     }
 
     companion object {
