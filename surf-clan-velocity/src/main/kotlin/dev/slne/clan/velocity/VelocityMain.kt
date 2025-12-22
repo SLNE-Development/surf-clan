@@ -11,6 +11,7 @@ import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import dev.slne.clan.velocity.commands.ClanCommand
+import dev.slne.clan.velocity.config.ClanConfig
 import dev.slne.clan.velocity.listener.ClanPlayerListener
 import dev.slne.clan.velocity.listener.JoinInviteListener
 import dev.slne.clan.velocity.listener.JoinResetClanTagColorListener
@@ -51,3 +52,5 @@ class VelocityMain @Inject constructor(
         lateinit var instance: VelocityMain
     }
 }
+
+val clanConfigHolder = ClanConfig.ClanConfigHolder()

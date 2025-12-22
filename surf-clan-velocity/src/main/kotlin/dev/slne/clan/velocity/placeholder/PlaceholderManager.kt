@@ -1,6 +1,7 @@
 package dev.slne.clan.velocity.placeholder
 
 import com.velocitypowered.api.proxy.Player
+import dev.slne.clan.velocity.clanConfigHolder
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.surf.surfapi.core.api.messages.adventure.text
 import io.github.miniplaceholders.api.Expansion
@@ -13,22 +14,22 @@ class PlaceholderManager {
     fun registerPlaceholders() {
         Expansion.builder("clan")
             .filter(Player::class.java)
-            .audiencePlaceholder("name") { audience, queue, ctx ->
+            .audiencePlaceholder("name") { audience, _, _ ->
                 val player = audience as Player
                 val clan = player.findClan()
                 Tag.inserting(text(clan?.name ?: ""))
             }
-            .audiencePlaceholder("tag_raw") { audience, queue, ctx ->
+            .audiencePlaceholder("tag_raw") { audience, _, _ ->
                 val player = audience as Player
                 val clan = player.findClan()
                 Tag.inserting(text(clan?.tag ?: ""))
             }
-            .audiencePlaceholder("tag") { audience, queue, ctx ->
+            .audiencePlaceholder("tag") { audience, queue, _ ->
                 val player = audience as Player
                 val minSize = queue.peek()?.asInt()?.orElseGet { 0 } ?: 0
                 Tag.inserting(renderClanTag(player, minSize = minSize))
             }
-            .audiencePlaceholder("tag_space") { audience, queue, ctx ->
+            .audiencePlaceholder("tag_space") { audience, queue, _ ->
                 val player = audience as Player
                 val minSize = queue.peek()?.asInt()?.orElseGet { 0 } ?: 0
                 Tag.inserting(renderClanTag(player, minSize = minSize, space = true))
@@ -46,7 +47,7 @@ class PlaceholderManager {
         val clan = player.findClan() ?: return Component.empty()
         val clanTag = clan.tag
 
-        val whitelistedClanTags = listOf("SLNE", "CXN", "SPDY")
+        val whitelistedClanTags = clanConfigHolder.config.whitelistedTags
         val whitelistPermission = "surf.clan.tag.bypass"
 
         if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag !in whitelistedClanTags && !player.hasPermission(
