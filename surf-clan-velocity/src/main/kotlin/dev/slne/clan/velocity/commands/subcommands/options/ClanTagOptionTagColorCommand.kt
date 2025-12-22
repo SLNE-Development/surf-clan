@@ -58,7 +58,6 @@ class ClanTagOptionTagColorCommand : CommandAPICommand("tagcolor") {
 
                 player.sendText {
                     appendPrefix()
-
                     success("Die Farbe des Clan-Tags wurde erfolgreich geändert und wird in einigen Sekunden Netzwerkweit aktualisiert.")
                 }
             }

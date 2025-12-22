@@ -14,6 +14,7 @@ import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -65,27 +66,21 @@ class ClanLeaveCommand : CommandAPICommand("leave") {
                         clanService.saveClan(clan)
 
                         clan.members.forEach { member ->
-                            member.playerOrNull?.sendMessage(buildText {
-                                append(Component.text("Der Spieler ", Colors.INFO))
-                                append(player.realName())
-                                append(Component.text(" hat den Clan verlassen.", Colors.INFO))
-                            })
+                            member.playerOrNull?.sendText {
+                                info("Der Spieler ")
+                                variableValue(player.username)
+                                info(" hat den Clan verlassen.")
+                            }
                         }
-
-                        player.sendMessage(buildText {
-                            append(Component.text("Du hast den Clan ", Colors.SUCCESS))
-                            append(clanComponent(clan))
-                            append(Component.text(" verlassen.", Colors.SUCCESS))
-                        })
                     }
 
                     return@launch
                 }
 
-                player.sendMessage(buildText {
-                    append(Component.text("Möchtest du den Clan ", Colors.INFO))
+                player.sendText {
+                    info("Möchtest du den Clan ")
                     append(clanComponent(clan))
-                    append(Component.text(" wirklich verlassen? Klicke ", Colors.INFO))
+                    info(" wirklich verlassen? Klicke ")
                     append(buildText {
                         append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
                         hoverEvent(HoverEvent.showText(buildText {
@@ -148,8 +143,8 @@ class ClanLeaveCommand : CommandAPICommand("leave") {
                         }))
                         clickEvent(ClickEvent.suggestCommand("/clan leave confirm"))
                     })
-                    append(Component.text(" um zu bestätigen.", Colors.INFO))
-                })
+                    info(" um zu bestätigen.")
+                }
             }
         })
     }

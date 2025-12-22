@@ -5,17 +5,13 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
 import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.playerOrNull
-import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.clan.velocity.util.clan
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanAcceptCommand : CommandAPICommand("accept") {
     init {
@@ -24,32 +20,24 @@ class ClanAcceptCommand : CommandAPICommand("accept") {
 
         playerExecutor { player, args ->
             plugin.container.launch {
-                val clanName = args.getUnchecked<String>("clan") ?: ""
                 val invite = ClanInviteArgument.clanInvite(player, args)
 
                 val playerClan = player.findClan()
 
                 if (playerClan != null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
-                        append(clanComponent(playerClan))
-                        append(
-                            Component.text(
-                                " und kannst keine weiteren Einladungen annehmen.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du bist bereits in diesem Clan und kannst keine weiteren Einladungen annehmen.")
+                    }
 
                     return@launch
                 }
 
                 if (invite == null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Du hast keine Einladung zum Clan ", Colors.ERROR))
-                        append(Component.text(clanName, Colors.VARIABLE_VALUE))
-                        append(Component.text(" erhalten.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du hast keine Einladung zu diesen Clan erhalten.")
+                    }
 
                     return@launch
                 }
@@ -62,13 +50,14 @@ class ClanAcceptCommand : CommandAPICommand("accept") {
                 invitedClan.members.forEach { member ->
                     val memberPlayer = member.playerOrNull ?: return@forEach
 
-                    memberPlayer.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.INFO))
-                        append(player.realName())
-                        append(Component.text(" ist dem Clan ", Colors.INFO))
-                        append(clanComponent(invitedClan))
-                        append(Component.text(" beigetreten.", Colors.INFO))
-                    })
+                    memberPlayer.sendText {
+                        appendPrefix()
+                        info("Der Spieler ")
+                        variableValue(player.username)
+                        info(" ist dem Clan ")
+                        variableValue(invitedClan.name)
+                        info(" beigetreten.")
+                    }
                 }
 
                 clanService.saveClan(invitedClan)

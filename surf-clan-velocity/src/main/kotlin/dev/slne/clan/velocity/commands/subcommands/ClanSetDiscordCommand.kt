@@ -12,9 +12,7 @@ import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
     init {
@@ -41,35 +39,18 @@ class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
                 }
 
                 if (!playerClan.hasPermission(player, ClanPermission.DISCORD)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du hast keine Berechtigung, den Discord Link zu ändern.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Du hast keine Berechtigung, den Discord Link zu ändern.")
+                    }
                     return@launch
                 }
 
                 if (playerClan.members.size < DISCORD_LINK_REQUIRED_MEMBERS) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du kannst den Discord-Link erst ab einer Mitgliederzahl von ",
-                                Colors.ERROR
-                            )
-                        )
-                        append(
-                            Component.text(
-                                "$DISCORD_LINK_REQUIRED_MEMBERS Mitgliedern",
-                                Colors.VARIABLE_VALUE
-                            )
-                        )
-                        append(Component.text(" ändern.", Colors.ERROR))
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Dein Clan muss mindestens $DISCORD_LINK_REQUIRED_MEMBERS Mitglieder haben, um den Discord-Link ändern zu können.")
+                    }
                     return@launch
                 }
 
@@ -79,15 +60,10 @@ class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
 
                 val split = discordFull.split(" ")
                 if (split.isEmpty() || split.size > 1) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du musst einen gültigen Discord-Invite Link angeben!",
-                                Colors.ERROR
-                            )
-                        )
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Du musst einen gültigen Discord-Invite Link angeben!")
+                    }
                     return@launch
                 }
 
@@ -97,24 +73,20 @@ class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
                 )
 
                 if (!discord.matches(discordInviteRegex)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du musst einen gültigen Discord-Invite Link angeben!",
-                                Colors.ERROR
-                            )
-                        )
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du musst einen gültigen Discord-Invite Link angeben!")
+                    }
                     return@launch
                 }
 
-                player.sendMessage(
-                    buildText {
-                        append(Component.text("Du hast den Discord Link auf ", Colors.SUCCESS))
-                        append(Component.text(discord, Colors.VARIABLE_VALUE))
-                        append(Component.text(" geändert.", Colors.SUCCESS))
-                    }
-                )
+                player.sendText {
+                    appendPrefix()
+                    success("Du hast den Discord Link auf ")
+                    variableValue(discord)
+                    success(" geändert.")
+                }
+
                 playerClan.discordInvite = discord
                 clanService.saveClan(playerClan)
             }

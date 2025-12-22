@@ -17,6 +17,7 @@ import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 
 class ClanKickMemberCommand : CommandAPICommand("kick") {
@@ -39,13 +40,10 @@ class ClanKickMemberCommand : CommandAPICommand("kick") {
                 val member = ClanMemberArgument.clanMember(clan, args)
 
                 if (member == null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(Component.text(memberName, Colors.VARIABLE_VALUE))
-                        append(Component.text(" ist nicht im Clan ", Colors.ERROR))
-                        append(clanComponent(clan))
-                        append(Component.text(".", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler ist nicht in deinem Clan.")
+                    }
 
                     return@launch
                 }
@@ -57,31 +55,19 @@ class ClanKickMemberCommand : CommandAPICommand("kick") {
                     )
 
                 if (!clan.hasPermission(player, ClanPermission.KICK)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du hast keine Berechtigung, den Spieler ",
-                                Colors.ERROR
-                            )
-                        )
-                        append(memberNameComponent)
-                        append(Component.text(" aus dem Clan ", Colors.ERROR))
-                        append(clanComponent(clan))
-                        append(Component.text(" zu entfernen.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du hast keine Berechtigung, den Spieler $memberName aus dem Clan zu entfernen.")
+                    }
 
                     return@launch
                 }
 
                 if (member.uuid == player.uniqueId) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du kannst dich nicht selbst rauswerfen.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du kannst dich nicht selbst rauswerfen.")
+                    }
 
                     return@launch
                 }
@@ -91,14 +77,10 @@ class ClanKickMemberCommand : CommandAPICommand("kick") {
                 val clanPlayerMember = clan.getMember(clanPlayer)
 
                 if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.")
+                    }
 
                     return@launch
                 }

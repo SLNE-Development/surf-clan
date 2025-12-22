@@ -15,6 +15,7 @@ import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 
 class ClanCreateCommand : CommandAPICommand("create") {
@@ -36,33 +37,29 @@ class ClanCreateCommand : CommandAPICommand("create") {
                 val findClan = player.findClan()
 
                 if (findClan != null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Du bist bereits im Clan ", Colors.ERROR))
-                        append(clanComponent(findClan))
-                        append(Component.text(".", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du bist bereits in einem Clan.")
+                    }
 
                     return@launch
                 }
 
                 val findClanByName = clanService.findClanByName(name)
                 if (findClanByName != null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Ein Clan mit dem Namen ", Colors.ERROR))
-                        append(clanComponent(findClanByName))
-                        append(Component.text(" existiert bereits.", Colors.ERROR))
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Ein Clan mit diesem Namen existiert bereits.")
+                    }
                     return@launch
                 }
 
                 val findClanByTag = clanService.findClanByTag(tag)
                 if (findClanByTag != null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Ein Clan mit dem Tag ", Colors.ERROR))
-                        append(clanComponent(findClanByTag))
-                        append(Component.text(" existiert bereits.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Ein Clan mit diesem Tag existiert bereits.")
+                    }
 
                     return@launch
                 }
@@ -79,6 +76,13 @@ class ClanCreateCommand : CommandAPICommand("create") {
                 clan.addMember(player.uniqueId, ClanMemberRole.OWNER, player.uniqueId)
 
                 clanService.saveClan(clan)
+
+                player.sendText {
+                    appendPrefix()
+                    info("Der Clan ")
+                    variableValue(name)
+                    info(" wurde erfolgreich erstellt.")
+                }
 
                 player.sendMessage(buildText {
                     append(Component.text("Der Clan ", Colors.SUCCESS))

@@ -12,10 +12,10 @@ import dev.slne.clan.velocity.commands.arguments.PlayerArgument
 import dev.slne.clan.velocity.commands.arguments.playerArgument
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -32,21 +32,14 @@ class ClanInviteCommand : CommandAPICommand("invite") {
 
                 if (playerClan == null) {
                     player.sendMessage(Messages.notInClanComponent)
-
                     return@launch
                 }
 
                 if (!playerClan.hasPermission(player, ClanPermission.INVITE)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text(
-                                "Du hast keine Berechtigung, Spieler in den Clan ",
-                                Colors.ERROR
-                            )
-                        )
-                        append(clanComponent(playerClan))
-                        append(Component.text(" einzuladen.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du hast keine Berechtigung, Spieler in den Clan einzuladen.")
+                    }
 
                     return@launch
                 }
@@ -54,11 +47,10 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                 val invitedPlayer = PlayerArgument.player(args)
 
                 if (invitedPlayer == null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(Component.text(args[0] as String, Colors.VARIABLE_VALUE))
-                        append(Component.text(" ist nicht online.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler ist nicht online.")
+                    }
 
                     return@launch
                 }
@@ -66,36 +58,28 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                 val invitedPlayerClan = invitedPlayer.findClan()
 
                 if (invitedPlayerClan != null) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(invitedPlayer.realName())
-                        append(Component.text(" ist bereits im Clan ", Colors.ERROR))
-                        append(clanComponent(invitedPlayerClan))
-                        append(Component.text(".", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler ist bereits in einem Clan.")
+                    }
 
                     return@launch
                 }
 
                 val clanPlayer = clanPlayerService.findClanPlayerByUuid(invitedPlayer.uniqueId)
                 if (clanPlayer == null) {
-                    player.sendMessage(
-                        Component.text(
-                            "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
-                            NamedTextColor.RED
-                        )
-                    )
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler konnte nicht gefunden werden.")
+                    }
                     return@launch
                 }
 
                 if (!clanPlayer.acceptsClanInvites) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(invitedPlayer.realName())
-                        append(Component.text(" nimmt keine Einladungen an.", Colors.ERROR))
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler nimmt keine Einladungen an.")
+                    }
                     return@launch
                 }
 
@@ -104,17 +88,20 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                 if (inviteResult) {
                     clanService.saveClan(playerClan)
 
-                    player.sendMessage(buildText {
-                        append(Component.text("Du hast ", Colors.SUCCESS))
-                        append(invitedPlayer.realName())
-                        append(Component.text(" in den Clan ", Colors.SUCCESS))
+                    player.sendText {
+                        appendPrefix()
+                        success("Du hast ")
+                        variableValue(invitedPlayer.username)
+                        success(" in den Clan ")
                         append(clanComponent(playerClan))
-                        append(Component.text(" eingeladen.", Colors.SUCCESS))
-                    })
+                        success(" eingeladen.")
+                    }
 
-                    invitedPlayer.sendMessage(buildText {
-                        append(Component.text("Du wurdest von ", Colors.INFO))
-                        append(player.realName())
+                    invitedPlayer.sendText {
+                        info("Du wurdest von ")
+                        variableValue(player.username)
+                        info(" in den Clan ")
+                        append(clanComponent(playerClan))
                         append(Component.text(" in den Clan ", Colors.INFO))
                         append(clanComponent(playerClan))
                         append(Component.text(" eingeladen. ", Colors.INFO))
@@ -129,7 +116,7 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                                     )
                                 )
                             )
-                            clickEvent(ClickEvent.runCommand("/clan invite ${player.username} accept ${playerClan.name}"))
+                            clickEvent(ClickEvent.runCommand("/clan accept ${playerClan.name}"))
                         }
 
                         append(acceptComponent)
@@ -145,17 +132,16 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                                     )
                                 )
                             )
-                            clickEvent(ClickEvent.runCommand("/clan invite ${player.username} deny ${playerClan.name}"))
+                            clickEvent(ClickEvent.runCommand("/clan deny ${playerClan.name}"))
                         }
 
                         append(denyComponent)
-                    })
+                    }
                 } else {
-                    player.sendMessage(buildText {
-                        append(Component.text("Der Spieler ", Colors.ERROR))
-                        append(invitedPlayer.realName())
-                        append(Component.text(" wurde bereits eingeladen.", Colors.ERROR))
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Der Spieler wurde bereits eingeladen.")
+                    }
                 }
             }
         }

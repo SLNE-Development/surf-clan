@@ -14,6 +14,7 @@ import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -39,35 +40,18 @@ class ClanDisbandCommand : CommandAPICommand("disband") {
                 }
 
                 if (!clan.hasPermission(player, ClanPermission.DISBAND)) {
-                    player.sendMessage(buildText {
-                        append(
-                            Component.text("Du hast keine Berechtigung, den Clan ", Colors.ERROR)
-                        )
-                        append(clanComponent(clan))
-                        append(Component.text(" aufzulösen.", Colors.ERROR))
-                    })
-
+                    player.sendText {
+                        appendPrefix()
+                        error("Du hast keine Berechtigung, den Clan aufzulösen.")
+                    }
                     return@launch
                 }
 
                 if (clan.members.size > CLAN_MAX_MEMBERS_DISBAND) {
-                    player.sendMessage(buildText {
-                        append(Component.text("Du kannst den Clan ", Colors.ERROR))
-                        append(clanComponent(clan))
-                        append(Component.text(" nicht auflösen, da er mehr als ", Colors.ERROR))
-                        append(
-                            Component.text(
-                                CLAN_MAX_MEMBERS_DISBAND.toString(),
-                                Colors.VARIABLE_VALUE
-                            )
-                        )
-                        append(
-                            Component.text(
-                                " Mitglieder hat. Wende dich bitte an den Support.",
-                                Colors.ERROR
-                            )
-                        )
-                    })
+                    player.sendText {
+                        appendPrefix()
+                        error("Du kannst den Clan nicht auflösen, da er mehr als $CLAN_MAX_MEMBERS_DISBAND Mitglieder hat.")
+                    }
 
                     return@launch
                 }
@@ -89,10 +73,11 @@ class ClanDisbandCommand : CommandAPICommand("disband") {
                     return@launch
                 }
 
-                player.sendMessage(buildText {
-                    append(Component.text("Bist du sicher, dass du den Clan ", Colors.INFO))
+                player.sendText {
+                    appendPrefix()
+                    info("Bist du sicher, dass du den Clan ")
                     append(clanComponent(clan))
-                    append(Component.text(" auflösen möchtest? Klicke ", Colors.INFO))
+                    info(" auflösen möchtest? Klicke")
                     append(buildText {
                         append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
 
@@ -131,8 +116,8 @@ class ClanDisbandCommand : CommandAPICommand("disband") {
 
                         clickEvent(ClickEvent.suggestCommand("/clan disband confirm"))
                     })
-                    append(Component.text(" um den Clan aufzulösen.", Colors.INFO))
-                })
+                    info(" um den Clan aufzulösen.")
+                }
             }
         }
     }

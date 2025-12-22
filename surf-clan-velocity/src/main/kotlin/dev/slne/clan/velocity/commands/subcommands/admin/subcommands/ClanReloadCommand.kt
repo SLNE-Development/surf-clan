@@ -5,7 +5,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.slne.clan.velocity.clanConfigHolder
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanReloadCommand : CommandAPICommand("reload") {
     init {
@@ -15,9 +15,10 @@ class ClanReloadCommand : CommandAPICommand("reload") {
             plugin.container.launch {
                 clanConfigHolder.reload()
 
-                player.sendMessage(buildText {
+                player.sendText {
+                    appendPrefix()
                     success("Die Clan-Konfiguration wurde neu geladen.")
-                })
+                }
             }
         }
     }

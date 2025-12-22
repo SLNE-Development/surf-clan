@@ -5,9 +5,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.slne.clan.core.service.clanService
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanRefreshCommand : CommandAPICommand("refresh") {
     init {
@@ -17,9 +15,10 @@ class ClanRefreshCommand : CommandAPICommand("refresh") {
             plugin.container.launch {
                 clanService.refreshCache()
 
-                player.sendMessage(buildText {
-                    append(Component.text("Der Clan-Cache wurde aktualisiert.", Colors.SUCCESS))
-                })
+                player.sendText {
+                    appendPrefix()
+                    success("Der Clan-Cache wurde aktualisiert.")
+                }
             }
         }
     }
