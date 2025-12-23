@@ -101,6 +101,7 @@ class ClanPromoteMemberCommand : CommandAPICommand("promote") {
                 member.role = newRole
 
                 val memberPromotedMessage = buildText {
+                    appendPrefix()
                     append(Component.text("Der Spieler ", Colors.INFO))
                     append(memberNameComponent)
                     append(Component.text(" wurde durch ", Colors.INFO))

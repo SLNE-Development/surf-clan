@@ -34,11 +34,12 @@ object ClanRedisListener {
         val target = plugin.server.getPlayer(event.invitedUuid).getOrNull() ?: return
 
         target.sendText {
+            appendPrefix()
             info("Du wurdest von ")
             variableValue(event.inviterName)
             info(" in den Clan ")
             variableValue(event.clanName)
-            info(" eingeladen.")
+            info(" eingeladen. ")
 
             val acceptComponent = buildText {
                 append(Component.text("[Annehmen]", Colors.SUCCESS))

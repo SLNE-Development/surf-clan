@@ -101,6 +101,7 @@ class ClanDemoteMemberCommand :
                 member.role = newRole
 
                 val memberPromotedMessage = buildText {
+                    appendPrefix()
                     info("Der Spieler ")
                     append(memberNameComponent)
                     info(" wurde durch ")

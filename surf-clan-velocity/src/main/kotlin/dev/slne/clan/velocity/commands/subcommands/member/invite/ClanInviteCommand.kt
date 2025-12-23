@@ -86,7 +86,7 @@ class ClanInviteCommand : CommandAPICommand("invite") {
 
                     redisApi.publishEvent(
                         ClanInviteRedisEvent(
-                            player.username, player.uniqueId, playerClan.name
+                            player.username, invitedPlayer.uuid, playerClan.name
                         )
                     )
 
