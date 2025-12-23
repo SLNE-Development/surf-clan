@@ -5,9 +5,11 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.surf.bitmap.bitmaps.Bitmaps
+import dev.slne.surf.bitmap.common.provider.BitmapProvider
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import it.unimi.dsi.fastutil.objects.ObjectSet
+import net.kyori.adventure.text.format.TextColor
 import java.time.LocalDateTime
 import java.util.*
 
@@ -20,7 +22,7 @@ data class Clan(
 
     val description: String? = null,
     var discordInvite: String? = null,
-    var clanTagColor: Bitmaps? = null,
+    var clanTagColor: TextColor = Colors.WHITE,
 
     val members: ObjectSet<ClanMember> = mutableObjectSetOf(),
     val invites: ObjectSet<ClanInvite> = mutableObjectSetOf(),
@@ -53,14 +55,7 @@ data class Clan(
         clanMember.role.hasPermission(permission)
 
     fun getMember(clanPlayer: ClanPlayer): ClanMember? = members.find { it.uuid == clanPlayer.uuid }
-    fun getTranslatedClanTag(): String {
-        val provider = if (clanTagColor == null) {
-            Bitmaps.CLAN_DEFAULT.provider
-        } else {
-            clanTagColor!!.provider
-        }
-
-        return provider.translateToString(tag)
-    }
+    fun getTranslatedClanTag() =
+        BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor ?: Colors.WHITE)
 
 }

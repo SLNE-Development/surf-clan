@@ -5,7 +5,7 @@ import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.bitmap.bitmaps.Bitmaps
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 object JoinResetClanTagColorListener {
@@ -23,7 +23,7 @@ object JoinResetClanTagColorListener {
                 return@launch
             }
 
-            val defaultTagColor = Bitmaps.CLAN_DEFAULT
+            val defaultTagColor = Colors.WHITE
 
             if (clan.clanTagColor != defaultTagColor) {
                 clan.clanTagColor = defaultTagColor
@@ -35,7 +35,6 @@ object JoinResetClanTagColorListener {
                     info("Die Farbe wurde auf die Standardfarbe zurückgesetzt und wird in wenigen Sekunden Netzwerkweit aktualisiert.")
                 }
             }
-
         }
     }
 }
