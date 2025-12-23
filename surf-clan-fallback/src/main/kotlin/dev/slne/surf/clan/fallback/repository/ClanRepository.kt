@@ -4,6 +4,7 @@ import dev.slne.clan.api.Clan
 import dev.slne.surf.clan.fallback.table.ClanInvitesTable
 import dev.slne.surf.clan.fallback.table.ClanMembersTable
 import dev.slne.surf.clan.fallback.table.ClansTable
+import dev.slne.surf.surfapi.core.api.util.toMutableObjectSet
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.*
@@ -60,10 +61,10 @@ class ClanRepository {
     suspend fun createClanFromRow(row: ResultRow): Clan {
         val invites =
             clanInvitesRepository.findInvitesByClanId(row[ClansTable.id].value)
-                .toObjectSet()
+                .toMutableObjectSet()
         val members =
             clanMembersRepository.findMembersByClanId(row[ClansTable.id].value)
-                .toObjectSet()
+                .toMutableObjectSet()
 
         return Clan(
             uuid = row[ClansTable.uuid],
