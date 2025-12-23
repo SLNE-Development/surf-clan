@@ -18,6 +18,8 @@ import dev.slne.clan.velocity.config.ClanConfig
 import dev.slne.clan.velocity.listener.ClanPlayerListener
 import dev.slne.clan.velocity.listener.JoinInviteListener
 import dev.slne.clan.velocity.listener.JoinResetClanTagColorListener
+import dev.slne.clan.velocity.redis.listener.ClanRedisListener
+import dev.slne.redis.RedisApi
 import java.nio.file.Path
 
 val plugin get() = VelocityMain.instance
@@ -29,7 +31,6 @@ class VelocityMain @Inject constructor(
     @param:DataDirectory val dataPath: Path,
     suspendingPluginContainer: SuspendingPluginContainer
 ) {
-
     init {
         instance = this
         suspendingPluginContainer.initialize(this)
@@ -39,6 +40,10 @@ class VelocityMain @Inject constructor(
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         databaseLoader.connect(dataPath)
         databaseLoader.createTables()
+
+        redisApi = RedisApi.create(dataPath)
+        redisApi.subscribeToEvents(ClanRedisListener)
+        redisApi.freezeAndConnect()
 
         ClanCommand().register()
 
@@ -56,10 +61,12 @@ class VelocityMain @Inject constructor(
         eventManager.unregisterListeners(this)
 
         databaseLoader.disconnect()
+        redisApi.disconnect()
     }
 
     companion object {
         lateinit var instance: VelocityMain
+        lateinit var redisApi: RedisApi
     }
 }
 

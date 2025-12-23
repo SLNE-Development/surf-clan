@@ -8,23 +8,19 @@ import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.clanPlayerService
 import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.commands.arguments.PlayerArgument
-import dev.slne.clan.velocity.commands.arguments.playerArgument
+import dev.slne.clan.velocity.VelocityMain.Companion.redisApi
+import dev.slne.clan.velocity.commands.arguments.PlayerStringArgument
+import dev.slne.clan.velocity.commands.arguments.playerStringArgument
 import dev.slne.clan.velocity.extensions.findClan
 import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.clan.velocity.redis.event.ClanInviteRedisEvent
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
 
 class ClanInviteCommand : CommandAPICommand("invite") {
     init {
         withPermission("surf.clan.invite")
-        playerArgument()
+        playerStringArgument()
 
         playerExecutor { player, args ->
             plugin.container.launch {
@@ -44,18 +40,18 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                     return@launch
                 }
 
-                val invitedPlayer = PlayerArgument.player(args)
+                val invitedName = PlayerStringArgument.player(args)
+                val invitedPlayer = clanPlayerService.findClanPlayerByName(invitedName)
 
                 if (invitedPlayer == null) {
                     player.sendText {
                         appendPrefix()
-                        error("Der Spieler ist nicht online.")
+                        error("Der Spieler konnte nicht gefunden werden.")
                     }
-
                     return@launch
                 }
 
-                val invitedPlayerClan = invitedPlayer.findClan()
+                val invitedPlayerClan = clanService.findClanByMember(invitedPlayer.uuid)
 
                 if (invitedPlayerClan != null) {
                     player.sendText {
@@ -66,16 +62,7 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                     return@launch
                 }
 
-                val clanPlayer = clanPlayerService.findClanPlayerByUuid(invitedPlayer.uniqueId)
-                if (clanPlayer == null) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler konnte nicht gefunden werden.")
-                    }
-                    return@launch
-                }
-
-                if (!clanPlayer.acceptsClanInvites) {
+                if (!invitedPlayer.acceptsClanInvites) {
                     player.sendText {
                         appendPrefix()
                         error("Der Spieler nimmt keine Einladungen an.")
@@ -83,7 +70,7 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                     return@launch
                 }
 
-                val inviteResult = playerClan.invite(invitedPlayer.uniqueId, player.uniqueId)
+                val inviteResult = playerClan.invite(invitedPlayer.uuid, player.uniqueId)
 
                 if (inviteResult) {
                     clanService.saveClan(playerClan)
@@ -97,46 +84,52 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                         success(" eingeladen.")
                     }
 
-                    invitedPlayer.sendText {
-                        info("Du wurdest von ")
-                        variableValue(player.username)
-                        info(" in den Clan ")
-                        append(clanComponent(playerClan))
-                        append(Component.text(" in den Clan ", Colors.INFO))
-                        append(clanComponent(playerClan))
-                        append(Component.text(" eingeladen. ", Colors.INFO))
+                    redisApi.publishEvent(
+                        ClanInviteRedisEvent(
+                            player.username, player.uniqueId, playerClan.name
+                        )
+                    )
 
-                        val acceptComponent = buildText {
-                            append(Component.text("[Annehmen]", Colors.SUCCESS))
-                            hoverEvent(
-                                HoverEvent.showText(
-                                    Component.text(
-                                        "Klicke hier, um die Einladung anzunehmen.",
-                                        NamedTextColor.GREEN
-                                    )
-                                )
-                            )
-                            clickEvent(ClickEvent.runCommand("/clan accept ${playerClan.name}"))
-                        }
-
-                        append(acceptComponent)
-                        appendSpace()
-
-                        val denyComponent = buildText {
-                            append(Component.text("[Ablehnen]", Colors.ERROR))
-                            hoverEvent(
-                                HoverEvent.showText(
-                                    Component.text(
-                                        "Klicke hier, um die Einladung abzulehnen.",
-                                        NamedTextColor.RED
-                                    )
-                                )
-                            )
-                            clickEvent(ClickEvent.runCommand("/clan deny ${playerClan.name}"))
-                        }
-
-                        append(denyComponent)
-                    }
+//                    invitedPlayer.sendText { TODO: Surf-redis
+//                        info("Du wurdest von ")
+//                        variableValue(player.username)
+//                        info(" in den Clan ")
+//                        append(clanComponent(playerClan))
+//                        append(Component.text(" in den Clan ", Colors.INFO))
+//                        append(clanComponent(playerClan))
+//                        append(Component.text(" eingeladen. ", Colors.INFO))
+//
+//                        val acceptComponent = buildText {
+//                            append(Component.text("[Annehmen]", Colors.SUCCESS))
+//                            hoverEvent(
+//                                HoverEvent.showText(
+//                                    Component.text(
+//                                        "Klicke hier, um die Einladung anzunehmen.",
+//                                        NamedTextColor.GREEN
+//                                    )
+//                                )
+//                            )
+//                            clickEvent(ClickEvent.runCommand("/clan accept ${playerClan.name}"))
+//                        }
+//
+//                        append(acceptComponent)
+//                        appendSpace()
+//
+//                        val denyComponent = buildText {
+//                            append(Component.text("[Ablehnen]", Colors.ERROR))
+//                            hoverEvent(
+//                                HoverEvent.showText(
+//                                    Component.text(
+//                                        "Klicke hier, um die Einladung abzulehnen.",
+//                                        NamedTextColor.RED
+//                                    )
+//                                )
+//                            )
+//                            clickEvent(ClickEvent.runCommand("/clan deny ${playerClan.name}"))
+//                        }
+//
+//                        append(denyComponent)
+//                    }
                 } else {
                     player.sendText {
                         appendPrefix()
