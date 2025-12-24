@@ -5,12 +5,14 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.service.clanService
+import dev.slne.clan.velocity.VelocityMain.Companion.redisApi
 import dev.slne.clan.velocity.commands.arguments.ClanInviteArgument
 import dev.slne.clan.velocity.commands.arguments.clanInviteArgument
 import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.redis.event.ClanBroadcastRedisEvent
 import dev.slne.clan.velocity.util.clan
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class ClanAcceptCommand : CommandAPICommand("accept") {
@@ -47,18 +49,18 @@ class ClanAcceptCommand : CommandAPICommand("accept") {
                 invitedClan.uninvite(player.uniqueId)
                 invitedClan.addMember(player.uniqueId, ClanMemberRole.MEMBER, invite.invitedByUuid)
 
-                invitedClan.members.forEach { member ->
-                    val memberPlayer = member.playerOrNull ?: return@forEach
-
-                    memberPlayer.sendText {
-                        appendPrefix()
-                        info("Der Spieler ")
-                        variableValue(player.username)
-                        info(" ist dem Clan ")
-                        variableValue(invitedClan.name)
-                        info(" beigetreten.")
-                    }
-                }
+                redisApi.publishEvent(
+                    ClanBroadcastRedisEvent(
+                        invitedClan.name,
+                        buildText {
+                            appendPrefix()
+                            info("Der Spieler ")
+                            variableValue(player.username)
+                            info(" ist dem Clan ")
+                            variableValue(invitedClan.name)
+                            info(" beigetreten.")
+                        }
+                    ))
 
                 clanService.saveClan(invitedClan)
             }

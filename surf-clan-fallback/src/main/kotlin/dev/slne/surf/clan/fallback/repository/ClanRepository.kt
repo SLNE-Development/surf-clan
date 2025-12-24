@@ -96,11 +96,16 @@ class ClanRepository {
                 it[updatedAt] = clan.updatedAt
             }
 
+            val clanId = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
+                .firstOrNull()?.get(ClansTable.id)?.value ?: return@newSuspendedTransaction
+
+            ClanInvitesTable.deleteWhere { ClanInvitesTable.clanId eq clanId }
+            ClanMembersTable.deleteWhere { ClanMembersTable.clanId eq clanId }
+
             if (clan.invites.isNotEmpty()) {
                 ClanInvitesTable.upsert {
                     for (invite in clan.invites) {
-                        it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
-                            .first()[ClansTable.id].value
+                        it[this.clanId] = clanId
                         it[invited] = invite.invited
                         it[invitedBy] = invite.invitedByUuid
                         it[createdAt] = invite.createdAt
@@ -112,8 +117,7 @@ class ClanRepository {
             if (clan.members.isNotEmpty()) {
                 ClanMembersTable.upsert {
                     for (member in clan.members) {
-                        it[clanId] = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
-                            .first()[ClansTable.id].value
+                        it[this.clanId] = clanId
                         it[uuid] = member.uuid
                         it[role] = member.role
                         it[addedBy] = member.addedBy
@@ -126,7 +130,7 @@ class ClanRepository {
         return clan
     }
 
-    suspend fun delete(clan: Clan): Clan {
+    suspend fun delete(clan: Clan) {
         newSuspendedTransaction(Dispatchers.IO) {
             val clanId = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
                 .first()[ClansTable.id].value
@@ -135,6 +139,5 @@ class ClanRepository {
             ClanInvitesTable.deleteWhere { ClanInvitesTable.clanId eq clanId }
             ClanMembersTable.deleteWhere { ClanMembersTable.clanId eq clanId }
         }
-        return clan
     }
 }

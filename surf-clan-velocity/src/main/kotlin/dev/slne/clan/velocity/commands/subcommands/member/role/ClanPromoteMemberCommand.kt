@@ -7,6 +7,7 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.clanPlayerService
 import dev.slne.clan.core.service.clanService
+import dev.slne.clan.velocity.VelocityMain.Companion.redisApi
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
 import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
 import dev.slne.clan.velocity.extensions.findClan
@@ -14,6 +15,7 @@ import dev.slne.clan.velocity.extensions.hasPermission
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.extensions.realName
 import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.redis.event.ClanBroadcastRedisEvent
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
@@ -99,6 +101,7 @@ class ClanPromoteMemberCommand : CommandAPICommand("promote") {
                 member.role = newRole
 
                 val memberPromotedMessage = buildText {
+                    appendPrefix()
                     append(Component.text("Der Spieler ", Colors.INFO))
                     append(memberNameComponent)
                     append(Component.text(" wurde durch ", Colors.INFO))
@@ -112,9 +115,12 @@ class ClanPromoteMemberCommand : CommandAPICommand("promote") {
 
                 clanService.saveClan(clan)
 
-                clan.members.forEach { clanMember ->
-                    clanMember.playerOrNull?.sendMessage(memberPromotedMessage)
-                }
+                redisApi.publishEvent(
+                    ClanBroadcastRedisEvent(
+                        clan.name,
+                        memberPromotedMessage
+                    )
+                )
             }
         }
     }

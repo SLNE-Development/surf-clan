@@ -26,7 +26,7 @@ class PlaceholderExpansion : ExpansionProvider {
             }
             .audiencePlaceholder("tag") { audience, queue, _ ->
                 val player = audience as Player
-                val minSize = queue.peek()?.asInt()?.orElseGet { 0 } ?: 0
+                val minSize = queue.peek()?.asInt()?.orElseGet { 10 } ?: 10
                 Tag.inserting(surfClanApi.renderClanTag(player, minSize = minSize))
             }
             .build()

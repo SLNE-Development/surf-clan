@@ -13,4 +13,6 @@ velocityPluginFile {
 dependencies {
     api(project(":surf-clan-core"))
     runtimeOnly(project(":surf-clan-fallback"))
+
+    implementation("dev.slne:surf-redis:1.0.0-20251223.105653-21")
 }
