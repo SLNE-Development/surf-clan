@@ -3,7 +3,6 @@ package dev.slne.clan.velocity.commands.subcommands
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.clanService
 import dev.slne.clan.core.utils.clanComponent
@@ -24,55 +23,12 @@ import net.kyori.adventure.text.format.TextDecoration
 class ClanLeaveCommand : CommandAPICommand("leave") {
     init {
         withPermission("surf.clan.leave")
-
-        stringArgument("confirm", true)
-
         executesPlayer(PlayerCommandExecutor { player, args ->
             plugin.container.launch {
                 val clan = player.findClan()
 
                 if (clan == null) {
                     player.sendMessage(Messages.notInClanComponent)
-
-                    return@launch
-                }
-
-                val confirm = args.getOrDefaultUnchecked("confirm", "")
-                if (confirm.isNotEmpty() && confirm == "confirm") {
-                    val clanDisbandedMessage = buildText {
-                        append(Component.text("Der Clan ", Colors.INFO))
-                        append(clanComponent(clan))
-                        append(Component.text(" wurde aufgelöst, da der Anführer ", Colors.INFO))
-                        append(player.realName())
-                        append(Component.text(" den Clan verlassen hat.", Colors.INFO))
-                    }
-
-                    if (clan.createdBy == player.uniqueId) {
-                        clanService.deleteClan(clan)
-
-                        clan.members.forEach { member ->
-                            member.player.sendMessage(clanDisbandedMessage)
-                        }
-                    } else {
-                        val clanMember = clan.members.find { it.uuid == player.uniqueId }
-
-                        if (clanMember == null) {
-                            player.sendMessage(Messages.notInClanComponent)
-
-                            return@launch
-                        }
-
-                        clan.removeMember(clanMember)
-                        clanService.saveClan(clan)
-
-                        clan.members.forEach { member ->
-                            member.playerOrNull?.sendText {
-                                info("Der Spieler ")
-                                variableValue(player.username)
-                                info(" hat den Clan verlassen.")
-                            }
-                        }
-                    }
 
                     return@launch
                 }
@@ -141,7 +97,50 @@ class ClanLeaveCommand : CommandAPICommand("leave") {
                                 )
                             )
                         }))
-                        clickEvent(ClickEvent.suggestCommand("/clan leave confirm"))
+                        clickEvent(ClickEvent.callback {
+                            plugin.container.launch {
+                                val clanDisbandedMessage = buildText {
+                                    append(Component.text("Der Clan ", Colors.INFO))
+                                    append(clanComponent(clan))
+                                    append(
+                                        Component.text(
+                                            " wurde aufgelöst, da der Anführer ",
+                                            Colors.INFO
+                                        )
+                                    )
+                                    append(player.realName())
+                                    append(Component.text(" den Clan verlassen hat.", Colors.INFO))
+                                }
+
+                                if (clan.createdBy == player.uniqueId) {
+                                    clanService.deleteClan(clan)
+
+                                    clan.members.forEach { member ->
+                                        member.player.sendMessage(clanDisbandedMessage)
+                                    }
+                                } else {
+                                    val clanMember =
+                                        clan.members.find { it.uuid == player.uniqueId }
+
+                                    if (clanMember == null) {
+                                        player.sendMessage(Messages.notInClanComponent)
+
+                                        return@launch
+                                    }
+
+                                    clan.removeMember(clanMember)
+                                    clanService.saveClan(clan)
+
+                                    clan.members.forEach { member ->
+                                        member.playerOrNull?.sendText {
+                                            info("Der Spieler ")
+                                            variableValue(player.username)
+                                            info(" hat den Clan verlassen.")
+                                        }
+                                    }
+                                }
+                            }
+                        })
                     })
                     info(" um zu bestätigen.")
                 }
