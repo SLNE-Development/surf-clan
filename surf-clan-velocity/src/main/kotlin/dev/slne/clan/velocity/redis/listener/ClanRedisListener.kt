@@ -1,13 +1,11 @@
 package dev.slne.clan.velocity.redis.listener
 
-import com.github.shynixn.mccoroutine.velocity.launch
 import dev.slne.clan.core.service.clanService
 import dev.slne.clan.velocity.extensions.playerOrNull
 import dev.slne.clan.velocity.plugin
 import dev.slne.clan.velocity.redis.event.ClanBroadcastRedisEvent
 import dev.slne.clan.velocity.redis.event.ClanInviteRedisEvent
-import dev.slne.clan.velocity.redis.event.ClanRefreshRedisEvent
-import dev.slne.redis.event.OnRedisEvent
+import dev.slne.surf.redis.event.OnRedisEvent
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
@@ -73,12 +71,5 @@ object ClanRedisListener {
             append(denyComponent)
         }
 
-    }
-
-    @OnRedisEvent
-    fun onClanRefreshEvent(event: ClanRefreshRedisEvent) {
-        plugin.container.launch {
-            clanService.refreshCache()
-        }
     }
 }

@@ -133,7 +133,7 @@ class ClanRepository {
     suspend fun delete(clan: Clan) {
         newSuspendedTransaction(Dispatchers.IO) {
             val clanId = ClansTable.selectAll().where(ClansTable.uuid eq clan.uuid)
-                .first()[ClansTable.id].value
+                .firstOrNull()?.get(ClansTable.id)?.value ?: return@newSuspendedTransaction
 
             ClansTable.deleteWhere { ClansTable.uuid eq clan.uuid }
             ClanInvitesTable.deleteWhere { ClanInvitesTable.clanId eq clanId }
