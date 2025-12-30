@@ -2,6 +2,10 @@ plugins {
     id("dev.slne.surf.surfapi.gradle.velocity")
 }
 
+surfVelocityApi {
+    withCoreVelocity()
+}
+
 velocityPluginFile {
     main = "dev.slne.clan.velocity.VelocityMain"
 
