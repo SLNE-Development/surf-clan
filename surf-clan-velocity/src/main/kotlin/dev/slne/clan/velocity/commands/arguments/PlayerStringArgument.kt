@@ -5,13 +5,12 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.CommandArguments
-import dev.slne.clan.velocity.plugin
+import dev.slne.surf.core.api.common.surfCoreApi
 
 class PlayerStringArgument(nodeName: String = "target") : StringArgument(nodeName) {
     init {
         replaceSuggestions(ArgumentSuggestions.strings { _ ->
-            plugin.server.allPlayers.map { it.username }
-                .toTypedArray()
+            surfCoreApi.getOnlinePlayers().mapNotNull { it.lastKnownName }.toTypedArray()
         })
     }
 

@@ -5,20 +5,24 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
+import dev.slne.clan.api.serializer.SerializableLocalDateTime
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import it.unimi.dsi.fastutil.objects.ObjectSet
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.TextColor
 import java.time.LocalDateTime
 import java.util.*
 
+@Serializable
 data class Clan(
-    val uuid: UUID,
+    val uuid: @Contextual UUID,
     val name: String,
     val tag: String,
 
-    val createdBy: UUID,
+    val createdBy: @Contextual UUID,
 
     val description: String? = null,
     var discordInvite: String? = null,
@@ -27,8 +31,8 @@ data class Clan(
     val members: ObjectSet<ClanMember> = mutableObjectSetOf(),
     val invites: ObjectSet<ClanInvite> = mutableObjectSetOf(),
 
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = null,
+    val createdAt: SerializableLocalDateTime = LocalDateTime.now(),
+    val updatedAt: SerializableLocalDateTime? = null,
 ) {
     fun invite(uuid: UUID, invitedBy: UUID) = invites.add(
         ClanInvite(

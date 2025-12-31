@@ -1,21 +1,29 @@
 package dev.slne.surf.clan.fallback.service
 
-import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.auto.service.AutoService
 import dev.slne.clan.api.Clan
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.core.service.ClanService
 import dev.slne.surf.clan.fallback.repository.clanRepository
-import dev.slne.surf.surfapi.core.api.util.logger
+import dev.slne.surf.redis.RedisApi
+import dev.slne.surf.redis.sync.map.SyncMap
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import net.kyori.adventure.util.Services
 import java.util.*
 
 @AutoService(ClanService::class)
 class ClanServiceImpl : ClanService, Services.Fallback {
-    private val clanCache = Caffeine.newBuilder().build<UUID, Clan>()
+    private lateinit var globalClans: SyncMap<String, Clan>
+    override val clans get() = globalClans.snapshot().values.toObjectSet()
 
-    override val clans get() = clanCache.asMap().values.toObjectSet()
+    override suspend fun refreshClans() {
+        globalClans
+        clanRepository.findClans().forEach { globalClans.put(it.uuid.toString(), it) }
+    }
+
+    override fun load(redisApi: RedisApi) {
+        globalClans = redisApi.createSyncMap("surf-clan:clans")
+    }
 
     override fun findClanByTag(tag: String): Clan? =
         clans.find { it.tag.equals(tag, ignoreCase = true) }
@@ -33,22 +41,14 @@ class ClanServiceImpl : ClanService, Services.Fallback {
         clans.find { it.invites.any { clanInvite -> clanInvite == invite } }
 
     override suspend fun saveClan(clan: Clan): Clan {
-        return clanRepository.save(clan).also { clanCache.put(clan.uuid, clan) }
-    }
-
-    override suspend fun refreshCache() {
-        clanCache.invalidateAll()
-
-        clanRepository.findClans().forEach { clan ->
-            clanCache.put(clan.uuid, clan)
-        }
-
-        logger().atInfo().log("Loaded ${clanCache.asMap().size} clans into cache.")
+        return clanRepository.save(clan).also { globalClans.put(clan.uuid.toString(), clan) }
     }
 
     override suspend fun deleteClan(clan: Clan) {
         clanRepository.delete(clan)
-        clanCache.invalidate(clan.uuid)
+        clans.find { it.uuid == clan.uuid }?.let {
+            globalClans.remove(it.uuid.toString())
+        }
     }
 
     override suspend fun createUnusedClanUuid(): UUID {

@@ -1,12 +1,15 @@
 package dev.slne.clan.api.invite
 
-import java.time.LocalDateTime
+import dev.slne.clan.api.serializer.SerializableLocalDateTime
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 data class ClanInvite(
-    val invited: UUID,
-    val invitedByUuid: UUID,
+    val invited: @Contextual UUID,
+    val invitedByUuid: @Contextual UUID,
 
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime?
+    val createdAt: SerializableLocalDateTime,
+    val updatedAt: SerializableLocalDateTime?
 )

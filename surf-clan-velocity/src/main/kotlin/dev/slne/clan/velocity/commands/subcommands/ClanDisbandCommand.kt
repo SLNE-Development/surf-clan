@@ -3,7 +3,6 @@ package dev.slne.clan.velocity.commands.subcommands
 import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.playerExecutor
-import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.Messages
 import dev.slne.clan.core.service.clanService
@@ -26,9 +25,6 @@ private const val CLAN_MAX_MEMBERS_DISBAND = 50
 class ClanDisbandCommand : CommandAPICommand("disband") {
     init {
         withPermission("surf.clan.disband")
-
-        stringArgument("confirm", true)
-
         playerExecutor { player, args ->
             plugin.container.launch {
                 val clan = player.findClan()
@@ -51,23 +47,6 @@ class ClanDisbandCommand : CommandAPICommand("disband") {
                     player.sendText {
                         appendPrefix()
                         error("Du kannst den Clan nicht auflösen, da er mehr als $CLAN_MAX_MEMBERS_DISBAND Mitglieder hat.")
-                    }
-
-                    return@launch
-                }
-
-                val confirm = args.getOrDefaultUnchecked("confirm", "")
-                if (confirm.isNotEmpty() && confirm == "confirm") {
-                    val clanDisbandedMessage = buildText {
-                        append(Component.text("Der Clan ", Colors.SUCCESS))
-                        append(clanComponent(clan))
-                        append(Component.text(" wurde aufgelöst.", Colors.SUCCESS))
-                    }
-
-                    clanService.deleteClan(clan)
-
-                    clan.members.forEach { member ->
-                        member.playerOrNull?.sendMessage(clanDisbandedMessage)
                     }
 
                     return@launch
@@ -114,7 +93,21 @@ class ClanDisbandCommand : CommandAPICommand("disband") {
                             )
                         }))
 
-                        clickEvent(ClickEvent.suggestCommand("/clan disband confirm"))
+                        clickEvent(ClickEvent.callback {
+                            plugin.container.launch {
+                                val clanDisbandedMessage = buildText {
+                                    append(Component.text("Der Clan ", Colors.SUCCESS))
+                                    append(clanComponent(clan))
+                                    append(Component.text(" wurde aufgelöst.", Colors.SUCCESS))
+                                }
+
+                                clanService.deleteClan(clan)
+
+                                clan.members.forEach { member ->
+                                    member.playerOrNull?.sendMessage(clanDisbandedMessage)
+                                }
+                            }
+                        })
                     })
                     info(" um den Clan aufzulösen.")
                 }

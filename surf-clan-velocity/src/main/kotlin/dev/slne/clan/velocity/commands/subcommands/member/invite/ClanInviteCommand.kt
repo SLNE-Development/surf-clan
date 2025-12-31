@@ -89,47 +89,6 @@ class ClanInviteCommand : CommandAPICommand("invite") {
                             player.username, invitedPlayer.uuid, playerClan.name
                         )
                     )
-
-//                    invitedPlayer.sendText { TODO: Surf-redis
-//                        info("Du wurdest von ")
-//                        variableValue(player.username)
-//                        info(" in den Clan ")
-//                        append(clanComponent(playerClan))
-//                        append(Component.text(" in den Clan ", Colors.INFO))
-//                        append(clanComponent(playerClan))
-//                        append(Component.text(" eingeladen. ", Colors.INFO))
-//
-//                        val acceptComponent = buildText {
-//                            append(Component.text("[Annehmen]", Colors.SUCCESS))
-//                            hoverEvent(
-//                                HoverEvent.showText(
-//                                    Component.text(
-//                                        "Klicke hier, um die Einladung anzunehmen.",
-//                                        NamedTextColor.GREEN
-//                                    )
-//                                )
-//                            )
-//                            clickEvent(ClickEvent.runCommand("/clan accept ${playerClan.name}"))
-//                        }
-//
-//                        append(acceptComponent)
-//                        appendSpace()
-//
-//                        val denyComponent = buildText {
-//                            append(Component.text("[Ablehnen]", Colors.ERROR))
-//                            hoverEvent(
-//                                HoverEvent.showText(
-//                                    Component.text(
-//                                        "Klicke hier, um die Einladung abzulehnen.",
-//                                        NamedTextColor.RED
-//                                    )
-//                                )
-//                            )
-//                            clickEvent(ClickEvent.runCommand("/clan deny ${playerClan.name}"))
-//                        }
-//
-//                        append(denyComponent)
-//                    }
                 } else {
                     player.sendText {
                         appendPrefix()

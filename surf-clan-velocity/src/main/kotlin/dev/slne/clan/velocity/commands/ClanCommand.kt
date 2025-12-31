@@ -33,5 +33,6 @@ class ClanCommand : CommandAPICommand("clan") {
         withSubcommand(ClanAdminCommand())
 
         withSubcommand(ClanOptionsCommand())
+        withSubcommand(ClanListCommand())
     }
 }

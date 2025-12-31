@@ -4,7 +4,6 @@ import com.github.shynixn.mccoroutine.velocity.SuspendingPluginContainer
 import com.github.shynixn.mccoroutine.velocity.launch
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
-import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
@@ -19,7 +18,7 @@ import dev.slne.clan.velocity.listener.ClanPlayerListener
 import dev.slne.clan.velocity.listener.JoinInviteListener
 import dev.slne.clan.velocity.listener.JoinResetClanTagColorListener
 import dev.slne.clan.velocity.redis.listener.ClanRedisListener
-import dev.slne.redis.RedisApi
+import dev.slne.surf.redis.RedisApi
 import java.nio.file.Path
 
 val plugin get() = VelocityMain.instance
@@ -36,13 +35,14 @@ class VelocityMain @Inject constructor(
         suspendingPluginContainer.initialize(this)
     }
 
-    @Subscribe(order = PostOrder.LATE)
+    @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         databaseLoader.connect(dataPath)
         databaseLoader.createTables()
 
         redisApi = RedisApi.create(dataPath)
         redisApi.subscribeToEvents(ClanRedisListener)
+        clanService.load(redisApi)
         redisApi.freezeAndConnect()
 
         ClanCommand().register()
@@ -52,7 +52,7 @@ class VelocityMain @Inject constructor(
         plugin.server.eventManager.register(plugin, JoinResetClanTagColorListener)
 
         container.launch {
-            clanService.refreshCache()
+            clanService.refreshClans()
         }
     }
 

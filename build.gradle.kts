@@ -1,5 +1,4 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import dev.slne.surf.surfapi.gradle.util.slnePrivate
+import dev.slne.surf.surfapi.gradle.util.slneReleases
 
 buildscript {
     repositories {
@@ -7,19 +6,23 @@ buildscript {
         maven("https://repo.slne.dev/repository/maven-public/") { name = "maven-public" }
     }
     dependencies {
-        classpath("dev.slne.surf:surf-api-gradle-plugin:1.21.7+")
+        classpath("dev.slne.surf:surf-api-gradle-plugin:1.21.11+")
     }
 }
 
 allprojects {
     group = "dev.slne.surf.clan"
     version = findProperty("version") as String
+}
 
-    tasks.withType<ShadowJar> {
-        exclude("kotlin/**")
-    }
-
-    repositories {
-        slnePrivate()
+subprojects {
+    afterEvaluate {
+        plugins.withType<PublishingPlugin> {
+            configure<PublishingExtension> {
+                repositories {
+                    slneReleases()
+                }
+            }
+        }
     }
 }
