@@ -10,10 +10,13 @@ import dev.slne.clan.velocity.clanConfigHolder
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.util.Services
+import java.util.*
 
 @AutoService(SurfClanApi::class)
 class SurfClanApiImpl : SurfClanApi, Services.Fallback {
     override fun findClan(player: Player) = clanService.findClanByMember(player.uniqueId)
+    override fun findClan(playerUuid: UUID) = clanService.findClanByMember(playerUuid)
+
     override suspend fun findClanPlayer(player: Player) =
         clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("ClanPlayer not found")
 
@@ -26,12 +29,24 @@ class SurfClanApiImpl : SurfClanApi, Services.Fallback {
         val clanTag = clan.tag
 
         val whitelistedClanTags = surfClanApi.getWhitelistedClans()
-        val whitelistPermission = "surf.clan.tag.bypass"
 
-        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag !in whitelistedClanTags && !player.hasPermission(
-                whitelistPermission
-            )
-        ) {
+        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag !in whitelistedClanTags) {
+            return Component.empty()
+        }
+
+        return clan.getTranslatedClanTag()
+    }
+
+    override fun renderClanTag(
+        playerUuid: UUID,
+        minSize: Int
+    ): Component {
+        val clan = surfClanApi.findClan(playerUuid) ?: return Component.empty()
+        val clanTag = clan.tag
+
+        val whitelistedClanTags = surfClanApi.getWhitelistedClans()
+
+        if ((clanTag.isEmpty() || clan.members.size < minSize) && clanTag !in whitelistedClanTags) {
             return Component.empty()
         }
 
