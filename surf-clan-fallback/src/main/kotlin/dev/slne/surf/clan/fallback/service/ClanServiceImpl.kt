@@ -54,7 +54,7 @@ class ClanServiceImpl : ClanService, Services.Fallback {
         clans.find { it.invites.any { clanInvite -> clanInvite == invite } }
 
     override suspend fun saveClan(clan: Clan): Clan {
-        clanListeners.filter { it.clanUuid == clan.uuid }.forEach {
+        clanListeners.forEach {
             it.action.invoke(clan)
         }
 
