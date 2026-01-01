@@ -24,4 +24,6 @@ interface SurfClanApi {
         playerUuid: UUID,
         minSize: Int = 0
     ): Component
+
+    fun addClanModificationListener(listener: ClanModificationListener)
 }

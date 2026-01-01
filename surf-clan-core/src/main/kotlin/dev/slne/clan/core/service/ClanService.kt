@@ -1,6 +1,7 @@
 package dev.slne.clan.core.service
 
 import dev.slne.clan.api.Clan
+import dev.slne.clan.api.ClanModificationListener
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.surf.redis.RedisApi
 import dev.slne.surf.surfapi.core.api.util.requiredService
@@ -17,6 +18,7 @@ interface ClanService {
     fun findClanByInvite(invite: ClanInvite): Clan?
 
     fun load(redisApi: RedisApi)
+    fun addClanModificationListener(listener: ClanModificationListener)
 
     val clans: ObjectSet<Clan>
 

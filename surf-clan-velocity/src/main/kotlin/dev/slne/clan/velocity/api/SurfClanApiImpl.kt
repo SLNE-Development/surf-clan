@@ -2,6 +2,7 @@ package dev.slne.clan.velocity.api
 
 import com.google.auto.service.AutoService
 import com.velocitypowered.api.proxy.Player
+import dev.slne.clan.api.ClanModificationListener
 import dev.slne.clan.api.SurfClanApi
 import dev.slne.clan.api.surfClanApi
 import dev.slne.clan.core.service.clanPlayerService
@@ -51,5 +52,11 @@ class SurfClanApiImpl : SurfClanApi, Services.Fallback {
         }
 
         return clan.getTranslatedClanTag()
+    }
+
+    override fun addClanModificationListener(
+        listener: ClanModificationListener
+    ) {
+        clanService.addClanModificationListener(listener)
     }
 }

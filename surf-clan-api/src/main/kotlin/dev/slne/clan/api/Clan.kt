@@ -6,13 +6,12 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.api.player.ClanPlayer
 import dev.slne.clan.api.serializer.SerializableLocalDateTime
+import dev.slne.clan.api.serializer.SerializableTextColor
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
-import it.unimi.dsi.fastutil.objects.ObjectSet
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.format.TextColor
 import java.time.LocalDateTime
 import java.util.*
 
@@ -26,10 +25,10 @@ data class Clan(
 
     val description: String? = null,
     var discordInvite: String? = null,
-    var clanTagColor: TextColor = Colors.WHITE,
+    var clanTagColor: SerializableTextColor = Colors.WHITE,
 
-    val members: ObjectSet<ClanMember> = mutableObjectSetOf(),
-    val invites: ObjectSet<ClanInvite> = mutableObjectSetOf(),
+    val members: MutableSet<ClanMember> = mutableObjectSetOf(),
+    val invites: MutableSet<ClanInvite> = mutableObjectSetOf(),
 
     val createdAt: SerializableLocalDateTime = LocalDateTime.now(),
     val updatedAt: SerializableLocalDateTime? = null,
@@ -60,6 +59,6 @@ data class Clan(
 
     fun getMember(clanPlayer: ClanPlayer): ClanMember? = members.find { it.uuid == clanPlayer.uuid }
     fun getTranslatedClanTag() =
-        BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor ?: Colors.WHITE)
+        BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor)
 
 }
