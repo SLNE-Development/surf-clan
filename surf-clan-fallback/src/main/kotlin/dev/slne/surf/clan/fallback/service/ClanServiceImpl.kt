@@ -44,6 +44,9 @@ class ClanServiceImpl : ClanService, Services.Fallback {
     override fun findClanByMember(uuid: UUID) =
         clans.find { it.members.any { member -> member.uuid == uuid } }
 
+    override fun findClanByUuid(clanUuid: UUID): Clan? =
+        clans.find { it.uuid == clanUuid }
+
     override fun findInvitesByMember(memberUuid: UUID) =
         clans.flatMap { it.invites }.filter { it.invited == memberUuid }.toObjectSet()
 

@@ -14,6 +14,7 @@ interface ClanService {
     fun findClanByTag(tag: String): Clan?
     fun findClanByName(name: String): Clan?
     fun findClanByMember(uuid: UUID): Clan?
+    fun findClanByUuid(clanUuid: UUID): Clan?
     fun findInvitesByMember(memberUuid: UUID): ObjectSet<ClanInvite>
     fun findClanByInvite(invite: ClanInvite): Clan?
 

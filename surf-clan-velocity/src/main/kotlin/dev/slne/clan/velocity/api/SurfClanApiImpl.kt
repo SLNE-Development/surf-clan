@@ -17,6 +17,7 @@ import java.util.*
 class SurfClanApiImpl : SurfClanApi, Services.Fallback {
     override fun findClan(player: Player) = clanService.findClanByMember(player.uniqueId)
     override fun findClan(playerUuid: UUID) = clanService.findClanByMember(playerUuid)
+    override fun findClanByUuid(clanUuid: UUID) = clanService.findClanByUuid(clanUuid)
 
     override suspend fun findClanPlayer(player: Player) =
         clanPlayerService.findClanPlayerByUuid(player.uniqueId) ?: error("ClanPlayer not found")

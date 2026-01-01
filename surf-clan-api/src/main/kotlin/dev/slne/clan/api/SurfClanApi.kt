@@ -12,6 +12,7 @@ val surfClanApi = requiredService<SurfClanApi>()
 interface SurfClanApi {
     fun findClan(player: Player): Clan?
     fun findClan(playerUuid: UUID): Clan?
+    fun findClanByUuid(clanUuid: UUID): Clan?
     suspend fun findClanPlayer(player: Player): ClanPlayer
 
     fun getWhitelistedClans(): ObjectSet<String>
