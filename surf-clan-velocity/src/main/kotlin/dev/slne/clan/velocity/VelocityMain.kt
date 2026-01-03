@@ -40,7 +40,7 @@ class VelocityMain @Inject constructor(
         databaseLoader.connect(dataPath)
         databaseLoader.createTables()
 
-        redisApi = RedisApi.create(dataPath)
+        redisApi = RedisApi.create()
         redisApi.subscribeToEvents(ClanRedisListener)
         clanService.load(redisApi)
         redisApi.freezeAndConnect()

@@ -54,17 +54,23 @@ class ClanServiceImpl : ClanService, Services.Fallback {
         clans.find { it.invites.any { clanInvite -> clanInvite == invite } }
 
     override suspend fun saveClan(clan: Clan): Clan {
+        clanRepository.save(clan).also { globalClans.put(clan.uuid.toString(), clan) }
+
         clanListeners.forEach {
             it.action.invoke(clan)
         }
 
-        return clanRepository.save(clan).also { globalClans.put(clan.uuid.toString(), clan) }
+        return clan
     }
 
     override suspend fun deleteClan(clan: Clan) {
         clanRepository.delete(clan)
         clans.find { it.uuid == clan.uuid }?.let {
             globalClans.remove(it.uuid.toString())
+        }
+
+        clanListeners.forEach {
+            it.action.invoke(clan)
         }
     }
 
