@@ -1,95 +1,66 @@
 package dev.slne.clan.velocity.commands.subcommands
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.greedyStringArgument
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
 
-class ClanSetDiscordCommand : CommandAPICommand("setdiscord") {
-    init {
-        withPermission("surf.clan.setdiscord")
+private val DISCORD_LINK_REGEX =
+    """^(?:https?://)?(?:www\.)?(?:discord\.gg|discord(?:app)?\.com/invite)/[A-Za-z0-9-]+/?$""".toRegex()
 
-        greedyStringArgument("discord") {
-            includeSuggestions(
-                ArgumentSuggestions.strings(
-                    "https://discord.gg/castcrafter",
-                    "https://discord.com/invite/castcrafter"
-                )
+fun CommandAPICommand.clanSetDiscordCommand() = subcommand("setdiscord") {
+    withPermission(ClanPermissions.CLAN_SET_DISCORD_COMMAND)
+
+    greedyStringArgument("link") {
+        includeSuggestions(
+            ArgumentSuggestions.strings(
+                "https://discord.gg/castcrafter",
+                "https://discord.com/invite/castcrafter",
+                "NULL"
             )
+        )
+    }
+
+    playerExecutorSuspend { player, args ->
+        val rawLink = args.getUnchecked<String>("link")!!
+        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+
+        if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.DISCORD)) {
+            throw CommandAPI.failWithString("Du hast keine Berechtigung, den Discord Link zu ändern.")
         }
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
-            plugin.container.launch {
-                val playerClan = player.findClan()
-                val discordFull = args.getUnchecked<String>("discord")
+        if (clan.members.size < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
+            throw CommandAPI.failWithString("Dein Clan muss mindestens ${Clan.DISCORD_LINK_REQUIRED_MEMBERS} Mitglieder haben, um den Discord-Link ändern zu können.")
+        }
 
-                if (playerClan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
+        val isNullLink = rawLink == "NULL"
 
-                    return@launch
-                }
-
-                if (!playerClan.hasPermission(player, ClanPermission.DISCORD)) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du hast keine Berechtigung, den Discord Link zu ändern.")
-                    }
-                    return@launch
-                }
-
-                if (playerClan.members.size < DISCORD_LINK_REQUIRED_MEMBERS) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Dein Clan muss mindestens $DISCORD_LINK_REQUIRED_MEMBERS Mitglieder haben, um den Discord-Link ändern zu können.")
-                    }
-                    return@launch
-                }
-
-                if (discordFull.isNullOrEmpty()) {
-                    return@launch
-                }
-
-                val split = discordFull.split(" ")
-                if (split.isEmpty() || split.size > 1) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du musst einen gültigen Discord-Invite Link angeben!")
-                    }
-                    return@launch
-                }
-
-                val discord = split[0]
-                val discordInviteRegex = Regex(
-                    "^(https?://)(www\\.)?(discord\\.gg|discord\\.com/invite)/[A-Za-z0-9]+/?$"
-                )
-
-                if (!discord.matches(discordInviteRegex)) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du musst einen gültigen Discord-Invite Link angeben!")
-                    }
-                    return@launch
-                }
-
-                player.sendText {
-                    appendPrefix()
-                    success("Du hast den Discord Link auf ")
-                    variableValue(discord)
-                    success(" geändert.")
-                }
-
-                playerClan.discordInvite = discord
-                clanService.saveClan(playerClan)
+        if (isNullLink) {
+            clan.setDiscordInvite(null)
+        } else {
+            if (!rawLink.matches(DISCORD_LINK_REGEX)) {
+                throw CommandAPI.failWithString("Du musst einen gültigen Discord-Invite Link angeben!")
             }
-        })
+
+            clan.setDiscordInvite(rawLink)
+        }
+
+        player.sendText {
+            appendPrefix()
+            success("Der Discord Link wurde erfolgreich ")
+            if (isNullLink) {
+                success("entfernt.")
+            } else {
+                success("auf ")
+                variableValue(rawLink)
+                success(" gesetzt.")
+            }
+        }
     }
 }

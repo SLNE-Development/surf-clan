@@ -1,127 +1,71 @@
 package dev.slne.clan.velocity.commands.subcommands.member.role
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.arguments
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.velocity.VelocityMain.Companion.redisApi
 import dev.slne.clan.velocity.commands.arguments.ClanMemberArgument
-import dev.slne.clan.velocity.commands.arguments.clanMemberArgument
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.extensions.playerOrNull
-import dev.slne.clan.velocity.extensions.realName
-import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.clan.velocity.redis.event.ClanBroadcastRedisEvent
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.core.api.command.args.awaiting
+import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
 
-class ClanPromoteMemberCommand : CommandAPICommand("promote") {
-    init {
-        withPermission("surf.clan.promote")
+fun CommandAPICommand.clanPromoteMemberCommand() = subcommand("promote") {
+    withPermission(ClanPermissions.CLAN_PROMOTE_MEMBER_COMMAND)
 
-        clanMemberArgument()
+    arguments(ClanMemberArgument("member"))
 
-        playerExecutor { player, args ->
-            plugin.container.launch {
-                val memberName = args[0] as String
-                val clan = player.findClan()
+    playerExecutorSuspend { player, args ->
+        val member = args.awaiting<ClanMember>("member")
+        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+        val isInClan = clan.isMember(member.uuid)
 
-                if (clan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
-
-                    return@launch
-                }
-
-                val member = ClanMemberArgument.clanMember(clan, args)
-
-                if (member == null) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler ist nicht in deinem Clan.")
-                    }
-
-                    return@launch
-                }
-
-                val memberNameComponent =
-                    member.playerOrNull?.realName() ?: Component.text(
-                        memberName,
-                        Colors.VARIABLE_VALUE
-                    )
-
-                if (!clan.hasPermission(player, ClanPermission.PROMOTE)) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du hast keine Berechtigung, diesen Spieler zu befördern.")
-                    }
-
-                    return@launch
-                }
-
-                if (member.uuid == player.uniqueId) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du kannst dich nicht selbst befördern.")
-                    }
-
-                    return@launch
-                }
-
-                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
-                    ?: error("Player not found")
-                val clanPlayerMember = clan.getMember(clanPlayer)
-
-                if (clanPlayerMember != null && member.role >= clanPlayerMember.role) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.")
-                    }
-
-                    return@launch
-                }
-
-                if (!member.role.hasNextRole()) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler hat bereits die höchste Rolle im Clan.")
-                    }
-
-                    return@launch
-                }
-
-                val oldRole = member.role
-                val newRole = member.role.nextRole()
-
-                member.role = newRole
-
-                val memberPromotedMessage = buildText {
-                    appendPrefix()
-                    append(Component.text("Der Spieler ", Colors.INFO))
-                    append(memberNameComponent)
-                    append(Component.text(" wurde durch ", Colors.INFO))
-                    append(player.realName())
-                    append(Component.text(" von ", Colors.INFO))
-                    append(oldRole.displayName)
-                    append(Component.text(" zu ", Colors.INFO))
-                    append(newRole.displayName)
-                    append(Component.text(" befördert.", Colors.INFO))
-                }
-
-                clanService.saveClan(clan)
-
-                redisApi.publishEvent(
-                    ClanBroadcastRedisEvent(
-                        clan.name,
-                        memberPromotedMessage
-                    )
-                )
-            }
+        if (!isInClan) {
+            throw CommandAPI.failWithString("Der Spieler ist nicht in deinem Clan.")
         }
+
+        if (member.uuid == player.uniqueId) {
+            throw CommandAPI.failWithString("Du kannst dich nicht selbst befördern.")
+        }
+
+        if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.PROMOTE)) {
+            throw CommandAPI.failWithString("Du hast keine Berechtigung, diesen Spieler zu befördern.")
+        }
+
+        val executorMember = clan.getMember(player.uniqueId)
+            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+
+        if (executorMember.role >= member.role) {
+            throw CommandAPI.failWithString("Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.")
+        }
+
+        if (!member.role.hasNextRole()) {
+            throw CommandAPI.failWithString("Der Spieler hat bereits die höchste Rolle im Clan.")
+        }
+
+        val oldRole = member.role
+        val newRole = member.role.nextRole()
+        val changedRole = member.changeRole(newRole)
+
+        if (!changedRole) {
+            throw CommandAPI.failWithString("Fehler beim Ändern der Rolle des Spielers.")
+        }
+
+        val memberName = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
+        ClanBroadcastRedisEvent.broadcast(clan) {
+            appendPrefix()
+            variableValue(memberName)
+            info(" wurde durch ")
+            variableValue(player.username)
+            info(" von ")
+            append(oldRole)
+            info(" zu ")
+            append(newRole)
+            info(" befördert.")
+        }.await()
     }
 }

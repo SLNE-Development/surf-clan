@@ -1,125 +1,30 @@
 package dev.slne.clan.velocity.commands.subcommands
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.playerExecutor
-import dev.jorel.commandapi.kotlindsl.stringArgument
-import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.ClanSettings.DISCORD_LINK_REQUIRED_MEMBERS
-import dev.slne.clan.core.utils.formatted
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.appendText
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import kotlin.jvm.optionals.getOrNull
+import dev.jorel.commandapi.kotlindsl.optionalArgument
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
+import dev.slne.clan.velocity.commands.arguments.ClanByClanTagArgument
+import dev.slne.clan.velocity.permission.ClanPermissions
+import dev.slne.surf.surfapi.core.api.command.args.awaitingOrNull
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
 
 
-class ClanInfoCommand : CommandAPICommand("info") {
-    init {
-        withPermission("surf.clan.info")
-        stringArgument("clanTag", optional = true) {
-            includeClanTagSuggestions()
+fun CommandAPICommand.clanInfoCommand() = subcommand("info") {
+    withPermission(ClanPermissions.CLAN_INFO_COMMAND)
+
+    optionalArgument(ClanByClanTagArgument("clanTag"))
+
+    playerExecutorSuspend { player, args ->
+        val clan = args.awaitingOrNull<Clan>("clanTag") ?: Clan.byPlayer(player.uniqueId)
+
+        if (clan == null) {
+            throw CommandAPI.failWithString("Du bist in keinem Clan.")
         }
 
-        playerExecutor { player, args ->
-            plugin.container.launch {
-                val clanTag = args.getOptionalUnchecked<String>("clanTag").getOrNull()
-                val clan = if (clanTag != null) {
-                    clanService.findClanByTag(clanTag)
-                } else {
-                    player.findClan()
-                }
-
-                if (clan == null) {
-                    if (clanTag != null) {
-                        player.sendMessage(Messages.unknownClanComponent(clanTag))
-                    } else {
-                        player.sendMessage(Messages.notInClanComponent)
-                    }
-
-                    return@launch
-                }
-
-                val createdBy =
-                    clanPlayerService.findClanPlayerByUuid(clan.createdBy)?.username ?: "Unbekannt"
-                val clanInfoComponent = buildText {
-                    appendText("ɪɴғᴏʀᴍᴀᴛɪᴏɴᴇɴ", Colors.INFO) {
-                        decorate(TextDecoration.BOLD)
-                    }
-                    appendNewline()
-
-                    append(renderLine("ɴᴀᴍᴇ", clan.name))
-                    appendNewline()
-
-                    append(renderLine("ᴛᴀɢ", clan.tag))
-                    appendNewline()
-
-                    append(
-                        renderLine(
-                            "ᴀɴғüʜʀᴇʀ",
-                            clan.members.count { it.role == ClanMemberRole.LEADER || it.role == ClanMemberRole.OWNER }
-                        )
-                    )
-                    appendNewline()
-
-                    append(
-                        renderLine(
-                            "ᴏғғɪᴢɪᴇʀᴇ",
-                            clan.members.count { it.role == ClanMemberRole.OFFICER }
-                        )
-                    )
-                    appendNewline()
-
-                    append(renderLine("ᴍɪᴛɢʟɪᴇᴅᴇʀ", clan.members.size))
-                    appendNewline()
-
-                    append(renderLine("ᴇʀsᴛᴇʟʟᴛ ᴠᴏɴ", createdBy))
-                    appendNewline()
-
-                    append(
-                        renderLine(
-                            "ᴇʀsᴛᴇʟʟᴛ ᴀᴍ",
-                            clan.createdAt?.formatted() ?: "/"
-                        )
-                    )
-
-                    if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
-                        appendNewline()
-                        append(
-                            buildText {
-                                append(
-                                    renderLine(
-                                        "ᴅɪsᴄᴏʀᴅ",
-                                        clan.discordInvite ?: "https://discord.gg/castcrafter"
-                                    )
-                                )
-
-                                clickEvent(
-                                    ClickEvent.openUrl(
-                                        clan.discordInvite ?: "https://discord.gg/castcrafter"
-                                    )
-                                )
-                            }
-                        )
-                    }
-                }
-
-                player.sendMessage(clanInfoComponent)
-            }
-        }
+        player.sendMessage(Components.Clan.renderClanInformation(clan as ClanImpl))
     }
-
-    private fun renderLine(key: String, value: Any) =
-        Component.text()
-            .append(Component.text("| ", Colors.INFO, TextDecoration.BOLD))
-            .append(Component.text("$key: ", NamedTextColor.GRAY))
-            .append(Component.text(value.toString(), NamedTextColor.WHITE))
 }

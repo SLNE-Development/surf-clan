@@ -1,182 +1,74 @@
 package dev.slne.clan.velocity.commands.subcommands.member
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.integerArgument
-import dev.jorel.commandapi.kotlindsl.playerExecutor
-import dev.jorel.commandapi.kotlindsl.stringArgument
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.commands.subcommands.includeClanTagSuggestions
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.plugin
+import dev.jorel.commandapi.kotlindsl.optionalArgument
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
+import dev.slne.clan.velocity.commands.arguments.ClanByClanTagArgument
+import dev.slne.clan.velocity.permission.ClanPermissions
+import dev.slne.surf.surfapi.core.api.command.args.awaitingOrNull
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
+import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import java.util.concurrent.ConcurrentHashMap
 
-private const val MEMBERS_PER_PAGE = 10
+data class ClanMemberData(val memberName: String, val role: ClanMemberRole)
 
-class ClanMembersCommand : CommandAPICommand("members") {
-    init {
-        withPermission("surf.clan.members")
+private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
+    val clanInformationHover = Components.Clan.renderClanInformationHover(clan)
 
-        stringArgument("clan", optional = true) {
-            includeClanTagSuggestions()
+    return Pagination {
+        title {
+            primary("Mitglieder von ".toSmallCaps())
+            append(clanInformationHover)
         }
-        integerArgument("page", 1, optional = true)
 
-        playerExecutor { player, args ->
-            plugin.container.launch {
-                var clan = player.findClan()
-                val clanTag = args.getUnchecked<String>("clan")
-                var page = args.getOrDefaultUnchecked("page", 1)
+        resultsPerPage = 10
 
-                if (clanTag != null) {
-                    clan = clanService.findClanByTag(clanTag)
+        rowRenderer { member, i ->
+            listOf(
+                buildText {
+                    text(member.memberName, Colors.WHITE)
+                    appendSpace()
+                    spacer("(")
+                    append(member.role)
+                    spacer(")")
                 }
-
-                if (clan == null) {
-                    player.sendMessage(
-                        if (clanTag == null) Messages.notInClanComponent else Messages.unknownClanComponent(
-                            clanTag
-                        )
-                    )
-
-                    return@launch
-                }
-
-                val chunkedMembers = clan.members
-                    .sortedBy { it.role.ordinal }
-                    .reversed()
-                    .chunked(MEMBERS_PER_PAGE)
-                val totalPages = chunkedMembers.size
-
-                page = if (page < 1) 1 else page
-                page = if (page > totalPages) totalPages else page
-
-                val pageMembers = chunkedMembers.getOrNull(page - 1) ?: emptyList()
-
-                val clanInfoMessage = buildText {
-                    appendNewline()
-                    append(Component.text("ᴍɪᴛɢʟɪᴇᴅᴇʀ ᴠᴏɴ ", Colors.INFO))
-                    append(clanComponent(clan))
-                    appendNewline()
-
-                    pageMembers.forEach { member ->
-                        val memberName =
-                            clanPlayerService.findClanPlayerByUuid(member.uuid)?.username
-                                ?: member.uuid.toString()
-
-                        append(buildText {
-                            append(
-                                Component.text(
-                                    "| ",
-                                    Colors.INFO,
-                                    TextDecoration.BOLD
-                                )
-                            )
-                            append(Component.text(memberName, NamedTextColor.WHITE))
-                            append(Component.text(" (", NamedTextColor.GRAY))
-                            append(Component.text(member.role.toString(), Colors.INFO))
-                            append(Component.text(")", NamedTextColor.GRAY))
-                        })
-
-                        appendNewline()
-                    }
-
-                    val firstPageComponent = renderPageSwapComponent(buildText {
-                        append(Component.text("[", NamedTextColor.GRAY))
-                        append(Component.text("<<", Colors.ERROR))
-                        append(Component.text("]", NamedTextColor.GRAY))
-
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(Component.text("Zur ersten Seite", Colors.INFO))
-                        }))
-
-                        clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} 1"))
-                    }, page) { it > 1 }
-
-                    val previousPageComponent = renderPageSwapComponent(buildText {
-                        append(Component.text("[", NamedTextColor.GRAY))
-                        append(Component.text("<", Colors.ERROR))
-                        append(Component.text("]", NamedTextColor.GRAY))
-
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(Component.text("Zurück zur Seite ${page - 1}", Colors.INFO))
-                        }))
-
-                        clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} ${page - 1}"))
-                    }, page) { it > 1 }
-
-                    val nextPageComponent = renderPageSwapComponent(buildText {
-                        append(Component.text("[", NamedTextColor.GRAY))
-                        append(Component.text(">", Colors.SUCCESS))
-                        append(Component.text("]", NamedTextColor.GRAY))
-
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(Component.text("Weiter zur Seite ${page + 1}", Colors.INFO))
-                        }))
-
-                        clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} ${page + 1}"))
-                    }, page) { it < totalPages }
-
-                    val lastPageComponent = renderPageSwapComponent(buildText {
-                        append(Component.text("[", NamedTextColor.GRAY))
-                        append(Component.text(">>", Colors.SUCCESS))
-                        append(Component.text("]", NamedTextColor.GRAY))
-
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(Component.text("Zur letzten Seite", Colors.INFO))
-                        }))
-
-                        clickEvent(ClickEvent.runCommand("/clan members ${clan.tag} $totalPages"))
-                    }, page) { it < totalPages }
-
-                    val pagination = buildText {
-                        append(firstPageComponent)
-                        appendSpace()
-                        append(previousPageComponent)
-                        appendSpace()
-                        append(
-                            Component.text(
-                                "sᴇɪᴛᴇ $page/$totalPages",
-                                NamedTextColor.GRAY
-                            )
-                        )
-                        appendSpace()
-                        append(nextPageComponent)
-                        appendSpace()
-                        append(lastPageComponent)
-                    }
-
-                    appendNewline()
-                    append(pagination)
-                }
-
-                player.sendMessage(clanInfoMessage)
-            }
+            )
         }
     }
+}
 
-    private fun renderPageSwapComponent(
-        message: Component,
-        currentPage: Int,
-        shouldRender: (Int) -> Boolean
-    ): Component {
-        return if (shouldRender(currentPage)) {
-            message
-        } else {
-            val pcs = PlainTextComponentSerializer.plainText()
-            val plainText = pcs.serialize(message)
+fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
+    withPermission(ClanPermissions.CLAN_VIEW_MEMBERS_COMMAND)
 
-            Component.text(plainText).color(NamedTextColor.GRAY)
+    optionalArgument(ClanByClanTagArgument("clan"))
+
+    playerExecutorSuspend { player, args ->
+        val clan = args.awaitingOrNull<Clan>("clan") ?: run {
+            Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
         }
+
+        val data = ConcurrentHashMap.newKeySet<ClanMemberData>()
+        supervisorScope {
+            for (member in clan.members) {
+                launch {
+                    val name = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
+                    data.add(ClanMemberData(name, member.role))
+                }
+            }
+        }
+
+        val pagination = pagination(clan as ClanImpl)
+        player.sendMessage(pagination.renderComponent(data))
     }
 }

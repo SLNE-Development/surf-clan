@@ -1,150 +1,101 @@
 package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
+import com.velocitypowered.api.proxy.Player
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.player
-import dev.slne.clan.velocity.extensions.playerOrNull
-import dev.slne.clan.velocity.extensions.realName
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
+import dev.slne.clan.core.redis.RedisService
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.clan.velocity.redis.event.BroadcastMessageEvent
+import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
+import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import java.util.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
 
-class ClanLeaveCommand : CommandAPICommand("leave") {
-    init {
-        withPermission("surf.clan.leave")
-        executesPlayer(PlayerCommandExecutor { player, args ->
-            plugin.container.launch {
-                val clan = player.findClan()
+fun CommandAPICommand.clanLeaveCommand() = subcommand("leave") {
+    withPermission(ClanPermissions.CLAN_LEAVE_COMMAND)
 
-                if (clan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
+    playerExecutorSuspend { player, args ->
+        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
-                    return@launch
-                }
+        if (clan.createdByUuid == player.uniqueId) {
+            throw CommandAPI.failWithString("Du bist der Besitzer des Clans und kannst ihn nicht verlassen. Nutze /clan disband um den Clan aufzulösen.")
+        }
 
-                player.sendText {
-                    info("Möchtest du den Clan ")
-                    append(clanComponent(clan))
-                    info(" wirklich verlassen? Klicke ")
-                    append(buildText {
-                        append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(
-                                Component.text(
-                                    "Klicke hier, um zu bestätigen.",
-                                    NamedTextColor.GRAY
-                                )
-                            )
-                            appendNewline()
-                            appendNewline()
-                            appendNewline()
-
-                            append(
-                                Component.text(
-                                    "Achtung: ",
-                                    NamedTextColor.RED,
-                                    TextDecoration.BOLD
-                                )
-                            )
-                            append(
-                                Component.text(
-                                    "Du kannst den Vorgang nicht rückgängig machen.",
-                                    NamedTextColor.RED
-                                )
-                            )
-                            appendNewline()
-                            appendNewline()
-
-                            append(
-                                Component.text(
-                                    "Wenn du den Clan verlässt, verlierst du alle Rechte ",
-                                    NamedTextColor.RED
-                                )
-                            )
-                            appendNewline()
-                            append(
-                                Component.text(
-                                    "und kannst nicht mehr selbstständig in den Clan zurückkehren.",
-                                    NamedTextColor.RED
-                                )
-                            )
-                            appendNewline()
-                            appendNewline()
-
-                            append(
-                                Component.text(
-                                    "Wenn du der Besitzer des Clans bist ",
-                                    NamedTextColor.RED,
-                                    TextDecoration.BOLD
-                                )
-                            )
-                            append(
-                                Component.text(
-                                    "und ihn verlässt, wird der Clan aufgelöst.",
-                                    NamedTextColor.RED,
-                                    TextDecoration.BOLD
-                                )
-                            )
-                        }))
-                        clickEvent(ClickEvent.callback {
-                            plugin.container.launch {
-                                val clanDisbandedMessage = buildText {
-                                    append(Component.text("Der Clan ", Colors.INFO))
-                                    append(clanComponent(clan))
-                                    append(
-                                        Component.text(
-                                            " wurde aufgelöst, da der Anführer ",
-                                            Colors.INFO
-                                        )
-                                    )
-                                    append(player.realName())
-                                    append(Component.text(" den Clan verlassen hat.", Colors.INFO))
-                                }
-
-                                if (clan.createdBy == player.uniqueId) {
-                                    clanService.deleteClan(clan)
-
-                                    clan.members.forEach { member ->
-                                        member.player.sendMessage(clanDisbandedMessage)
-                                    }
-                                } else {
-                                    val clanMember =
-                                        clan.members.find { it.uuid == player.uniqueId }
-
-                                    if (clanMember == null) {
-                                        player.sendMessage(Messages.notInClanComponent)
-
-                                        return@launch
-                                    }
-
-                                    clan.removeMember(clanMember)
-                                    clanService.saveClan(clan)
-
-                                    clan.members.forEach { member ->
-                                        member.playerOrNull?.sendText {
-                                            info("Der Spieler ")
-                                            variableValue(player.username)
-                                            info(" hat den Clan verlassen.")
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    })
-                    info(" um zu bestätigen.")
-                }
+        player.sendText {
+            warning("Möchtest du den Clan ")
+            append(Components.Clan.renderClanInformationHover(clan as ClanImpl))
+            warning(" wirklich verlassen? Klicke ")
+            append {
+                error("HIER", TextDecoration.BOLD)
+                hoverEvent(createHoverEvent())
+                clickEvent(createConfirmCallback(clan.uuid))
             }
-        })
+            warning(" um den Clan zu verlassen.")
+        }
+    }
+}
+
+private fun createHoverEvent() = buildText {
+    info("Klicke hier um den Clan zu verlassen.")
+    appendNewline(3)
+    error("Achtung: ", TextDecoration.BOLD)
+    error("Du kannst den Vorgang nicht rückgängig machen.")
+    appendNewline(2)
+    error("Wenn du den Clan verlässt, verlierst du alle Rechte")
+    appendNewline()
+    error("und benötigst erneut eine Einladung, um wieder den Clan beitreten zu können.")
+}
+
+private fun createConfirmCallback(originalClanUuid: UUID) = ClickEvent.callback(
+    ClickCallback.widen({ clicked ->
+        plugin.container.launch {
+            handleLeaveClick(clicked, originalClanUuid)
+        }
+    }, Player::class.java)
+) { it.lifetime(1.minutes.toJavaDuration()) }
+
+private suspend fun handleLeaveClick(clicked: Player, originalClanUuid: UUID) {
+    val clan = Clan.byPlayer(clicked.uniqueId) ?: return clicked.sendText {
+        appendPrefix()
+        error("Du bist nicht mehr in einem Clan.")
+    }
+
+    if (clan.uuid != originalClanUuid) return clicked.sendText {
+        appendPrefix()
+        error("Der Clan, den du verlassen wolltest, hat sich geändert. Bitte versuche es erneut.")
+    }
+
+    val removed = clan.removeMember(clicked.uniqueId)
+
+    if (!removed) {
+        return clicked.sendText {
+            appendPrefix()
+            error("Du bist nicht mehr in dem Clan.")
+        }
+    } else {
+        clicked.sendText {
+            appendPrefix()
+            success("Du hast den Clan verlassen.")
+        }
+
+        val memberLeftMessage = buildText {
+            variableValue(clicked.username)
+            info(" hat den Clan verlassen.")
+        }
+
+        val memberUuids = clan.members.map { it.uuid }.toSet()
+        RedisService.publish(BroadcastMessageEvent(memberLeftMessage, memberUuids)).await()
     }
 }

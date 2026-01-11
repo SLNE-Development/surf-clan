@@ -1,21 +1,22 @@
 package dev.slne.clan.api.member
 
+import dev.slne.clan.api.member.listener.ClanMemberListener
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.api.serializer.SerializableLocalDateTime
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 import java.util.*
 
-@Serializable
-data class ClanMember(
-    val uuid: @Contextual UUID,
-    var role: ClanMemberRole,
+interface ClanMember {
+    val uuid: UUID
+    val role: ClanMemberRole
+    val addedBy: UUID?
 
-    val addedBy: @Contextual UUID?,
+    fun hasPermission(clanPermission: ClanPermission): Boolean
+    suspend fun changeRole(role: ClanMemberRole): Boolean
 
-    val createdAt: SerializableLocalDateTime = LocalDateTime.now(),
-    val updatedAt: SerializableLocalDateTime? = LocalDateTime.now()
-) {
-    fun hasPermission(clanPermission: ClanPermission) = role.hasPermission(clanPermission)
+    companion object {
+        fun registerListener(listener: ClanMemberListener) = ClanMemberService.instance.registerListener(listener)
+        fun unregisterListener(listener: ClanMemberListener) = ClanMemberService.instance.unregisterListener(listener)
+
+        suspend fun byUuid(uuid: UUID) = ClanMemberService.instance.findMemberByUuid(uuid)
+        suspend fun byName(name: String) = ClanMemberService.instance.findMemberByName(name)
+    }
 }

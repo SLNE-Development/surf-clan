@@ -3,77 +3,86 @@ package dev.slne.clan.velocity.listener
 import com.github.shynixn.mccoroutine.velocity.launch
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.ServerConnectedEvent
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.extensions.findClanInvites
+import dev.slne.clan.api.invite.ClanInvite
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.seconds
 
 object JoinInviteListener {
+
     @Subscribe
-    fun onLogin(event: ServerConnectedEvent) {
+    fun onServerConnected(event: ServerConnectedEvent) {
         plugin.container.launch {
-            delay(1000L)
+            delay(1.seconds)
 
             val player = event.player
-            val invites = player.findClanInvites()
+            if (player.currentServer.isEmpty) {
+                return@launch
+            }
+
+            val invites = ClanInvite.pendingInvitesByPlayer(player.uniqueId)
 
             if (invites.isEmpty()) {
                 return@launch
             }
 
-            player.sendMessage(buildText {
-                append(Component.text("ᴅᴜ ʜᴀsᴛ ɴᴏᴄʜ ", Colors.INFO))
-                append(Component.text("${invites.size}", Colors.VARIABLE_VALUE))
-                append(
-                    Component.text(
-                        " ᴏғғᴇɴᴇ ᴄʟᴀɴ-ᴇɪɴʟᴀᴅᴜɴɢ${if (invites.size == 1) "" else "ᴇɴ"}:",
-                        Colors.INFO
-                    )
-                )
-            })
 
-            for (invite in invites) {
-                val clan = clanService.findClanByInvite(invite) ?: return@launch
-                val acceptComponent = buildText {
-                    append(Component.text(" [Annehmen]", Colors.SUCCESS))
-                    hoverEvent(
-                        HoverEvent.showText(
-                            Component.text(
-                                "Klicke hier, um die Einladung anzunehmen.",
-                                NamedTextColor.GREEN
-                            )
+            val data = ConcurrentHashMap.newKeySet<ClanInviteRenderData>()
+
+            supervisorScope {
+                for (invite in invites) {
+                    launch {
+                        val clan = invite.getClan() ?: return@launch
+                        val renderData = ClanInviteRenderData(
+                            clanInformationHover = Components.Clan.renderClanInformationHover(clan as ClanImpl),
+                            clanName = clan.name
                         )
-                    )
-                    clickEvent(ClickEvent.runCommand("/clan accept ${clan.name}"))
+                        data.add(renderData)
+                    }
                 }
+            }
 
-                val denyComponent = buildText {
-                    append(Component.text("[Ablehnen]", Colors.ERROR))
-                    hoverEvent(
-                        HoverEvent.showText(
-                            Component.text(
-                                "Klicke hier, um die Einladung abzulehnen.",
-                                NamedTextColor.RED
-                            )
-                        )
-                    )
-                    clickEvent(ClickEvent.runCommand("/clan invite ${player.username} deny ${clan.name}"))
-                }
+            buildText {
+                appendPrefix()
+                info("Du hast noch ".toSmallCaps())
+                variableValue(invites.size)
+                info(" offene Clan-Einladung${if (invites.size == 1) "" else "en"}.".toSmallCaps())
+                appendCollectionNewLine(data) { it.asComponent() }
+            }
+        }
+    }
 
-                player.sendMessage(buildText {
-                    append(Component.text(" - ", Colors.INFO))
-                    append(clanComponent(clan))
-                    append(acceptComponent)
-                    appendSpace()
-                    append(denyComponent)
+    private data class ClanInviteRenderData(
+        private val clanInformationHover: Component,
+        private val clanName: String
+    ) : ComponentLike {
+        override fun asComponent(): Component = buildText {
+            append(clanInformationHover)
+            appendSpace()
+            append {
+                success("[Annehmen]")
+                hoverEvent(buildText {
+                    info("Klicke hier, um die Einladung anzunehmen.")
                 })
+                clickEvent(ClickEvent.runCommand("/clan accept $clanName"))
+            }
+            appendSpace()
+            append {
+                error("[Ablehnen]")
+                hoverEvent(buildText {
+                    info("Klicke hier, um die Einladung abzulehnen.")
+                })
+                clickEvent(ClickEvent.runCommand("/clan deny $clanName"))
             }
         }
     }

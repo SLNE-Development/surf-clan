@@ -1,12 +1,12 @@
 package dev.slne.clan.velocity.commands.subcommands.player
 
 import dev.jorel.commandapi.CommandAPICommand
-import dev.slne.clan.velocity.commands.subcommands.player.subcommands.ClanPlayerSettingsCommand
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.velocity.commands.subcommands.player.subcommands.clanPlayerSettingsCommand
+import dev.slne.clan.velocity.permission.ClanPermissions
 
-class ClanPlayerCommand : CommandAPICommand("player") {
-    init {
-        withPermission("surf.clan.player")
+fun CommandAPICommand.clanPlayerCommand() = subcommand("player") {
+    withPermission(ClanPermissions.CLAN_PLAYER_COMMAND)
 
-        withSubcommand(ClanPlayerSettingsCommand())
-    }
+    clanPlayerSettingsCommand()
 }

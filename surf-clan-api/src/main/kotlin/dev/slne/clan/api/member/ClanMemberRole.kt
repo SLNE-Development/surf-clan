@@ -1,56 +1,46 @@
 package dev.slne.clan.api.member
 
 import dev.slne.clan.api.permission.ClanPermission
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.text
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.ComponentLike
+import java.util.*
 
 enum class ClanMemberRole(
-    private val permissions: Array<ClanPermission>,
     val displayName: Component,
-) {
-
+    vararg permissions: ClanPermission,
+): ComponentLike {
     MEMBER(
-        arrayOf(),
-        Component.text("Mitglied", NamedTextColor.YELLOW)
+        text("Mitglied", Colors.YELLOW)
     ),
     OFFICER(
-        arrayOf(
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
-        ),
-        Component.text("Offizier", NamedTextColor.GOLD)
+        text("Offizier", Colors.GOLD),
+        ClanPermission.INVITE,
+        ClanPermission.KICK,
     ),
     LEADER(
-        arrayOf(
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
-
-            ClanPermission.DEMOTE,
-            ClanPermission.PROMOTE,
-
-            ClanPermission.DISCORD
-        ),
-        Component.text("Anführer", NamedTextColor.RED)
+        text("Anführer", Colors.RED),
+        ClanPermission.INVITE,
+        ClanPermission.KICK,
+        ClanPermission.DEMOTE,
+        ClanPermission.PROMOTE,
+        ClanPermission.DISCORD
     ),
     OWNER(
-        arrayOf(
-
-            ClanPermission.DISBAND,
-
-            ClanPermission.INVITE,
-            ClanPermission.KICK,
-
-            ClanPermission.DEMOTE,
-            ClanPermission.PROMOTE,
-
-            ClanPermission.DISCORD,
-            ClanPermission.OPTIONS_TAG_COLOR
-        ),
-        Component.text("Besitzer", NamedTextColor.RED)
+        text("Besitzer", Colors.RED),
+        ClanPermission.DISBAND,
+        ClanPermission.INVITE,
+        ClanPermission.KICK,
+        ClanPermission.DEMOTE,
+        ClanPermission.PROMOTE,
+        ClanPermission.DISCORD,
+        ClanPermission.OPTIONS_TAG_COLOR
     );
 
-    fun hasNextRole() = this != LEADER
+    private val permissions = EnumSet.copyOf(permissions.toSet())
+
+    fun hasNextRole() = this != LEADER && this != OWNER
     fun hasPreviousRole() = this != MEMBER
 
     fun nextRole() = when (this) {
@@ -67,6 +57,7 @@ enum class ClanMemberRole(
         OWNER -> OWNER
     }
 
-    fun hasPermission(permission: ClanPermission) =
-        ObjectOpenHashSet(permissions).contains(permission)
+    fun hasPermission(permission: ClanPermission) = permissions.contains(permission)
+
+    override fun asComponent() = displayName
 }

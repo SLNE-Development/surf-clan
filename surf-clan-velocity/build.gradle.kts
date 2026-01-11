@@ -14,10 +14,10 @@ velocityPluginFile {
         register("miniplaceholders")
     }
 
-    authors = listOf("Ammo", "red")
+    authors = listOf("Ammo", "red", "twisti")
 }
 
 dependencies {
     api(project(":surf-clan-core"))
-    runtimeOnly(project(":surf-clan-fallback"))
+    runtimeOnly(project(":surf-clan-runtime"))
 }

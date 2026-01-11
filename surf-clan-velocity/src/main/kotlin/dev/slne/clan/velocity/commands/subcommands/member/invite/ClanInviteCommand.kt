@@ -1,100 +1,51 @@
 package dev.slne.clan.velocity.commands.subcommands.member.invite
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.arguments
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.VelocityMain.Companion.redisApi
-import dev.slne.clan.velocity.commands.arguments.PlayerStringArgument
-import dev.slne.clan.velocity.commands.arguments.playerStringArgument
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.plugin
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
+import dev.slne.clan.core.redis.RedisService
+import dev.slne.clan.velocity.commands.arguments.OfflinePlayerArgument
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.clan.velocity.redis.event.ClanInviteRedisEvent
+import dev.slne.surf.core.api.common.player.SurfPlayer
+import dev.slne.surf.surfapi.core.api.command.args.awaiting
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
 
-class ClanInviteCommand : CommandAPICommand("invite") {
-    init {
-        withPermission("surf.clan.invite")
-        playerStringArgument()
+fun CommandAPICommand.clanInviteCommand() = subcommand("invite") {
+    withPermission(ClanPermissions.CLAN_INVITE_COMMAND)
 
-        playerExecutor { player, args ->
-            plugin.container.launch {
-                val playerClan = player.findClan()
+    arguments(OfflinePlayerArgument("invitee"))
 
-                if (playerClan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
-                    return@launch
+    playerExecutorSuspend { player, args ->
+        val invitee = args.awaiting<SurfPlayer>("invitee")
+        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+
+        if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.INVITE)) {
+            throw CommandAPI.failWithString("Du hast keine Berechtigung, Spieler in den Clan einzuladen.")
+        }
+
+        when (clan.invite(invitee.uuid, player.uniqueId)) {
+            ClanInviteResult.AlreadyInClan -> throw CommandAPI.failWithString("Der Spieler ist bereits in einem Clan.")
+            ClanInviteResult.AlreadyInvited -> throw CommandAPI.failWithString("Der Spieler wurde bereits eingeladen.")
+            ClanInviteResult.InvitationsDisabled -> throw CommandAPI.failWithString("Der Spieler nimmt keine Einladungen an.")
+            is ClanInviteResult.Success -> {
+                player.sendText {
+                    appendPrefix()
+                    success("Du hast ")
+                    variableValue(invitee.lastKnownName ?: invitee.uuid.toString())
+                    success(" in den Clan ")
+                    append(Components.Clan.renderClanInformationHover(clan as ClanImpl))
+                    success(" eingeladen.")
                 }
 
-                if (!playerClan.hasPermission(player, ClanPermission.INVITE)) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du hast keine Berechtigung, Spieler in den Clan einzuladen.")
-                    }
-
-                    return@launch
-                }
-
-                val invitedName = PlayerStringArgument.player(args)
-                val invitedPlayer = clanPlayerService.findClanPlayerByName(invitedName)
-
-                if (invitedPlayer == null) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler konnte nicht gefunden werden.")
-                    }
-                    return@launch
-                }
-
-                val invitedPlayerClan = clanService.findClanByMember(invitedPlayer.uuid)
-
-                if (invitedPlayerClan != null) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler ist bereits in einem Clan.")
-                    }
-
-                    return@launch
-                }
-
-                if (!invitedPlayer.acceptsClanInvites) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler nimmt keine Einladungen an.")
-                    }
-                    return@launch
-                }
-
-                val inviteResult = playerClan.invite(invitedPlayer.uuid, player.uniqueId)
-
-                if (inviteResult) {
-                    clanService.saveClan(playerClan)
-
-                    player.sendText {
-                        appendPrefix()
-                        success("Du hast ")
-                        variableValue(invitedPlayer.username)
-                        success(" in den Clan ")
-                        append(clanComponent(playerClan))
-                        success(" eingeladen.")
-                    }
-
-                    redisApi.publishEvent(
-                        ClanInviteRedisEvent(
-                            player.username, invitedPlayer.uuid, playerClan.name
-                        )
-                    )
-                } else {
-                    player.sendText {
-                        appendPrefix()
-                        error("Der Spieler wurde bereits eingeladen.")
-                    }
-                }
+                RedisService.publish(ClanInviteRedisEvent(player.username, invitee.uuid, clan.name)).await()
             }
         }
     }

@@ -1,13 +1,12 @@
 package dev.slne.clan.velocity.redis.event
 
 import dev.slne.surf.redis.event.RedisEvent
-import kotlinx.serialization.Contextual
+import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class ClanInviteRedisEvent(
     val inviterName: String,
-    val invitedUuid: @Contextual UUID,
+    val invitedUuid: SerializableStringUUID,
     val clanName: String
 ) : RedisEvent()

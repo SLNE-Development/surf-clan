@@ -1,4 +1,5 @@
 import dev.slne.surf.surfapi.gradle.util.slneReleases
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 buildscript {
     repositories {
@@ -17,12 +18,22 @@ allprojects {
 
 subprojects {
     afterEvaluate {
-        plugins.withType<PublishingPlugin> {
-            configure<PublishingExtension> {
-                repositories {
-                    slneReleases()
-                }
+        configure<KotlinJvmExtension> {
+            compilerOptions {
+                optIn.add("dev.slne.clan.api.util.InternalClanApi")
             }
         }
     }
 }
+
+//subprojects {
+//    afterEvaluate {
+//        plugins.withType<PublishingPlugin> {
+//            configure<PublishingExtension> {
+//                repositories {
+//                    slneReleases()
+//                }
+//            }
+//        }
+//    }
+//}

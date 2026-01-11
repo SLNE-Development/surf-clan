@@ -1,35 +1,40 @@
 package dev.slne.clan.velocity.redis.listener
 
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.velocity.extensions.playerOrNull
+import com.github.shynixn.mccoroutine.velocity.launch
+import dev.slne.clan.core.clan.CoreClanService
 import dev.slne.clan.velocity.plugin
+import dev.slne.clan.velocity.redis.event.BroadcastMessageEvent
 import dev.slne.clan.velocity.redis.event.ClanBroadcastRedisEvent
 import dev.slne.clan.velocity.redis.event.ClanInviteRedisEvent
 import dev.slne.surf.redis.event.OnRedisEvent
-import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
 import kotlin.jvm.optionals.getOrNull
 
 object ClanRedisListener {
+
+    @OnRedisEvent
+    fun onBroadcastMessage(event: BroadcastMessageEvent) {
+        event.receiver
+            .mapNotNull { plugin.proxy.getPlayer(it).getOrNull() }
+            .forEach { it.sendMessage(event.message) }
+    }
+
     @OnRedisEvent
     fun onClanBroadcastEvent(event: ClanBroadcastRedisEvent) {
-        val clan = clanService.findClanByName(event.clanName) ?: return
-
-        clan.members.forEach {
-            it.playerOrNull?.sendText {
-                append(event.message)
+        plugin.container.launch {
+            val clan = CoreClanService.findClanByID(event.clanID) ?: return@launch
+            for (member in clan.members) {
+                val player = plugin.proxy.getPlayer(member.uuid).getOrNull() ?: continue
+                player.sendMessage(event.message)
             }
         }
     }
 
     @OnRedisEvent
     fun onClanInviteEvent(event: ClanInviteRedisEvent) {
-        val target = plugin.server.getPlayer(event.invitedUuid).getOrNull() ?: return
+        val target = plugin.proxy.getPlayer(event.invitedUuid).getOrNull() ?: return
 
         target.sendText {
             appendPrefix()
@@ -39,37 +44,23 @@ object ClanRedisListener {
             variableValue(event.clanName)
             info(" eingeladen. ")
 
-            val acceptComponent = buildText {
-                append(Component.text("[Annehmen]", Colors.SUCCESS))
-                hoverEvent(
-                    HoverEvent.showText(
-                        Component.text(
-                            "Klicke hier, um die Einladung anzunehmen.",
-                            NamedTextColor.GREEN
-                        )
-                    )
-                )
+            append {
+                success("[Annehmen]")
+                hoverEvent(buildText {
+                    info("Klicke hier, um die Einladung anzunehmen.")
+                })
                 clickEvent(ClickEvent.runCommand("/clan accept ${event.clanName}"))
             }
 
-            append(acceptComponent)
             appendSpace()
 
-            val denyComponent = buildText {
-                append(Component.text("[Ablehnen]", Colors.ERROR))
-                hoverEvent(
-                    HoverEvent.showText(
-                        Component.text(
-                            "Klicke hier, um die Einladung abzulehnen.",
-                            NamedTextColor.RED
-                        )
-                    )
-                )
+            append {
+                error("[Ablehnen]")
+                hoverEvent(buildText {
+                    info("Klicke hier, um die Einladung abzulehnen.")
+                })
                 clickEvent(ClickEvent.runCommand("/clan deny ${event.clanName}"))
             }
-
-            append(denyComponent)
         }
-
     }
 }

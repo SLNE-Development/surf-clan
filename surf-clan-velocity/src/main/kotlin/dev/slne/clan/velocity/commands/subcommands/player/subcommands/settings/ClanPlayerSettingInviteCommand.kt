@@ -1,50 +1,39 @@
 package dev.slne.clan.velocity.commands.subcommands.player.subcommands.settings
 
-import com.github.shynixn.mccoroutine.velocity.launch
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import dev.jorel.commandapi.kotlindsl.booleanArgument
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.velocity.plugin
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.player.ClanPlayer
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
 
-class ClanPlayerSettingInviteCommand : CommandAPICommand("invite") {
-    init {
-        withPermission("surf.clan.player.settings.invite")
+fun CommandAPICommand.clanPlayerSettingInviteCommand() = subcommand("invite") {
+    withPermission(ClanPermissions.CLAN_PLAYER_SETTINGS_INVITE_COMMAND)
 
-        booleanArgument("accept", optional = true)
+    booleanArgument("accept", optional = true)
 
-        executesPlayer(PlayerCommandExecutor { player, args ->
-            plugin.container.launch {
-                val accept = args.getOptionalUnchecked<Boolean>("accept").orElse(true)
-                val clanPlayer = clanPlayerService.findClanPlayerByUuid(player.uniqueId)
+    playerExecutorSuspend { player, args ->
+        val acceptByArgs = args.getUnchecked<Boolean?>("accept")
+        val clanPlayer = ClanPlayer.byUuid(player.uniqueId)
 
-                if (clanPlayer == null) {
-                    player.sendMessage(Messages.notInClanComponent)
+        val accept = acceptByArgs ?: clanPlayer.acceptsClanInvites.not()
+        val changed = clanPlayer.setAcceptsClanInvites(accept)
 
-                    return@launch
-                }
+        if (!changed) {
+            throw CommandAPI.failWithString("Nothing changed.")
+        }
 
-                clanPlayer.acceptsClanInvites = accept
-                clanPlayerService.save(clanPlayer)
-
-                if (accept) {
-                    player.sendText {
-                        appendPrefix()
-                        info("Du hast Einladungen zu Clans ")
-                        success("aktiviert")
-                        info(".")
-                    }
-                } else {
-                    player.sendText {
-                        appendPrefix()
-                        info("Du hast Einladungen zu Clans ")
-                        error("deaktiviert")
-                        info(".")
-                    }
-                }
+        player.sendText {
+            appendPrefix()
+            success("Du hast Einladungen zu Clans ")
+            if (accept) {
+                variableValue("aktiviert")
+            } else {
+                variableValue("deaktiviert")
             }
-        })
+            success(".")
+        }
     }
 }
