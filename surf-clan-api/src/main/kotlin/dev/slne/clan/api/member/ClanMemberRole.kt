@@ -10,7 +10,7 @@ import java.util.*
 enum class ClanMemberRole(
     val displayName: Component,
     vararg permissions: ClanPermission,
-): ComponentLike {
+) : ComponentLike {
     MEMBER(
         text("Mitglied", Colors.YELLOW)
     ),
@@ -38,7 +38,9 @@ enum class ClanMemberRole(
         ClanPermission.OPTIONS_TAG_COLOR
     );
 
-    private val permissions = EnumSet.copyOf(permissions.toSet())
+    private val permissions = EnumSet.noneOf(ClanPermission::class.java).apply {
+        addAll(permissions.toSet())
+    }
 
     fun hasNextRole() = this != LEADER && this != OWNER
     fun hasPreviousRole() = this != MEMBER

@@ -11,7 +11,7 @@ import dev.slne.clan.core.invite.CoreClanInviteService
 import dev.slne.surf.clan.runtime.db.repository.ClanInviteRepository
 import java.util.*
 
-@AutoService(CoreClanInviteService::class)
+@AutoService(ClanInviteService::class)
 class ClanInviteServiceImpl : CoreClanInviteService {
 
     override suspend fun fetchPendingInvites(clanID: ULong): Set<ClanInviteImpl> {

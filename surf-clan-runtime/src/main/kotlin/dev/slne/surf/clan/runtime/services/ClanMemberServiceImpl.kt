@@ -17,7 +17,7 @@ import dev.slne.surf.surfapi.core.api.util.logger
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-@AutoService(CoreClanMemberService::class)
+@AutoService(ClanMemberService::class)
 class ClanMemberServiceImpl : CoreClanMemberService {
 
     private val loadedMembers = Caffeine.newBuilder()

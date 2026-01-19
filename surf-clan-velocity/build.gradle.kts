@@ -11,7 +11,7 @@ velocityPluginFile {
     main = "dev.slne.clan.velocity.VelocityMain"
 
     pluginDependencies {
-        register("miniplaceholders")
+//        register("miniplaceholders")
     }
 
     authors = listOf("Ammo", "red", "twisti")
