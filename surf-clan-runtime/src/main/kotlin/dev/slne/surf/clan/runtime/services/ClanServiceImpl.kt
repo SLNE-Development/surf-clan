@@ -39,7 +39,7 @@ class ClanServiceImpl : CoreClanService {
 
     private val tagSuggestionBucketCache = Caffeine.newBuilder()
         .maximumSize(5_000)
-        .expireAfterWrite(15.seconds)
+        .expireAfterWrite(1.minutes)
         .asLoadingCache<String, List<String>> { bucketKey ->
             ClanRepository.suggestTagsByPrefix(bucketKey, 100)
         }
@@ -250,7 +250,14 @@ class ClanServiceImpl : CoreClanService {
 
     override suspend fun computeTagSuggestions(input: String, limit: Int): Collection<String> {
         val normalized = normalizeTag(input)
-        if (normalized.isEmpty()) return emptyList()
+        if (normalized.isEmpty()) {
+            return tagSuggestionBucketCache.underlying()
+                .asMap()
+                .values
+                .flatMap { it.getNow(emptyList()) }
+                .distinct()
+                .take(limit)
+        }
 
         val cappedLimit = limit.coerceIn(1, 100)
         val bucketKey = normalized.take(minOf(3, normalized.length))

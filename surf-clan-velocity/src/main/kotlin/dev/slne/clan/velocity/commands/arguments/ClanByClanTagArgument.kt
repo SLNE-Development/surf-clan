@@ -16,7 +16,7 @@ class ClanByClanTagArgument(nodeName: String) : SuspendCustomArgument<Clan, Stri
             info: SuggestionInfo<CommandSource>,
             builder: SuggestionsBuilder
         ) {
-            val tag = info.currentInput
+            val tag = info.currentArg
             for (tag in CoreClanService.computeTagSuggestions(tag)) {
                 builder.suggest(tag)
             }
