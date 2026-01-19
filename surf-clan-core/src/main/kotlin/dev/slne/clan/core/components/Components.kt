@@ -38,58 +38,53 @@ object Components {
             info("Informationen".toSmallCaps(), TextDecoration.BOLD)
 
             appendNewline {
-                append(renderLine("Name".toSmallCaps(), clan.name))
+                appendLine("Name".toSmallCaps(), clan.name)
             }
 
             appendNewline {
-                append(renderLine("Tag".toSmallCaps(), clan.tag))
+                appendLine("Tag".toSmallCaps(), clan.tag)
             }
 
             appendNewline {
-                append(
-                    renderLine(
-                        "Anführer".toSmallCaps(),
-                        clan.members.count { it.role == ClanMemberRole.LEADER || it.role == ClanMemberRole.OWNER }
-                    )
+                appendLine(
+                    "Anführer".toSmallCaps(),
+                    clan.members.count { it.role == ClanMemberRole.LEADER || it.role == ClanMemberRole.OWNER }
                 )
             }
 
             appendNewline {
-                append(
-                    renderLine(
-                        "Offiziere".toSmallCaps(),
-                        clan.members.count { it.role == ClanMemberRole.OFFICER }
-                    )
+                appendLine(
+                    "Offiziere".toSmallCaps(),
+                    clan.members.count { it.role == ClanMemberRole.OFFICER }
                 )
             }
 
             appendNewline {
-                append(renderLine("Mitglieder".toSmallCaps(), clan.members.size))
+                appendLine("Mitglieder".toSmallCaps(), clan.members.size)
             }
 
             appendNewline {
-                append(renderLine("Erstellt von".toSmallCaps(), createdBy))
+                appendLine("Erstellt von".toSmallCaps(), createdBy)
             }
 
             appendNewline {
-                append(renderLine("Erstellt am".toSmallCaps(), DATE_TIME_FORMATTER.format(clan.createdAt)))
+                appendLine("Erstellt am".toSmallCaps(), DATE_TIME_FORMATTER.format(clan.createdAt))
             }
 
             if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
                 appendNewline {
-                    append(
-                        renderLine(
-                            "Discord",
-                            clan.discordInvite ?: CommonComponents.DISCORD_LINK.color(Colors.WHITE)
-                        )
+                    appendLine(
+                        "Discord",
+                        clan.discordInvite ?: CommonComponents.DISCORD_LINK.color(Colors.WHITE)
                     )
-                    clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) } ?: CommonComponents.DISCORD_LINK.clickEvent())
+                    clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) }
+                        ?: CommonComponents.DISCORD_LINK.clickEvent())
                 }
             }
         }
     }
 
-    private fun SurfComponentBuilder.renderLine(key: String, value: Any) = append {
+    private fun SurfComponentBuilder.appendLine(key: String, value: Any) = append {
         info("| ", TextDecoration.BOLD)
         text("$key: ", Colors.GRAY)
         if (value is ComponentLike) {
