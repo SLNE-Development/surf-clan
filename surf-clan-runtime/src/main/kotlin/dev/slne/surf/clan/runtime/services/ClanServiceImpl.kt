@@ -129,7 +129,7 @@ class ClanServiceImpl : CoreClanService {
     }
 
     override fun validateClanNameAndTag(name: String, tag: String): ClanValidationResult {
-        if (name.length < Clan.MIN_NAME_LENGTH || name.length > Clan.MIN_NAME_LENGTH) {
+        if (name.length < Clan.MIN_NAME_LENGTH || name.length > Clan.MAX_NAME_LENGTH) {
             return ClanValidationResult.NameOutOfRange(Clan.MIN_NAME_LENGTH, Clan.MAX_NAME_LENGTH)
         }
 

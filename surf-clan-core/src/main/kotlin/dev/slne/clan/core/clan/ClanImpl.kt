@@ -11,6 +11,7 @@ import dev.slne.clan.core.config.ClanConfig
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
+import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.Component
@@ -28,8 +29,8 @@ data class ClanImpl(
     override var discordInvite: String?,
     override var clanTagColor: TextColor,
     override var members: Set<ClanMember>,
-    override val updatedAt: SerializableLocalDateTime,
-    override val createdAt: SerializableLocalDateTime
+    override val updatedAt: SerializableOffsetDateTime,
+    override val createdAt: SerializableOffsetDateTime
 ) : Clan {
 
     override suspend fun setDescription(description: String?) {

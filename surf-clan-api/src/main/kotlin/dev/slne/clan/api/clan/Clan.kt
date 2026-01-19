@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -30,8 +31,8 @@ interface Clan {
 
     val members: Set<ClanMember>
 
-    val updatedAt: LocalDateTime
-    val createdAt: LocalDateTime
+    val updatedAt: OffsetDateTime
+    val createdAt: OffsetDateTime
 
     suspend fun setDescription(description: String?)
     suspend fun setDiscordInvite(discordInvite: String?)

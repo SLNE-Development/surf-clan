@@ -5,8 +5,10 @@ import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteAcceptResult
 import dev.slne.clan.core.clan.CoreClanService
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
+import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
+import java.time.OffsetDateTime
 
 @Serializable
 data class ClanInviteImpl(
@@ -15,8 +17,8 @@ data class ClanInviteImpl(
     override val invited: SerializableStringUUID,
     override val invitedBy: SerializableStringUUID,
 
-    override val createdAt: SerializableLocalDateTime,
-    val updatedAt: SerializableLocalDateTime?
+    override val createdAt: SerializableOffsetDateTime,
+    val updatedAt: SerializableOffsetDateTime?
 ) : ClanInvite {
     override suspend fun getClan(): Clan? {
         return CoreClanService.findClanByID(clanID)

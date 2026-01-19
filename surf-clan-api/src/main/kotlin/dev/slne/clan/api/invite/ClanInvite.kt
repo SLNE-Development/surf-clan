@@ -2,13 +2,14 @@ package dev.slne.clan.api.invite
 
 import dev.slne.clan.api.clan.Clan
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 
 interface ClanInvite {
     val invited: UUID
     val invitedBy: UUID
 
-    val createdAt: LocalDateTime
+    val createdAt: OffsetDateTime
 
     suspend fun getClan(): Clan?
     suspend fun getClanOrThrow(): Clan

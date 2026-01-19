@@ -16,7 +16,6 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.inSubQuery
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import kotlinx.coroutines.flow.*
-import java.time.LocalDateTime
 import java.util.*
 
 @AutoService(ClanInviteRepository::class)
@@ -118,7 +117,7 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
         clanID = row[ClanInvitesTable.clanId].value,
         invited = row[ClanInvitesTable.invited],
         invitedBy = row[ClanInvitesTable.invitedBy],
-        createdAt = LocalDateTime.from(row[ClanInvitesTable.createdAt]),
-        updatedAt = LocalDateTime.from(row[ClanInvitesTable.updatedAt])
+        createdAt = row[ClanInvitesTable.createdAt],
+        updatedAt = row[ClanInvitesTable.updatedAt]
     )
 }

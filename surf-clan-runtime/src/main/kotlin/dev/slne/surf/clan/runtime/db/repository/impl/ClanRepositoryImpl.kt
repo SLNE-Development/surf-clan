@@ -186,7 +186,7 @@ class ClanRepositoryImpl : ClanRepository {
         discordInvite = row[ClansTable.discordInvite],
         clanTagColor = row[ClansTable.tagColor],
         members = members,
-        updatedAt = LocalDateTime.from(row[ClansTable.updatedAt]),
-        createdAt = LocalDateTime.from(row[ClansTable.createdAt])
+        updatedAt = row[ClansTable.updatedAt],
+        createdAt = row[ClansTable.createdAt]
     )
 }

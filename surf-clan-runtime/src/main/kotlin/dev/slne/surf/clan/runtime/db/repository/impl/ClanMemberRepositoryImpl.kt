@@ -17,7 +17,6 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.s
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.update
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
-import java.time.LocalDateTime
 import java.util.*
 
 @AutoService(ClanMemberRepository::class)
@@ -71,8 +70,8 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
             uuid = row[ClanMembersTable.uuid],
             role = row[ClanMembersTable.role],
             addedBy = row[ClanMembersTable.addedBy],
-            createdAt = LocalDateTime.from(row[ClanMembersTable.createdAt]),
-            updatedAt = LocalDateTime.from(row[ClanMembersTable.updatedAt])
+            createdAt = row[ClanMembersTable.createdAt],
+            updatedAt = row[ClanMembersTable.updatedAt]
         )
     }
 }

@@ -4,9 +4,11 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
+import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Serializable
 data class ClanMemberImpl(
@@ -14,8 +16,8 @@ data class ClanMemberImpl(
     override val uuid: SerializableStringUUID,
     override var role: ClanMemberRole,
     override val addedBy: SerializableStringUUID?,
-    val createdAt: SerializableLocalDateTime = LocalDateTime.now(),
-    val updatedAt: SerializableLocalDateTime? = LocalDateTime.now()
+    val createdAt: SerializableOffsetDateTime = OffsetDateTime.now(),
+    val updatedAt: SerializableOffsetDateTime? = OffsetDateTime.now()
 ) : ClanMember {
     override fun hasPermission(clanPermission: ClanPermission): Boolean {
         return role.hasPermission(clanPermission)
