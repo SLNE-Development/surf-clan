@@ -38,6 +38,7 @@ fun CommandAPICommand.clanCreateCommand() = subcommand("create") {
         val clan = result.clan as ClanImpl
 
         player.sendText {
+            appendPrefix()
             success("Der Clan ")
             append(Components.Clan.renderClanInformationHover(clan))
             success(" wurde erfolgreich erstellt.")

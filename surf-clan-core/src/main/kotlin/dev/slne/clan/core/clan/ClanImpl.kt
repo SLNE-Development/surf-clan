@@ -8,8 +8,10 @@ import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.config.ClanConfig
+import dev.slne.clan.core.member.ClanMemberImpl
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.serializer.adventure.component.textcolor.SerializableTextColor
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
@@ -27,8 +29,8 @@ data class ClanImpl(
     override val createdByUuid: SerializableStringUUID,
     override var description: String?,
     override var discordInvite: String?,
-    override var clanTagColor: TextColor,
-    override var members: Set<ClanMember>,
+    override var clanTagColor:  SerializableTextColor,
+    override var members: Set<ClanMemberImpl>,
     override val updatedAt: SerializableOffsetDateTime,
     override val createdAt: SerializableOffsetDateTime
 ) : Clan {

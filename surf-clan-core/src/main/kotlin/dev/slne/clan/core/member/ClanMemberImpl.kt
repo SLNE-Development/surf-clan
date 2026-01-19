@@ -3,11 +3,9 @@ package dev.slne.clan.core.member
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 @Serializable

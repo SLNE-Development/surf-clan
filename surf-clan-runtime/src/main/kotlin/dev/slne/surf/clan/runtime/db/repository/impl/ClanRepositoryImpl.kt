@@ -29,7 +29,6 @@ class ClanRepositoryImpl : ClanRepository {
         val clanIDSubQuery = ClanMembersTable
             .select(ClanMembersTable.clanId)
             .where { ClanMembersTable.uuid eq playerUuid }
-            .limit(1)
 
         joinClansWithMembers()
             .selectAll()
