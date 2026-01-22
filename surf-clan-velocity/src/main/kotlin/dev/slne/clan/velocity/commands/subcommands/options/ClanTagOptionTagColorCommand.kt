@@ -20,7 +20,7 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
 
     textArgument("hex") {
         replaceSuggestions { info, builder ->
-            val raw = info.currentInput.trim()
+            val raw = info.currentArg.trim()
             val startsWithHex = raw.startsWith(TextColor.HEX_PREFIX)
             val prefix = raw.removePrefix(TextColor.HEX_PREFIX).uppercase()
 
