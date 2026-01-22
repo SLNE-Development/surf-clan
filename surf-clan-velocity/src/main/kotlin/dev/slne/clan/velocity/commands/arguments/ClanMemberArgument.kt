@@ -10,6 +10,7 @@ import dev.slne.surf.surfapi.velocity.api.command.args.SuspendCustomArgument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -23,7 +24,7 @@ class ClanMemberArgument(nodeName: String) : SuspendCustomArgument<ClanMember, S
             supervisorScope {
                 for (member in clan.members) {
                     launch {
-                        memberNames.add(PlayerLookupService.getUsername(member.uuid))
+                        memberNames.add(PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString())
                     }
                 }
             }
@@ -33,9 +34,10 @@ class ClanMemberArgument(nodeName: String) : SuspendCustomArgument<ClanMember, S
     }
 
     override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): ClanMember {
-        val playerName = info.currentInput
-        val member = ClanMember.byName(playerName)
+        val playerNameOrUuid = info.currentInput
+        val uuid = runCatching { UUID.fromString(playerNameOrUuid) }.getOrNull()
+        val member = if (uuid != null) ClanMember.byUuid(uuid) else ClanMember.byName(playerNameOrUuid)
 
-        return member ?: throw CommandAPI.failWithString("Clan Member '$playerName' not found.")
+        return member ?: throw CommandAPI.failWithString("Clan Member '$playerNameOrUuid' not found.")
     }
 }
