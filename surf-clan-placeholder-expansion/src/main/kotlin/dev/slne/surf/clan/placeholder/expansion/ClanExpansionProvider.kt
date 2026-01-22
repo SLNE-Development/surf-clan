@@ -5,6 +5,7 @@ import dev.slne.surf.clan.placeholder.expansion.ClanDataCache.CachedClanData
 import dev.slne.surf.surfapi.core.api.messages.adventure.getPointer
 import dev.slne.surf.surfapi.core.api.messages.adventure.text
 import io.github.miniplaceholders.api.Expansion
+import io.github.miniplaceholders.api.utils.Tags
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.identity.Identity
 import net.kyori.adventure.text.Component.empty
@@ -20,19 +21,19 @@ object ClanExpansionProvider {
             .version("1.2.0")
             .audiencePlaceholder("name") { audience, _, _ ->
                 when (val data = ClanDataCache.getData(audience.getUuid())) {
-                    CachedClanData.Empty -> Tag.inserting(empty())
+                    CachedClanData.Empty -> Tags.EMPTY_TAG
                     is CachedClanData.Loaded -> Tag.inserting(text(data.name))
                 }
             }
             .audiencePlaceholder("tag_raw") { audience, _, _ ->
                 when (val data = ClanDataCache.getData(audience.getUuid())) {
-                    CachedClanData.Empty -> Tag.inserting(empty())
+                    CachedClanData.Empty -> Tags.EMPTY_TAG
                     is CachedClanData.Loaded -> Tag.inserting(text(data.tag))
                 }
             }
             .audiencePlaceholder("tag") { audience, queue, _ ->
                 when (val data = ClanDataCache.getData(audience.getUuid())) {
-                    CachedClanData.Empty -> Tag.inserting(empty())
+                    CachedClanData.Empty -> Tags.EMPTY_TAG
                     is CachedClanData.Loaded -> Tag.inserting(data.renderedClanTag)
                 }
             }
