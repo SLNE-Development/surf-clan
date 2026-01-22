@@ -39,7 +39,7 @@ fun CommandAPICommand.clanPromoteMemberCommand() = subcommand("promote") {
         val executorMember = clan.getMember(player.uniqueId)
             ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
-        if (executorMember.role >= member.role) {
+        if (executorMember.role <= member.role) {
             throw CommandAPI.failWithString("Du kannst keinen Spieler befördern, der den selben oder einen höheren Rang hat.")
         }
 

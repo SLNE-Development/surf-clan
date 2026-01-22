@@ -91,6 +91,7 @@ private suspend fun handleLeaveClick(clicked: Player, originalClanUuid: UUID) {
         }
 
         val memberLeftMessage = buildText {
+            appendPrefix()
             variableValue(clicked.username)
             info(" hat den Clan verlassen.")
         }

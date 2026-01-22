@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.jorel.commandapi.kotlindsl.textArgument
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.velocity.permission.ClanPermissions
@@ -17,7 +18,7 @@ import net.kyori.adventure.text.format.TextColor
 fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
     withPermission(ClanPermissions.CLAN_OPTIONS_TAG_COLOR_COMMAND)
 
-    stringArgument("hex") {
+    textArgument("hex") {
         replaceSuggestions { info, builder ->
             val raw = info.currentInput.trim()
             val startsWithHex = raw.startsWith(TextColor.HEX_PREFIX)

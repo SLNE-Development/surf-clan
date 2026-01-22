@@ -2,7 +2,6 @@ package dev.slne.surf.clan.runtime.services
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.auto.service.AutoService
-import com.sksamuel.aedile.core.asCache
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
@@ -23,7 +22,7 @@ class ClanMemberServiceImpl : CoreClanMemberService {
     private val loadedMembers = Caffeine.newBuilder()
         .weakValues()
         .maximumSize(10_000)
-        .asCache<UUID, ClanMemberImpl>()
+        .build<UUID, ClanMemberImpl>()
 
     private val listeners = CopyOnWriteArrayList<ClanMemberListener>()
 
@@ -60,7 +59,12 @@ class ClanMemberServiceImpl : CoreClanMemberService {
     }
 
     override suspend fun findMemberByUuid(uuid: UUID): ClanMember? {
-        return loadedMembers.getOrNull(uuid) { ClanMemberRepository.findByUuid(uuid) }
+        val member = loadedMembers.getIfPresent(uuid)
+        if (member != null) return member
+        val loaded = ClanMemberRepository.findByUuid(uuid) ?: return null
+        loadedMembers.put(uuid, loaded)
+
+        return loaded
     }
 
     override suspend fun findMemberByName(name: String): ClanMember? {

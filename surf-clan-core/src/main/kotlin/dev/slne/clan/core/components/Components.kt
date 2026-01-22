@@ -22,6 +22,7 @@ object Components {
             val hoverComponent = buildText {
                 append(renderClanInformation(clan))
                 appendNewline()
+                appendNewline()
 
                 text("Klicke, um eine Einladung zum Clan-Discord", Colors.GRAY)
                 appendNewline()

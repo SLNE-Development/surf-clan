@@ -35,15 +35,15 @@ fun CommandAPICommand.clanSetDiscordCommand() = subcommand("setdiscord") {
             throw CommandAPI.failWithString("Du hast keine Berechtigung, den Discord Link zu ändern.")
         }
 
-        if (clan.members.size < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
-            throw CommandAPI.failWithString("Dein Clan muss mindestens ${Clan.DISCORD_LINK_REQUIRED_MEMBERS} Mitglieder haben, um den Discord-Link ändern zu können.")
-        }
-
         val isNullLink = rawLink == "NULL"
 
         if (isNullLink) {
             clan.setDiscordInvite(null)
         } else {
+            if (clan.members.size < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
+                throw CommandAPI.failWithString("Dein Clan muss mindestens ${Clan.DISCORD_LINK_REQUIRED_MEMBERS} Mitglieder haben, um den Discord-Link ändern zu können.")
+            }
+
             if (!rawLink.matches(DISCORD_LINK_REGEX)) {
                 throw CommandAPI.failWithString("Du musst einen gültigen Discord-Invite Link angeben!")
             }

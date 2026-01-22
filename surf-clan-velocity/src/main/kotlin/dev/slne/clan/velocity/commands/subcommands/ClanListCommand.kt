@@ -1,15 +1,22 @@
 package dev.slne.clan.velocity.commands.subcommands
 
+import com.github.shynixn.mccoroutine.velocity.launch
+import com.velocitypowered.api.proxy.Player
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.core.clan.ClanImpl
 import dev.slne.clan.core.clan.CoreClanService
+import dev.slne.clan.core.components.Components
 import dev.slne.clan.velocity.permission.ClanPermissions
+import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
 import dev.slne.surf.surfapi.velocity.api.command.executors.anyExecutorSuspend
+import net.kyori.adventure.text.event.ClickCallback
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
 
 
@@ -24,6 +31,21 @@ private val pagination = Pagination<Clan> {
                 variableValue(clan.name)
                 appendSpace()
                 info("(${clan.tag})")
+
+                val clanUuid = clan.uuid
+                clickEvent(ClickEvent.callback(ClickCallback.widen({ clicked ->
+                    plugin.container.launch {
+                        val clan = Clan.byUuid(clanUuid)
+                        if (clan == null) {
+                            clicked.sendText {
+                                appendPrefix()
+                                error("Der Clan konnte nicht gefunden werden.")
+                            }
+                        } else {
+                            clicked.sendMessage(Components.Clan.renderClanInformation(clan as ClanImpl))
+                        }
+                    }
+                }, Player::class.java)))
             }
         )
     }

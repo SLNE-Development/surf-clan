@@ -9,6 +9,7 @@ import dev.slne.clan.core.components.Components
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -36,7 +37,6 @@ object JoinInviteListener {
                 return@launch
             }
 
-
             val data = ConcurrentHashMap.newKeySet<ClanInviteRenderData>()
 
             supervisorScope {
@@ -52,7 +52,7 @@ object JoinInviteListener {
                 }
             }
 
-            buildText {
+            player.sendText {
                 appendPrefix()
                 info("Du hast noch ".toSmallCaps())
                 variableValue(invites.size)
