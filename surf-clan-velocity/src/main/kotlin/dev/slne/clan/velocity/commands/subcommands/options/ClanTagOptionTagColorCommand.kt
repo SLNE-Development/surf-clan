@@ -3,7 +3,6 @@ package dev.slne.clan.velocity.commands.subcommands.options
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.getValue
-import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.jorel.commandapi.kotlindsl.textArgument
 import dev.slne.clan.api.clan.Clan
@@ -12,6 +11,7 @@ import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.util.random
 import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
+import it.unimi.dsi.fastutil.chars.CharList
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet
 import net.kyori.adventure.text.format.TextColor
 
@@ -19,32 +19,47 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
     withPermission(ClanPermissions.CLAN_OPTIONS_TAG_COLOR_COMMAND)
 
     textArgument("hex") {
+        val allowedChars = CharList.of(
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'A', 'B', 'C', 'D', 'E', 'F',
+            'a', 'b', 'c', 'd', 'e', 'f',
+            '#'
+        )
+
         replaceSuggestions { info, builder ->
             val raw = info.currentArg.trim()
             val startsWithHex = raw.startsWith(TextColor.HEX_PREFIX)
-            val prefix = raw.removePrefix(TextColor.HEX_PREFIX).uppercase()
 
+            val prefix = raw.removePrefix(TextColor.HEX_PREFIX)
+                .trim()
+                .uppercase()
+
+            if (prefix.any { it !in allowedChars }) return@replaceSuggestions builder.buildFuture()
             if (prefix.length > 6) return@replaceSuggestions builder.buildFuture()
 
-            val out = ObjectLinkedOpenHashSet<String>(10)
+            if (prefix.length == 6) {
+                val suggestion = if (startsWithHex) TextColor.HEX_PREFIX + prefix else prefix
+                builder.suggest(suggestion)
+                return@replaceSuggestions builder.buildFuture()
+            }
+
+            val restLength = 6 - prefix.length
+            val max = 1 shl (4 * restLength)
+
+            val out = ObjectLinkedOpenHashSet<String>(5)
             var tries = 0
             val maxTries = 5_000
+            while (out.size < 5 && tries++ < maxTries) {
+                val rest = random.nextInt(max)
+                    .toString(16)
+                    .uppercase()
+                    .padStart(restLength, '0')
 
-            while (out.size < 10 && tries++ < maxTries) {
-                val hex = "%06X".format(random.nextInt(0xFFFFFF))
-                if (hex.startsWith(prefix)) {
-                    if (startsWithHex) {
-                        out.add(TextColor.HEX_PREFIX + hex)
-                    } else {
-                        out.add(hex)
-                    }
-                }
+                val hex = prefix + rest
+                out.add(if (startsWithHex) TextColor.HEX_PREFIX + hex else hex)
             }
 
-            for (string in out) {
-                builder.suggest(string)
-            }
-
+            out.forEach(builder::suggest)
             builder.buildFuture()
         }
     }
@@ -52,7 +67,8 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
     playerExecutorSuspend { player, args ->
         val hex: String by args
         val correctedHex = if (!hex.startsWith(TextColor.HEX_PREFIX)) TextColor.HEX_PREFIX + hex else hex
-        val color = TextColor.fromHexString(correctedHex) ?: throw CommandAPI.failWithString("Gebe eine gültige Hex-Farbe an.")
+        val color =
+            TextColor.fromHexString(correctedHex) ?: throw CommandAPI.failWithString("Gebe eine gültige Hex-Farbe an.")
 
         val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
