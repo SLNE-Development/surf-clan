@@ -52,7 +52,7 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
     playerExecutorSuspend { player, args ->
         val hex: String by args
         val correctedHex = if (!hex.startsWith(TextColor.HEX_PREFIX)) TextColor.HEX_PREFIX + hex else hex
-        val color = TextColor.fromHexString(hex) ?: throw CommandAPI.failWithString("Gebe eine gültige Hex-Farbe an.")
+        val color = TextColor.fromHexString(correctedHex) ?: throw CommandAPI.failWithString("Gebe eine gültige Hex-Farbe an.")
 
         val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
