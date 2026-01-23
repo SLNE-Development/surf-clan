@@ -5,27 +5,27 @@ import com.google.auto.service.AutoService
 import com.sksamuel.aedile.core.asLoadingCache
 import com.sksamuel.aedile.core.expireAfterWrite
 import dev.slne.clan.api.clan.*
-import dev.slne.clan.api.clan.listener.ClanCreatedListener
-import dev.slne.clan.api.clan.listener.ClanListener
-import dev.slne.clan.api.clan.listener.ClanUpdateMemberListener
-import dev.slne.clan.api.clan.listener.ClanUpdatedListener
+import dev.slne.clan.api.clan.listener.*
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.clan.core.clan.AbstractClanView
 import dev.slne.clan.core.clan.ClanImpl
 import dev.slne.clan.core.clan.ClanTagRules
 import dev.slne.clan.core.clan.CoreClanService
 import dev.slne.clan.core.invite.ClanInviteImpl
+import dev.slne.clan.core.member.ClanMemberImpl
 import dev.slne.clan.core.redis.RedisService
 import dev.slne.surf.clan.runtime.db.repository.ClanRepository
 import dev.slne.surf.redis.cache.RedisSetIndexes
 import dev.slne.surf.surfapi.core.api.util.logger
+import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
 import net.kyori.adventure.text.format.TextColor
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @AutoService(ClanService::class)
 class ClanServiceImpl : CoreClanService {
@@ -90,6 +90,11 @@ class ClanServiceImpl : CoreClanService {
 
     fun callClanCreatedListeners(clan: Clan) {
         callClanListeners<ClanCreatedListener> { it.onClanCreated(clan) }
+    }
+
+    fun callClanDeletedListeners(clan: Clan) {
+        val view = clan.view()
+        callClanListeners<ClanDeletedListener> { it.onClanDeleted(view) }
     }
 
     fun callClanUpdatedListeners(clan: Clan) {
@@ -178,6 +183,7 @@ class ClanServiceImpl : CoreClanService {
         val updated = ClanRepository.updateDescription(clan.id, description)
         if (updated) {
             invalidateCachedClanByID(clan.id)
+            clan.description = description
             callClanUpdatedListeners(clan)
         }
 
@@ -188,6 +194,7 @@ class ClanServiceImpl : CoreClanService {
         val updated = ClanRepository.updateDiscordInvite(clan.id, discordInvite)
         if (updated) {
             invalidateCachedClanByID(clan.id)
+            clan.discordInvite = discordInvite
             callClanUpdatedListeners(clan)
         }
 
@@ -198,13 +205,14 @@ class ClanServiceImpl : CoreClanService {
         val updated = ClanRepository.updateTagColor(clan.id, tagColor)
         if (updated) {
             invalidateCachedClanByID(clan.id)
+            clan.clanTagColor = tagColor
             callClanUpdatedListeners(clan)
         }
 
         return updated
     }
 
-    override suspend fun fetchPendingInvites(clan: ClanImpl): Set<ClanInviteImpl> {
+    override suspend fun fetchPendingInvites(clan: AbstractClanView): Set<ClanInviteImpl> {
         return ClanInviteServiceImpl.get().fetchPendingInvites(clan.id)
     }
 
@@ -224,6 +232,7 @@ class ClanServiceImpl : CoreClanService {
     ): ClanMemberAddResult {
         val result = ClanMemberServiceImpl.get().addMember(clan.id, playerUuid, role, addedBy)
         if (result is ClanMemberAddResult.Success) {
+            clan.members = clan.members.plusElement(result.member as ClanMemberImpl).toObjectSet()
             callClanMemberUpdatedListeners(clan, result.member.uuid, true)
         }
 
@@ -233,6 +242,7 @@ class ClanServiceImpl : CoreClanService {
     override suspend fun removeMember(clan: ClanImpl, playerUuid: UUID): Boolean {
         val result = ClanMemberServiceImpl.get().removeMember(clan.id, playerUuid)
         if (result) {
+            clan.members = clan.members.filterNotTo(mutableObjectSetOf()) { it.uuid == playerUuid }
             callClanMemberUpdatedListeners(clan, playerUuid, false)
         }
 
@@ -243,6 +253,7 @@ class ClanServiceImpl : CoreClanService {
         val deleted = ClanRepository.delete(clan.id)
         if (deleted) {
             invalidateCachedClanByID(clan.id)
+            callClanDeletedListeners(clan)
         }
 
         return deleted

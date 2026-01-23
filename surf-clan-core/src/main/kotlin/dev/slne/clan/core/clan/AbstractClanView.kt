@@ -1,0 +1,36 @@
+package dev.slne.clan.core.clan
+
+import dev.slne.clan.api.clan.ClanView
+import dev.slne.clan.api.member.ClanMemberView
+import dev.slne.clan.api.permission.ClanPermission
+import dev.slne.clan.core.config.ClanConfig
+import dev.slne.surf.bitmap.common.provider.BitmapProvider
+import dev.slne.surf.surfapi.core.api.messages.Colors
+import net.kyori.adventure.text.Component
+import java.util.*
+
+abstract class AbstractClanView : ClanView {
+    abstract val id: ULong
+
+    override fun isMember(uuid: UUID): Boolean {
+        return members.any { member -> member.uuid == uuid }
+    }
+
+    override fun hasMemberPermission(
+        uuid: UUID,
+        permission: ClanPermission
+    ): Boolean {
+        return getMember(uuid)?.hasPermission(permission) ?: false
+    }
+
+    override fun getRichClanTag(): Component {
+        return BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor)
+    }
+
+    override suspend fun renderClanTag(minSize: Int): Component {
+        if (tag.isBlank()) return Component.empty()
+        if (members.size < minSize && tag !in ClanConfig.getConfig().whitelistedTags) return Component.empty()
+
+        return getRichClanTag()
+    }
+}

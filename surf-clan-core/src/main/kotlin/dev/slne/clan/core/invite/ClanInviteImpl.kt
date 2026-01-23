@@ -1,33 +1,22 @@
 package dev.slne.clan.core.invite
 
-import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteAcceptResult
-import dev.slne.clan.core.clan.CoreClanService
-import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.ldt.SerializableLocalDateTime
+import dev.slne.clan.api.invite.ClanInviteView
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
-import java.time.OffsetDateTime
 
 @Serializable
 data class ClanInviteImpl(
     val id: ULong,
-    val clanID: ULong,
+    override val clanID: ULong,
     override val invited: SerializableStringUUID,
     override val invitedBy: SerializableStringUUID,
 
     override val createdAt: SerializableOffsetDateTime,
     val updatedAt: SerializableOffsetDateTime?
-) : ClanInvite {
-    override suspend fun getClan(): Clan? {
-        return CoreClanService.findClanByID(clanID)
-    }
-
-    override suspend fun getClanOrThrow(): Clan {
-        return getClan() ?: error("Clan not found")
-    }
-
+) : AbstractClanInviteView(), ClanInvite {
     override suspend fun accept(): ClanInviteAcceptResult {
         return CoreClanInviteService.acceptInvite(this)
     }
@@ -36,5 +25,11 @@ data class ClanInviteImpl(
         return CoreClanInviteService.revokeInvite(this)
     }
 
+    override fun view(): ClanInviteView = ClanInviteViewImpl(
+        clanID = clanID,
+        invited = invited,
+        invitedBy = invitedBy,
+        createdAt = createdAt
+    )
 
 }

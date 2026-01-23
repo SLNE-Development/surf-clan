@@ -1,21 +1,14 @@
 package dev.slne.clan.api.invite
 
-import dev.slne.clan.api.clan.Clan
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
+import org.jetbrains.annotations.ApiStatus
 import java.util.*
 
-interface ClanInvite {
-    val invited: UUID
-    val invitedBy: UUID
-
-    val createdAt: OffsetDateTime
-
-    suspend fun getClan(): Clan?
-    suspend fun getClanOrThrow(): Clan
-
+@ApiStatus.NonExtendable
+interface ClanInvite : ClanInviteView {
     suspend fun accept(): ClanInviteAcceptResult
     suspend fun revoke(): Boolean
+
+    fun view(): ClanInviteView
 
     companion object {
         suspend fun pendingInvitesByPlayer(invited: UUID): List<ClanInvite> =

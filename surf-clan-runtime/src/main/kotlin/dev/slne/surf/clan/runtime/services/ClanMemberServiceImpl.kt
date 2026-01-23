@@ -100,6 +100,7 @@ class ClanMemberServiceImpl : CoreClanMemberService {
 
         if (changed) {
             ClanServiceImpl.get().invalidateCachedClanByMember(member.uuid)
+            member.role = role
             loadedMembers.getIfPresent(member.uuid)?.let {
                 it.role = role
             }

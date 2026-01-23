@@ -6,53 +6,34 @@ import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.surf.surfapi.core.api.messages.Colors
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @ApiStatus.NonExtendable
-interface Clan {
-    val uuid: UUID
-    val name: String
-    val tag: String
-    val createdByUuid: UUID
-
-    val description: String?
-    val discordInvite: String?
-    val clanTagColor: TextColor
-
-    val members: Set<ClanMember>
-
-    val updatedAt: OffsetDateTime
-    val createdAt: OffsetDateTime
+interface Clan : ClanView {
+    override val members: Set<ClanMember>
 
     suspend fun setDescription(description: String?)
     suspend fun setDiscordInvite(discordInvite: String?)
     suspend fun setClanTagColor(color: TextColor)
 
-    suspend fun getPendingInvites(): Set<ClanInvite>
+    override suspend fun getPendingInvites(): Set<ClanInvite>
     suspend fun invite(invitee: UUID, invitedBy: UUID): ClanInviteResult
     suspend fun revokeInvite(uuid: UUID): Boolean
 
-    fun isMember(uuid: UUID): Boolean
     suspend fun addMember(uuid: UUID, role: ClanMemberRole, addedBy: UUID?): ClanMemberAddResult
     suspend fun removeMember(member: ClanMember): Boolean
     suspend fun removeMember(uuid: UUID): Boolean
-    fun hasMemberPermission(uuid: UUID, permission: ClanPermission): Boolean
-    fun getMember(uuid: UUID): ClanMember?
-
-    fun getRichClanTag(): Component
-    suspend fun renderClanTag(minSize: Int = 0): Component
+    override fun getMember(uuid: UUID): ClanMember?
 
     suspend fun delete(): Boolean
+
+    fun view(): ClanView
 
     companion object {
         val DEFAULT_CLAN_TAG_COLOR: TextColor = Colors.WHITE

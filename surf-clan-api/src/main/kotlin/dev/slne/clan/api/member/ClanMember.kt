@@ -1,16 +1,14 @@
 package dev.slne.clan.api.member
 
 import dev.slne.clan.api.member.listener.ClanMemberListener
-import dev.slne.clan.api.permission.ClanPermission
+import org.jetbrains.annotations.ApiStatus
 import java.util.*
 
-interface ClanMember {
-    val uuid: UUID
-    val role: ClanMemberRole
-    val addedBy: UUID?
-
-    fun hasPermission(clanPermission: ClanPermission): Boolean
+@ApiStatus.NonExtendable
+interface ClanMember : ClanMemberView {
     suspend fun changeRole(role: ClanMemberRole): Boolean
+
+    fun view(): ClanMemberView
 
     companion object {
         fun registerListener(listener: ClanMemberListener) = ClanMemberService.instance.registerListener(listener)
