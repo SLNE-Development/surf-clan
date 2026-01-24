@@ -27,7 +27,7 @@ abstract class AbstractClanView : ClanView {
         return BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor)
     }
 
-    override suspend fun renderClanTag(minSize: Int): Component {
+    override fun renderClanTag(minSize: Int): Component {
         if (tag.isBlank()) return Component.empty()
         if (members.size < minSize && tag !in ClanConfig.getConfig().whitelistedTags) return Component.empty()
 

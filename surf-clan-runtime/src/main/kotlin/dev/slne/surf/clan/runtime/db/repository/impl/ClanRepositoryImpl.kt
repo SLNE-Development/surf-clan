@@ -12,16 +12,18 @@ import dev.slne.surf.database.libs.io.r2dbc.spi.R2dbcDataIntegrityViolationExcep
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
+import dev.slne.surf.surfapi.core.api.util.logger
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
 import net.kyori.adventure.text.format.TextColor
-import java.time.LocalDateTime
 import java.util.*
 
 @AutoService(ClanRepository::class)
 class ClanRepositoryImpl : ClanRepository {
+    private val log = logger()
+
     private fun joinClansWithMembers() = ClansTable
         .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
 
@@ -125,7 +127,12 @@ class ClanRepositoryImpl : ClanRepository {
             return@suspendTransaction when {
                 ClansTable.TAG_UQ_INDEX_NAME in msg -> ClanCreationResult.ClanTagAlreadyExists
                 ClansTable.NAME_UQ_INDEX_NAME in msg -> ClanCreationResult.ClanNameAlreadyExists
-                else -> throw e
+                else -> {
+                    log.atWarning()
+                        .withCause(e)
+                        .log("Failed to create clan due to data integrity violation")
+                    ClanCreationResult.ClanAlreadyExists
+                }
             }
         }
 

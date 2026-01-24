@@ -1,7 +1,6 @@
 package dev.slne.clan.api.clan
 
 import dev.slne.clan.api.clan.listener.ClanListener
-import dev.slne.clan.api.clan.listener.ClanUpdatedListener
 import dev.slne.clan.api.util.InternalClanApi
 import dev.slne.surf.surfapi.core.api.util.requiredService
 import java.util.*

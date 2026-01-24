@@ -4,7 +4,7 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInviteView
 import dev.slne.clan.core.clan.CoreClanService
 
-abstract class AbstractClanInviteView: ClanInviteView {
+abstract class AbstractClanInviteView : ClanInviteView {
     abstract val clanID: ULong
 
     override suspend fun getClan(): Clan? {
@@ -12,6 +12,6 @@ abstract class AbstractClanInviteView: ClanInviteView {
     }
 
     override suspend fun getClanOrThrow(): Clan {
-        return getClan() ?: error("Clan not found")
+        return getClan() ?: throw NoSuchElementException("Clan with ID $clanID does not exist")
     }
 }
