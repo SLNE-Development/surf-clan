@@ -8,13 +8,13 @@ import dev.slne.surf.clan.runtime.db.table.ClanInvitesTable
 import dev.slne.surf.clan.runtime.db.table.ClanMembersTable
 import dev.slne.surf.clan.runtime.db.table.ClanPlayerTable
 import dev.slne.surf.clan.runtime.db.table.ClansTable
-import dev.slne.surf.database.libs.io.r2dbc.spi.R2dbcDataIntegrityViolationException
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.ResultRow
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.and
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.eq
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.inSubQuery
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
+import dev.slne.surf.database.utils.asDataIntegrityViolation
 import kotlinx.coroutines.flow.*
 import java.util.*
 
@@ -76,7 +76,8 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
             }.single()
 
             ClanInviteResult.Success(createClanInviteDAO(row))
-        } catch (_: R2dbcDataIntegrityViolationException) {
+        } catch (e: ExposedR2dbcException) {
+            e.asDataIntegrityViolation()
             ClanInviteResult.AlreadyInvited
         }
     }

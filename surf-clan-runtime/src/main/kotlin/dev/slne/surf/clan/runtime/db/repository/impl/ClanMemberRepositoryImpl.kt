@@ -6,15 +6,12 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.runtime.db.repository.ClanMemberRepository
 import dev.slne.surf.clan.runtime.db.table.ClanMembersTable
-import dev.slne.surf.database.libs.io.r2dbc.spi.R2dbcDataIntegrityViolationException
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.ResultRow
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.and
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.eq
-import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.deleteWhere
-import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.insertReturning
-import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.selectAll
+import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
-import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.update
+import dev.slne.surf.database.utils.asDataIntegrityViolation
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
 import java.util.*
@@ -36,7 +33,8 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
             }.single()
 
             ClanMemberAddResult.Success(createMemberDAO(row))
-        } catch (_: R2dbcDataIntegrityViolationException) {
+        } catch (e: ExposedR2dbcException) {
+            e.asDataIntegrityViolation()
             ClanMemberAddResult.AlreadyMember
         }
     }

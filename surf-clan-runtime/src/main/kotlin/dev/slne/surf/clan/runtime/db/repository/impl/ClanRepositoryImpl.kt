@@ -12,6 +12,7 @@ import dev.slne.surf.database.libs.io.r2dbc.spi.R2dbcDataIntegrityViolationExcep
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
+import dev.slne.surf.database.utils.asDataIntegrityViolation
 import dev.slne.surf.surfapi.core.api.util.logger
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
@@ -122,7 +123,8 @@ class ClanRepositoryImpl : ClanRepository {
                 description?.let { smt[this.description] = it }
                 discordInvite?.let { smt[this.discordInvite] = it }
             }.single()
-        } catch (e: R2dbcDataIntegrityViolationException) {
+        } catch (e: ExposedR2dbcException) {
+            val e = e.asDataIntegrityViolation()
             val msg = e.message ?: throw e
             return@suspendTransaction when {
                 ClansTable.TAG_UQ_INDEX_NAME in msg -> ClanCreationResult.ClanTagAlreadyExists
