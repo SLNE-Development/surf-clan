@@ -1,25 +1,21 @@
 package dev.slne.clan.velocity.commands.subcommands.admin.subcommands
 
-import com.github.shynixn.mccoroutine.velocity.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
-import dev.slne.clan.velocity.clanConfigHolder
-import dev.slne.clan.velocity.plugin
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.core.config.ClanConfig
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
-class ClanReloadCommand : CommandAPICommand("reload") {
-    init {
-        withPermission("surf.clan.admin.reload")
+fun CommandAPICommand.clanReloadCommand() = subcommand("reload") {
+    withPermission(ClanPermissions.CLAN_ADMIN_RELOAD_COMMAND)
 
-        anyExecutor { player, _ ->
-            plugin.container.launch {
-                clanConfigHolder.reload()
+    anyExecutor { source, args ->
+        ClanConfig.reloadFromFile()
 
-                player.sendText {
-                    appendPrefix()
-                    success("Die Clan-Konfiguration wurde neu geladen.")
-                }
-            }
+        source.sendText {
+            appendPrefix()
+            success("Die Clan-Konfiguration wurde neu geladen.")
         }
     }
 }

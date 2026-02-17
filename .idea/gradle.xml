@@ -5,14 +5,14 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="C:/Gradle/gradle-8.5" />
+        <option name="gradleJvm" value="temurin-25 (2)" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/surf-clan-api" />
             <option value="$PROJECT_DIR$/surf-clan-core" />
-            <option value="$PROJECT_DIR$/surf-clan-fallback" />
             <option value="$PROJECT_DIR$/surf-clan-placeholder-expansion" />
+            <option value="$PROJECT_DIR$/surf-clan-runtime" />
             <option value="$PROJECT_DIR$/surf-clan-velocity" />
           </set>
         </option>

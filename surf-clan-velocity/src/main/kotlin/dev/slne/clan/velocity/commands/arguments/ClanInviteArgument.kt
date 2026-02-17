@@ -1,45 +1,46 @@
 package dev.slne.clan.velocity.commands.arguments
 
 import com.velocitypowered.api.proxy.Player
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.Argument
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.StringArgument
-import dev.jorel.commandapi.executors.CommandArguments
 import dev.slne.clan.api.invite.ClanInvite
-import dev.slne.clan.velocity.extensions.findClanInvites
-import dev.slne.clan.velocity.util.clan
+import dev.slne.surf.surfapi.velocity.api.command.args.SuspendCustomArgument
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import java.util.concurrent.ConcurrentHashMap
 
-const val CLAN_INVITE_ARGUMENT_NODE_NAME = "clan"
 
-class ClanInviteArgument(
-    nodeName: String = CLAN_INVITE_ARGUMENT_NODE_NAME
-) : StringArgument(nodeName) {
+class ClanInviteArgument(nodeName: String) : SuspendCustomArgument<ClanInvite, String>(StringArgument(nodeName)) {
     init {
-        replaceSuggestions(ArgumentSuggestions.stringCollection { info ->
-            val player = info.sender as? Player ?: return@stringCollection emptyList()
-            player.findClanInvites().map { it.clan.name }
+        replaceSuggestions(stringCollectionSuspend { info ->
+            val player = info.sender as? Player ?: return@stringCollectionSuspend emptyList()
+            val invites = ClanInvite.pendingInvitesByPlayer(player.uniqueId)
+
+            if (invites.isEmpty()) return@stringCollectionSuspend emptyList()
+
+            val clanNames = ConcurrentHashMap.newKeySet<String>()
+            supervisorScope {
+                for (invite in invites) {
+                    launch {
+                        val clan = invite.getClan()
+                        if (clan != null) {
+                            clanNames.add(clan.name)
+                        }
+                    }
+                }
+            }
+
+            clanNames
         })
     }
 
-    companion object {
-        fun clanInvite(
-            player: Player,
-            args: CommandArguments,
-            nodeName: String = CLAN_INVITE_ARGUMENT_NODE_NAME
-        ): ClanInvite? {
-            val clanName = args.getUnchecked<String>(nodeName) ?: return null
+    override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): ClanInvite {
+        val clanName = info.currentInput
+        val sender = info.sender as? Player
+            ?: throw CommandAPI.failWithString("Cannot parse clan invite argument without player sender.")
+        val invite = ClanInvite.pendingInviteByPlayerAndClanName(sender.uniqueId, clanName)
 
-            return player.findClanInvites()
-                .find { it.clan.name == clanName }
-        }
+        return invite ?: throw CommandAPI.failWithString("No pending invite for clan '$clanName'.")
     }
 }
-
-inline fun CommandAPICommand.clanInviteArgument(
-    nodeName: String = CLAN_INVITE_ARGUMENT_NODE_NAME,
-    optional: Boolean = false,
-    block: Argument<*>.() -> Unit = {}
-): CommandAPICommand = withArguments(
-    ClanInviteArgument(nodeName).setOptional(optional).apply(block)
-)

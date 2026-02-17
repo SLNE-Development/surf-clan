@@ -1,38 +1,39 @@
 package dev.slne.clan.velocity.commands
 
-import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.kotlindsl.commandAPICommand
 import dev.slne.clan.velocity.commands.subcommands.*
-import dev.slne.clan.velocity.commands.subcommands.admin.ClanAdminCommand
-import dev.slne.clan.velocity.commands.subcommands.member.ClanKickMemberCommand
-import dev.slne.clan.velocity.commands.subcommands.member.ClanMembersCommand
-import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanAcceptCommand
-import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanDenyCommand
-import dev.slne.clan.velocity.commands.subcommands.member.invite.ClanInviteCommand
-import dev.slne.clan.velocity.commands.subcommands.member.role.ClanDemoteMemberCommand
-import dev.slne.clan.velocity.commands.subcommands.member.role.ClanPromoteMemberCommand
-import dev.slne.clan.velocity.commands.subcommands.player.ClanPlayerCommand
+import dev.slne.clan.velocity.commands.subcommands.admin.clanAdminCommand
+import dev.slne.clan.velocity.commands.subcommands.member.clanKickMemberCommand
+import dev.slne.clan.velocity.commands.subcommands.member.clanMembersCommand
+import dev.slne.clan.velocity.commands.subcommands.member.invite.clanAcceptCommand
+import dev.slne.clan.velocity.commands.subcommands.member.invite.clanDenyCommand
+import dev.slne.clan.velocity.commands.subcommands.member.invite.clanInviteCommand
+import dev.slne.clan.velocity.commands.subcommands.member.role.clanDemoteMemberCommand
+import dev.slne.clan.velocity.commands.subcommands.member.role.clanPromoteMemberCommand
+import dev.slne.clan.velocity.commands.subcommands.player.clanPlayerCommand
+import dev.slne.clan.velocity.permission.ClanPermissions
 
-class ClanCommand : CommandAPICommand("clan") {
-    init {
-        withSubcommand(ClanCreateCommand())
-        withSubcommand(ClanDisbandCommand())
-        withSubcommand(ClanLeaveCommand())
-        withSubcommand(ClanInfoCommand())
-        withSubcommand(ClanSetDiscordCommand())
+fun clanCommand() = commandAPICommand("clan") {
+    withPermission(ClanPermissions.CLAN_COMMAND)
 
-        withSubcommand(ClanInviteCommand())
-        withSubcommands(ClanAcceptCommand())
-        withSubcommands(ClanDenyCommand())
+    clanCreateCommand()
+    clanDisbandCommand()
+    clanLeaveCommand()
+    clanInfoCommand()
+    clanSetDiscordCommand()
 
-        withSubcommand(ClanPromoteMemberCommand())
-        withSubcommand(ClanDemoteMemberCommand())
-        withSubcommand(ClanKickMemberCommand())
-        withSubcommand(ClanMembersCommand())
+    clanInviteCommand()
+    clanAcceptCommand()
+    clanDenyCommand()
 
-        withSubcommand(ClanPlayerCommand())
-        withSubcommand(ClanAdminCommand())
+    clanPromoteMemberCommand()
+    clanDemoteMemberCommand()
+    clanKickMemberCommand()
+    clanMembersCommand()
 
-        withSubcommand(ClanOptionsCommand())
-        withSubcommand(ClanListCommand())
-    }
+    clanPlayerCommand()
+    clanAdminCommand()
+
+    clanOptionsCommand()
+    clanListCommand()
 }

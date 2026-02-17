@@ -1,0 +1,94 @@
+package dev.slne.clan.core.clan
+
+import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.invite.ClanInvite
+import dev.slne.clan.api.invite.ClanInviteResult
+import dev.slne.clan.api.member.ClanMember
+import dev.slne.clan.api.member.ClanMemberAddResult
+import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.clan.core.member.ClanMemberImpl
+import dev.slne.surf.surfapi.core.api.serializer.adventure.component.textcolor.SerializableTextColor
+import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
+import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
+import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import kotlinx.serialization.Serializable
+import net.kyori.adventure.text.format.TextColor
+import java.util.*
+
+@Serializable
+data class ClanImpl(
+    override val id: ULong,
+    override val uuid: SerializableStringUUID,
+    override val name: String,
+    override val tag: String,
+    override val createdByUuid: SerializableStringUUID,
+    override var description: String?,
+    override var discordInvite: String?,
+    override var clanTagColor: SerializableTextColor,
+    override var members: Set<ClanMemberImpl>,
+    override val updatedAt: SerializableOffsetDateTime,
+    override val createdAt: SerializableOffsetDateTime
+) : AbstractClanView(), Clan {
+    override suspend fun setDescription(description: String?) {
+        CoreClanService.updateDescription(this, description)
+    }
+
+    override suspend fun setDiscordInvite(discordInvite: String?) {
+        CoreClanService.updateDiscordInvite(this, discordInvite)
+    }
+
+    override suspend fun setClanTagColor(color: TextColor) {
+        CoreClanService.updateTagColor(this, color)
+    }
+
+    override suspend fun getPendingInvites(): Set<ClanInvite> {
+        return CoreClanService.fetchPendingInvites(this)
+    }
+
+    override suspend fun invite(invitee: UUID, invitedBy: UUID): ClanInviteResult {
+        return CoreClanService.invitePlayer(this, invitee, invitedBy)
+    }
+
+    override suspend fun revokeInvite(uuid: UUID): Boolean {
+        return CoreClanService.revokeInvite(this, uuid)
+    }
+
+    override suspend fun addMember(
+        uuid: UUID,
+        role: ClanMemberRole,
+        addedBy: UUID?
+    ): ClanMemberAddResult {
+        return CoreClanService.addMember(this, uuid, role, addedBy)
+    }
+
+    override suspend fun removeMember(member: ClanMember): Boolean {
+        return removeMember(member.uuid)
+    }
+
+    override suspend fun removeMember(uuid: UUID): Boolean {
+        return CoreClanService.removeMember(this, uuid)
+    }
+
+    override fun getMember(uuid: UUID): ClanMember? {
+        return members.find { member -> member.uuid == uuid }
+    }
+
+    override suspend fun delete(): Boolean {
+        return CoreClanService.delete(this)
+    }
+
+    override fun view() = ClanViewImpl(
+        id = id,
+        uuid = uuid,
+        name = name,
+        tag = tag,
+        createdByUuid = createdByUuid,
+        description = description,
+        discordInvite = discordInvite,
+        clanTagColor = clanTagColor,
+        members = members.mapTo(mutableObjectSetOf()) { it.view() },
+        updatedAt = updatedAt,
+        createdAt = createdAt
+    )
+
+}

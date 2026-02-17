@@ -1,117 +1,133 @@
 package dev.slne.clan.velocity.commands.subcommands
 
 import com.github.shynixn.mccoroutine.velocity.launch
+import com.velocitypowered.api.proxy.Player
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.clan.core.Messages
-import dev.slne.clan.core.service.clanService
-import dev.slne.clan.core.utils.clanComponent
-import dev.slne.clan.velocity.extensions.findClan
-import dev.slne.clan.velocity.extensions.hasPermission
-import dev.slne.clan.velocity.extensions.playerOrNull
+import dev.slne.clan.core.clan.ClanImpl
+import dev.slne.clan.core.components.Components
+import dev.slne.clan.core.redis.RedisService
+import dev.slne.clan.velocity.permission.ClanPermissions
 import dev.slne.clan.velocity.plugin
-import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.clan.velocity.redis.event.BroadcastMessageEvent
+import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import net.kyori.adventure.text.Component
+import dev.slne.surf.surfapi.velocity.api.command.executors.playerExecutorSuspend
+import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import java.util.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaDuration
 
 private const val CLAN_MAX_MEMBERS_DISBAND = 50
 
-class ClanDisbandCommand : CommandAPICommand("disband") {
-    init {
-        withPermission("surf.clan.disband")
-        playerExecutor { player, args ->
-            plugin.container.launch {
-                val clan = player.findClan()
+fun CommandAPICommand.clanDisbandCommand() = subcommand("disband") {
+    withPermission(ClanPermissions.CLAN_DISBAND_COMMAND)
 
-                if (clan == null) {
-                    player.sendMessage(Messages.notInClanComponent)
+    playerExecutorSuspend { player, args ->
+        val playerUuid = player.uniqueId
+        val clan = Clan.byPlayer(playerUuid) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
-                    return@launch
-                }
+        clan.canBeDisbandedBy(playerUuid)?.let { error ->
+            throw CommandAPI.failWithString(error.message)
+        }
 
-                if (!clan.hasPermission(player, ClanPermission.DISBAND)) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du hast keine Berechtigung, den Clan aufzulösen.")
-                    }
-                    return@launch
-                }
+        player.sendDisbandConfirmation(clan)
+    }
+}
 
-                if (clan.members.size > CLAN_MAX_MEMBERS_DISBAND) {
-                    player.sendText {
-                        appendPrefix()
-                        error("Du kannst den Clan nicht auflösen, da er mehr als $CLAN_MAX_MEMBERS_DISBAND Mitglieder hat.")
-                    }
+private suspend fun Player.sendDisbandConfirmation(clan: Clan) = sendText {
+    appendPrefix()
+    warning("Bist du dir sicher, dass du den Clan ")
+    append(Components.Clan.renderClanInformationHover(clan as ClanImpl))
+    warning(" auflösen möchtest?")
+    appendSpace()
+    warning("Klicke ")
 
-                    return@launch
-                }
+    append {
+        error("HIER", TextDecoration.BOLD)
+        hoverEvent(disbandHoverText())
+        clickEvent(createDisbandClickEvent(clan.uuid))
+    }
 
-                player.sendText {
-                    appendPrefix()
-                    info("Bist du sicher, dass du den Clan ")
-                    append(clanComponent(clan))
-                    info(" auflösen möchtest? Klicke")
-                    append(buildText {
-                        append(Component.text("hier", Colors.VARIABLE_VALUE, TextDecoration.BOLD))
+    warning(" um den Clan aufzulösen.")
+}
 
-                        hoverEvent(HoverEvent.showText(buildText {
-                            append(
-                                Component.text(
-                                    "Klicke hier, um den Clan aufzulösen.",
-                                    NamedTextColor.GRAY
-                                )
-                            )
-                            appendNewline()
-                            appendNewline()
+private fun disbandHoverText() = buildText {
+    info("Klicke hier, um den Clan aufzulösen.")
+    appendNewline(2)
+    error("Achtung: ", TextDecoration.BOLD)
+    error("Alle Daten des Clans werden gelöscht ")
+    appendNewline()
+    error("und können nicht wiederhergestellt werden.")
+    appendNewline()
+    error("Auch der Support kann keine Daten wiederherstellen.")
+}
 
-                            append(Component.text("Achtung: ", Colors.ERROR, TextDecoration.BOLD))
-                            append(
-                                Component.text(
-                                    "Alle Daten des Clans werden gelöscht ",
-                                    Colors.ERROR
-                                )
-                            )
-                            appendNewline()
-                            append(
-                                Component.text(
-                                    "und können nicht wiederhergestellt werden.",
-                                    Colors.ERROR
-                                )
-                            )
-                            appendNewline()
-                            append(
-                                Component.text(
-                                    "Auch der Support kann keine Daten wiederherstellen.",
-                                    Colors.ERROR
-                                )
-                            )
-                        }))
+private fun createDisbandClickEvent(oldClanUuid: UUID): ClickEvent = ClickEvent.callback(
+    ClickCallback.widen({ clicked ->
+        plugin.container.launch {
+            handleDisbandClick(clicked, oldClanUuid)
+        }
+    }, Player::class.java)
+) { it.lifetime(1.minutes.toJavaDuration()) }
 
-                        clickEvent(ClickEvent.callback {
-                            plugin.container.launch {
-                                val clanDisbandedMessage = buildText {
-                                    append(Component.text("Der Clan ", Colors.SUCCESS))
-                                    append(clanComponent(clan))
-                                    append(Component.text(" wurde aufgelöst.", Colors.SUCCESS))
-                                }
+private suspend fun handleDisbandClick(clicked: Player, oldClanUuid: UUID) {
+    val uuid = clicked.uniqueId
 
-                                clanService.deleteClan(clan)
+    val currentClan = Clan.byPlayer(uuid) ?: return clicked.sendText {
+        appendPrefix()
+        error("Du bist nicht mehr in einem Clan.")
+    }
 
-                                clan.members.forEach { member ->
-                                    member.playerOrNull?.sendMessage(clanDisbandedMessage)
-                                }
-                            }
-                        })
-                    })
-                    info(" um den Clan aufzulösen.")
-                }
-            }
+    if (currentClan.uuid != oldClanUuid) return clicked.sendText {
+        appendPrefix()
+        error("Du bist nicht mehr in dem Clan, den du auflösen wolltest.")
+    }
+
+    currentClan.canBeDisbandedBy(uuid)?.let { error ->
+        return clicked.sendText {
+            appendPrefix()
+            error(error.message)
         }
     }
+
+    if (!currentClan.delete()) return clicked.sendText {
+        appendPrefix()
+        error("Beim Löschen des Clans ist ein Fehler aufgetreten.")
+    }
+
+    broadcastClanDisband(currentClan)
+}
+
+private suspend fun broadcastClanDisband(deletedClan: Clan) {
+    val message = buildText {
+        appendPrefix()
+        success("Der Clan ")
+        append(Components.Clan.renderClanInformationHover(deletedClan as ClanImpl))
+        success(" wurde erfolgreich aufgelöst.")
+    }
+
+    val memberUuids = deletedClan.members.map { it.uuid }.toSet()
+    RedisService.publish(BroadcastMessageEvent(message, memberUuids)).await()
+}
+
+private suspend fun Clan.canBeDisbandedBy(playerUuid: UUID): DisbandError? {
+    if (!hasMemberPermission(playerUuid, ClanPermission.DISBAND)) {
+        return DisbandError.NO_PERMISSION
+    }
+    if (members.size > CLAN_MAX_MEMBERS_DISBAND) {
+        return DisbandError.TOO_MANY_MEMBERS
+    }
+    return null
+}
+
+private enum class DisbandError(val message: String) {
+    NO_PERMISSION("Du hast keine Berechtigung, den Clan aufzulösen."),
+    TOO_MANY_MEMBERS("Du kannst den Clan nicht auflösen, da er mehr als $CLAN_MAX_MEMBERS_DISBAND Mitglieder hat.")
 }

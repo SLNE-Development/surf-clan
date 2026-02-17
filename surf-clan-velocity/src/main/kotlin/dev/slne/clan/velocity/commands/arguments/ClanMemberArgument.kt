@@ -1,59 +1,43 @@
 package dev.slne.clan.velocity.commands.arguments
 
 import com.velocitypowered.api.proxy.Player
-import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.Argument
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.StringArgument
-import dev.jorel.commandapi.executors.CommandArguments
-import dev.slne.clan.api.Clan
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.member.ClanMember
-import dev.slne.clan.core.service.clanPlayerService
-import dev.slne.clan.velocity.extensions.findClan
-import kotlinx.coroutines.*
-import kotlinx.coroutines.future.future
+import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.surfapi.velocity.api.command.args.SuspendCustomArgument
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
-const val CLAN_MEMBER_ARGUMENT_NODE_NAME = "target"
 
-@OptIn(DelicateCoroutinesApi::class)
-class ClanMemberArgument(
-    nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
-) : StringArgument(nodeName) {
+class ClanMemberArgument(nodeName: String) : SuspendCustomArgument<ClanMember, String>(StringArgument(nodeName)) {
     init {
-        replaceSuggestions(ArgumentSuggestions.stringCollectionAsync { info ->
-            GlobalScope.future(Dispatchers.IO) {
-                val player = info.sender as? Player ?: return@future emptyList()
-                val clan = player.findClan() ?: return@future emptyList()
+        replaceSuggestions(stringCollectionSuspend { info ->
+            val player = info.sender as? Player ?: return@stringCollectionSuspend emptyList()
+            val clan = Clan.byPlayer(player.uniqueId) ?: return@stringCollectionSuspend emptyList()
 
-                clan.members.map {
-                    async {
-                        clanPlayerService.findClanPlayerByUuid(it.uuid)?.username
-                            ?: it.uuid.toString()
+            val memberNames = ConcurrentHashMap.newKeySet<String>()
+            supervisorScope {
+                for (member in clan.members) {
+                    launch {
+                        memberNames.add(PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString())
                     }
-                }.awaitAll()
+                }
             }
+
+            memberNames
         })
     }
 
-    companion object {
-        suspend fun clanMember(
-            clan: Clan,
-            args: CommandArguments,
-            nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME
-        ): ClanMember? {
-            val argument = args.getUnchecked<String>(nodeName) ?: return null
-            val clanPlayer =
-                clanPlayerService.findClanPlayerByName(argument) ?: return null
+    override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): ClanMember {
+        val playerNameOrUuid = info.currentInput
+        val uuid = runCatching { UUID.fromString(playerNameOrUuid) }.getOrNull()
+        val member = if (uuid != null) ClanMember.byUuid(uuid) else ClanMember.byName(playerNameOrUuid)
 
-            return clan.members.find { it.uuid == clanPlayer.uuid }
-        }
+        return member ?: throw CommandAPI.failWithString("Clan Member '$playerNameOrUuid' not found.")
     }
 }
-
-inline fun CommandAPICommand.clanMemberArgument(
-    nodeName: String = CLAN_MEMBER_ARGUMENT_NODE_NAME,
-    optional: Boolean = false,
-    block: Argument<*>.() -> Unit = {}
-): CommandAPICommand = withArguments(
-    ClanMemberArgument(nodeName).setOptional(optional).apply(block)
-)
