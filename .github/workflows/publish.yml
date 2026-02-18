@@ -3,7 +3,7 @@ name: Publish to Maven & Create GitHub Release
 on:
   push:
     branches:
-      - 'version/*'
+      - version/**
   workflow_dispatch:
 
 env:
@@ -11,11 +11,11 @@ env:
   SLNE_SNAPSHOTS_REPO_PASSWORD: ${{ secrets.SLNE_SNAPSHOTS_REPO_PASSWORD }}
   SLNE_RELEASES_REPO_USERNAME: ${{ secrets.SLNE_RELEASES_REPO_USERNAME }}
   SLNE_RELEASES_REPO_PASSWORD: ${{ secrets.SLNE_RELEASES_REPO_PASSWORD }}
-  MODULE_REGEX: "surf-clan-api.*-all\\.jar$|surf-clan-velocity.*-all\\.jar$"
+  MODULE_REGEX: "surf-clan-paper.*-all\\.jar$|surf-clan-velocity.*-all\\.jar$surf-clan-placeholder-expansion.*-all\\.jar$"
   DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -23,30 +23,29 @@ jobs:
         uses: catchpoint/workflow-telemetry-action@v2
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
+      - name: Setup Java
+        uses: actions/setup-java@v5
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
+          distribution: "graalvm"
+          java-version: 25
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
         with:
-          distribution: 'graalvm'
-          java-version: '24'
+          allow-snapshot-wrappers: true
 
-      - name: Build all modules with Gradle
-        run: ./gradlew build shadowJar --parallel --no-scan
+      - name: Build with Gradle
+        run: ./gradlew shadowJar
 
-      - name: Publish all modules to Maven
-        run: ./gradlew publish --parallel --no-scan
+      - name: Check with Gradle
+        run: ./gradlew check checkLegacyAbi
+
+      - name: Publish to Maven
+        run: ./gradlew publish
 
       - name: Extract Project Version and Snapshot Flag from Gradle
         id: get_version
@@ -54,12 +53,13 @@ jobs:
           VERSION=$(./gradlew properties --no-daemon \
             | grep '^version:' \
             | awk '{print $2}')
-          SNAPSHOT_FLAG=$(./gradlew properties --no-daemon \
-            | grep '^snapshot:' \
-            | awk '{print $2}')
-          if [ "$SNAPSHOT_FLAG" = "true" ]; then
-            VERSION="${VERSION}-SNAPSHOT"
+
+          if [[ "$VERSION" == *SNAPSHOT* ]]; then
+            SNAPSHOT_FLAG=true
+          else
+            SNAPSHOT_FLAG=false
           fi
+
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "SNAPSHOT_FLAG=$SNAPSHOT_FLAG" >> $GITHUB_ENV
 
