@@ -3,6 +3,7 @@ package dev.slne.surf.clan.runtime.db.repository
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.core.clan.ClanImpl
 import dev.slne.surf.surfapi.core.api.util.requiredService
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import java.util.*
 
@@ -16,13 +17,20 @@ interface ClanRepository {
 
     suspend fun updateDescription(clanID: ULong, description: String?): Boolean
     suspend fun updateDiscordInvite(clanID: ULong, discordInvite: String?): Boolean
-    suspend fun updateTagColor(clanID: ULong, tagColor: TextColor): Boolean
+    suspend fun updateTagColor(
+        clanID: ULong,
+        tagForegroundColor: TextColor?,
+        tagBackgroundColor: TextColor?,
+        tagShadowColor: ShadowColor?
+    ): Boolean
 
     suspend fun create(
         name: String,
         tag: String,
         owner: UUID,
-        tagColor: TextColor?,
+        tagForegroundColor: TextColor?,
+        tagBackgroundColor: TextColor?,
+        tagShadowColor: ShadowColor?,
         description: String?,
         discordInvite: String?
     ): ClanCreationResult

@@ -22,7 +22,6 @@ import dev.slne.surf.surfapi.core.api.util.logger
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
-import net.kyori.adventure.text.format.TextColor
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
@@ -167,7 +166,9 @@ class ClanServiceImpl : CoreClanService {
             properties.name,
             normalizeTag(properties.tag),
             properties.owner,
-            properties.tagColor,
+            properties.tagColor?.foregroundColor,
+            properties.tagColor?.backgroundColor,
+            properties.tagColor?.shadowColor,
             properties.description,
             properties.discordInvite
         )
@@ -201,11 +202,19 @@ class ClanServiceImpl : CoreClanService {
         return updated
     }
 
-    override suspend fun updateTagColor(clan: ClanImpl, tagColor: TextColor): Boolean {
-        val updated = ClanRepository.updateTagColor(clan.id, tagColor)
+    override suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean {
+        val updatedTagColor = clan.clanTagColor.applyUpdate(update, Clan.DEFAULT_CLAN_TAG_COLORS)
+
+        val updated = ClanRepository.updateTagColor(
+            clan.id,
+            updatedTagColor.foregroundColor,
+            updatedTagColor.backgroundColor,
+            updatedTagColor.shadowColor
+        )
+
         if (updated) {
             invalidateCachedClanByID(clan.id)
-            clan.clanTagColor = tagColor
+            clan.clanTagColor = updatedTagColor
             callClanUpdatedListeners(clan)
         }
 

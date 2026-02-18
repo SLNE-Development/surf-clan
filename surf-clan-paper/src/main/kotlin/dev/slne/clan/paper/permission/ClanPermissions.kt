@@ -23,6 +23,9 @@ object ClanPermissions : PermissionRegistry() {
 
     val CLAN_OPTIONS_COMMAND = create("$COMMAND.options")
     val CLAN_OPTIONS_TAG_COLOR_COMMAND = create("$CLAN_OPTIONS_COMMAND.tagColor")
+    val CLAN_OPTIONS_TAG_COLOR_BACKGROUND_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.background")
+    val CLAN_OPTIONS_TAG_COLOR_FOREGROUND_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.foreground")
+    val CLAN_OPTIONS_TAG_COLOR_SHADOW_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.shadow")
 
     val CLAN_PLAYER_COMMAND = create("$PREFIX.player")
     val CLAN_PLAYER_SETTINGS_COMMAND = create("$CLAN_PLAYER_COMMAND.settings")

@@ -1,6 +1,7 @@
 package dev.slne.clan.core.clan
 
 import dev.slne.clan.api.clan.ClanService
+import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
@@ -20,7 +21,7 @@ interface CoreClanService : ClanService {
 
     suspend fun updateDescription(clan: ClanImpl, description: String?): Boolean
     suspend fun updateDiscordInvite(clan: ClanImpl, discordInvite: String?): Boolean
-    suspend fun updateTagColor(clan: ClanImpl, tagColor: TextColor): Boolean
+    suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean
 
     suspend fun fetchPendingInvites(clan: AbstractClanView): Set<ClanInviteImpl>
     suspend fun invitePlayer(clan: ClanImpl, invitee: UUID, invitedBy: UUID): ClanInviteResult

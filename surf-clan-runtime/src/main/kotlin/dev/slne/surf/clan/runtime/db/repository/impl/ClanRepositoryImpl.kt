@@ -2,13 +2,13 @@ package dev.slne.surf.clan.runtime.db.repository.impl
 
 import com.google.auto.service.AutoService
 import dev.slne.clan.api.clan.ClanCreationResult
+import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.clan.ClanImpl
 import dev.slne.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.runtime.db.repository.ClanRepository
 import dev.slne.surf.clan.runtime.db.table.ClanMembersTable
 import dev.slne.surf.clan.runtime.db.table.ClansTable
-import dev.slne.surf.database.libs.io.r2dbc.spi.R2dbcDataIntegrityViolationException
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import java.util.*
 
@@ -90,9 +91,16 @@ class ClanRepositoryImpl : ClanRepository {
         } > 0
     }
 
-    override suspend fun updateTagColor(clanID: ULong, tagColor: TextColor): Boolean = suspendTransaction {
+    override suspend fun updateTagColor(
+        clanID: ULong,
+        tagForegroundColor: TextColor?,
+        tagBackgroundColor: TextColor?,
+        tagShadowColor: ShadowColor?
+    ): Boolean = suspendTransaction {
         ClansTable.update({ ClansTable.id eq clanID }) {
-            it[ClansTable.tagColor] = tagColor
+            it[ClansTable.tagForegroundColor] = tagForegroundColor
+            it[ClansTable.tagBackgroundColor] = tagBackgroundColor
+            it[ClansTable.tagShadowColor] = tagShadowColor
         } > 0
     }
 
@@ -100,7 +108,9 @@ class ClanRepositoryImpl : ClanRepository {
         name: String,
         tag: String,
         owner: UUID,
-        tagColor: TextColor?,
+        tagForegroundColor: TextColor?,
+        tagBackgroundColor: TextColor?,
+        tagShadowColor: ShadowColor?,
         description: String?,
         discordInvite: String?
     ): ClanCreationResult = suspendTransaction {
@@ -119,7 +129,9 @@ class ClanRepositoryImpl : ClanRepository {
                 smt[this.name] = name
                 smt[this.tag] = tag
                 smt[this.createdBy] = owner
-                tagColor?.let { smt[this.tagColor] = it }
+                tagForegroundColor?.let { smt[this.tagForegroundColor] = it }
+                tagBackgroundColor?.let { smt[this.tagBackgroundColor] = it }
+                tagShadowColor?.let { smt[this.tagShadowColor] = it }
                 description?.let { smt[this.description] = it }
                 discordInvite?.let { smt[this.discordInvite] = it }
             }.single()
@@ -181,6 +193,7 @@ class ClanRepositoryImpl : ClanRepository {
             }
             .toSet()
 
+        ShadowColor.none()
         return createClanDAO(clanRow, members)
     }
 
@@ -192,7 +205,11 @@ class ClanRepositoryImpl : ClanRepository {
         createdByUuid = row[ClansTable.createdBy],
         description = row[ClansTable.description],
         discordInvite = row[ClansTable.discordInvite],
-        clanTagColor = row[ClansTable.tagColor],
+        clanTagColor = ClanTagColor.withDefaultsAsFallback(
+            foreground = row[ClansTable.tagForegroundColor],
+            background = row[ClansTable.tagBackgroundColor],
+            shadow = row[ClansTable.tagShadowColor]
+        ),
         members = members,
         updatedAt = row[ClansTable.updatedAt],
         createdAt = row[ClansTable.createdAt]

@@ -7,6 +7,7 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
@@ -43,12 +44,7 @@ interface Clan : ClanView {
      */
     suspend fun setDiscordInvite(discordInvite: String?)
 
-    /**
-     * Changes the color of the clan's tag.
-     *
-     * @param color the new text color for the clan tag
-     */
-    suspend fun setClanTagColor(color: TextColor)
+    suspend fun changeClanTagColor(update: ClanTagColor.Update)
 
     /**
      * Retrieves all pending invitations sent by this clan.
@@ -131,7 +127,17 @@ interface Clan : ClanView {
         /**
          * The default color for clan tags when no custom color is set.
          */
-        val DEFAULT_CLAN_TAG_COLOR: TextColor = Colors.WHITE
+        val DEFAULT_CLAN_TAG_BACKGROUND_COLOR: TextColor = Colors.WHITE
+
+        val DEFAULT_CLAN_TAG_FOREGROUND_COLOR: TextColor = Colors.WHITE
+
+        val DEFAULT_CLAN_TAG_SHADOW_COLOR: ShadowColor = ShadowColor.none()
+
+        val DEFAULT_CLAN_TAG_COLORS = ClanTagColor(
+            DEFAULT_CLAN_TAG_FOREGROUND_COLOR,
+            DEFAULT_CLAN_TAG_BACKGROUND_COLOR,
+            DEFAULT_CLAN_TAG_SHADOW_COLOR
+        )
 
         /**
          * The minimum number of members required before a Discord link can be set.
@@ -250,3 +256,7 @@ interface Clan : ClanView {
         }
     }
 }
+
+suspend inline fun Clan.changeClanTagColor(update: ClanTagColor.Update.Builder.() -> Unit) = changeClanTagColor(
+    ClanTagColor.update(update)
+)

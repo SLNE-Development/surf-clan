@@ -5,7 +5,6 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.config.ClanConfig
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
 import dev.slne.surf.core.api.common.surfCoreApi
-import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import java.util.*
 
@@ -24,7 +23,12 @@ abstract class AbstractClanView : ClanView {
     }
 
     override fun getRichClanTag(): Component {
-        return BitmapProvider.translateToComponent(tag, Colors.WHITE, clanTagColor)
+        return BitmapProvider.translateToComponent(
+            tag,
+            clanTagColor.foregroundColor,
+            clanTagColor.backgroundColor,
+            clanTagColor.shadowColor
+        )
     }
 
     override fun renderClanTag(minSize: Int): Component {

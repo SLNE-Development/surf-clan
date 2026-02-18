@@ -4,6 +4,7 @@ import dev.slne.clan.api.invite.ClanInviteView
 import dev.slne.clan.api.member.ClanMemberView
 import dev.slne.clan.api.permission.ClanPermission
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
 import java.time.OffsetDateTime
@@ -53,10 +54,7 @@ interface ClanView {
      */
     val discordInvite: String?
 
-    /**
-     * The color used to display this clan's tag.
-     */
-    val clanTagColor: TextColor
+    val clanTagColor: ClanTagColor
 
     /**
      * An immutable set of all members in this clan.

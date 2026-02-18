@@ -23,7 +23,7 @@ data class ClanCreateBuilder internal constructor(
     /**
      * The color for the clan tag, or `null` to use the default color.
      */
-    var tagColor: TextColor? = null
+    var tagColor: ClanTagColor? = null
         private set
 
     /**
@@ -44,7 +44,7 @@ data class ClanCreateBuilder internal constructor(
      * @param tagColor the color to use for the clan tag
      * @return this builder for method chaining
      */
-    fun tagColor(tagColor: TextColor) = apply { this.tagColor = tagColor }
+    fun tagColor(tagColor: ClanTagColor) = apply { this.tagColor = tagColor }
 
     /**
      * Sets the description for the clan.

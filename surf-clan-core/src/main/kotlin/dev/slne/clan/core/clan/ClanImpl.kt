@@ -1,18 +1,17 @@
 package dev.slne.clan.core.clan
 
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.core.member.ClanMemberImpl
-import dev.slne.surf.surfapi.core.api.serializer.adventure.component.textcolor.SerializableTextColor
 import dev.slne.surf.surfapi.core.api.serializer.java.datetime.datetime.offset.SerializableOffsetDateTime
 import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import kotlinx.serialization.Serializable
-import net.kyori.adventure.text.format.TextColor
 import java.util.*
 
 @Serializable
@@ -22,12 +21,12 @@ data class ClanImpl(
     override val name: String,
     override val tag: String,
     override val createdByUuid: SerializableStringUUID,
+    override var clanTagColor: ClanTagColor,
     override var description: String?,
     override var discordInvite: String?,
-    override var clanTagColor: SerializableTextColor,
     override var members: Set<ClanMemberImpl>,
     override val updatedAt: SerializableOffsetDateTime,
-    override val createdAt: SerializableOffsetDateTime
+    override val createdAt: SerializableOffsetDateTime,
 ) : AbstractClanView(), Clan {
     override suspend fun setDescription(description: String?) {
         CoreClanService.updateDescription(this, description)
@@ -37,8 +36,8 @@ data class ClanImpl(
         CoreClanService.updateDiscordInvite(this, discordInvite)
     }
 
-    override suspend fun setClanTagColor(color: TextColor) {
-        CoreClanService.updateTagColor(this, color)
+    override suspend fun changeClanTagColor(update: ClanTagColor.Update) {
+        CoreClanService.updateTagColor(this, update)
     }
 
     override suspend fun getPendingInvites(): Set<ClanInvite> {
