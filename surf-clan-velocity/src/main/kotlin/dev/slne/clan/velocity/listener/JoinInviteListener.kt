@@ -13,6 +13,8 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.event.ClickEvent
@@ -23,6 +25,8 @@ object JoinInviteListener {
 
     @Subscribe
     fun onServerConnected(event: ServerConnectedEvent) {
+        if (event.previousServer.isEmpty) return
+
         plugin.container.launch {
             delay(1.seconds)
 
@@ -38,22 +42,25 @@ object JoinInviteListener {
             }
 
             val data = ConcurrentHashMap.newKeySet<ClanInviteRenderData>()
+            val semaphore = Semaphore(64)
 
             supervisorScope {
                 for (invite in invites) {
                     launch {
-                        val clan = invite.getClan() ?: return@launch
-                        val renderData = ClanInviteRenderData(
-                            clanInformationHover = Components.Clan.renderClanInformationHover(clan as ClanImpl),
-                            clanName = clan.name
-                        )
-                        data.add(renderData)
+                        semaphore.withPermit {
+                            val clan = invite.getClan() ?: return@launch
+                            val renderData = ClanInviteRenderData(
+                                clanInformationHover = Components.Clan.renderClanInformationHover(clan as ClanImpl),
+                                clanName = clan.name
+                            )
+                            data.add(renderData)
+                        }
                     }
                 }
             }
 
             player.sendText {
-                appendPrefix()
+                appendInfoPrefix()
                 info("Du hast noch ".toSmallCaps())
                 variableValue(invites.size)
                 info(" offene Clan-Einladung${if (invites.size == 1) "" else "en"}.".toSmallCaps())

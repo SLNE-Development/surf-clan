@@ -129,4 +129,6 @@ interface ClanView {
      * @return the formatted clan tag component if criteria are met, otherwise an empty component
      */
     fun renderClanTag(minSize: Int = 0): Component
+
+    fun broadcast(message: Component)
 }

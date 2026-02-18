@@ -1,10 +1,10 @@
 package dev.slne.clan.core.clan
 
 import dev.slne.clan.api.clan.ClanView
-import dev.slne.clan.api.member.ClanMemberView
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.core.config.ClanConfig
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
+import dev.slne.surf.core.api.common.surfCoreApi
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import java.util.*
@@ -32,5 +32,13 @@ abstract class AbstractClanView : ClanView {
         if (members.size < minSize && tag !in ClanConfig.getConfig().whitelistedTags) return Component.empty()
 
         return getRichClanTag()
+    }
+
+    override fun broadcast(message: Component) {
+        members.asSequence()
+            .map { it.uuid }
+            .distinct()
+            .mapNotNull { surfCoreApi.getPlayer(it) }
+            .forEach { surfCoreApi.sendText(it, message) }
     }
 }

@@ -6,7 +6,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class ClanConfig(
-    val whitelistedTags: List<String> = emptyList()
+    val whitelistedTags: List<String> = emptyList() // TODO: save in db
 ) {
     companion object : SpongeYmlConfigClass<ClanConfig>(
         ClanConfig::class.java,
