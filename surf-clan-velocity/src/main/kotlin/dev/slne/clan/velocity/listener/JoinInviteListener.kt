@@ -25,7 +25,7 @@ object JoinInviteListener {
 
     @Subscribe
     fun onServerConnected(event: ServerConnectedEvent) {
-        if (event.previousServer.isEmpty) return
+        if (event.previousServer.isPresent) return
 
         plugin.container.launch {
             delay(1.seconds)
