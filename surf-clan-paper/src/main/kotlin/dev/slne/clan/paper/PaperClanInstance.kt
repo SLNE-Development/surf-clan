@@ -8,8 +8,8 @@ import dev.slne.clan.paper.commands.clanCommand
 class PaperClanInstance : ClanInstance() {
     override val dataPath get() = plugin.dataPath
 
-    override suspend fun load() {
-        super.load()
+    override suspend fun enable() {
+        super.enable()
         clanCommand()
     }
 }
