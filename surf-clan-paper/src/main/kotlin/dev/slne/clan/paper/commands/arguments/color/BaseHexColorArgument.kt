@@ -11,7 +11,7 @@ abstract class BaseHexColorArgument<T>(
     val normalized = HexColorParser.normalizeToRgba(info.currentInput())
         ?: throw CustomArgumentException.fromMessageBuilder(
             MessageBuilder()
-                .append("Invalid hex color: ")
+                .append("Failed to parse hex color code: ")
                 .appendArgInput()
         )
 
