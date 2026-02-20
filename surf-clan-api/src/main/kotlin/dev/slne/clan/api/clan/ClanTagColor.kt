@@ -69,6 +69,20 @@ data class ClanTagColor(
                 shadowColor = shadow ?: Clan.DEFAULT_CLAN_TAG_SHADOW_COLOR
             )
         }
+
+        fun clanTagColorOrNull(
+            foreground: TextColor?,
+            background: TextColor?,
+            shadow: ShadowColor?
+        ): ClanTagColor? {
+            if (foreground == null || background == null || shadow == null) return null
+
+            return ClanTagColor(
+                foregroundColor = foreground,
+                backgroundColor = background,
+                shadowColor = shadow
+            )
+        }
     }
 
     internal sealed interface Field<out T> {
@@ -77,7 +91,7 @@ data class ClanTagColor(
         data class Set<T>(val value: T) : Field<T>
     }
 
-    fun applyUpdate(update: Update, defaults: ClanTagColor): ClanTagColor {
+    fun applyUpdate(update: Update): ClanTagColor {
         fun <T> Field<T>.resolve(current: T, default: T): T =
             when (this) {
                 Field.Unset -> current
@@ -86,9 +100,21 @@ data class ClanTagColor(
             }
 
         return copy(
-            foregroundColor = update.foreground.resolve(foregroundColor, defaults.foregroundColor),
-            backgroundColor = update.background.resolve(backgroundColor, defaults.backgroundColor),
-            shadowColor = update.shadow.resolve(shadowColor, defaults.shadowColor),
+            foregroundColor = update.foreground.resolve(foregroundColor, foregroundColor),
+            backgroundColor = update.background.resolve(backgroundColor, backgroundColor),
+            shadowColor = update.shadow.resolve(shadowColor, shadowColor),
         )
+    }
+}
+
+fun ClanTagColor?.update(update: ClanTagColor.Update): ClanTagColor {
+    return this?.applyUpdate(update) ?: ClanTagColor().applyUpdate(update)
+}
+
+fun ClanTagColor?.update(block: ClanTagColor.Update.Builder.() -> Unit): ClanTagColor {
+    val builder = ClanTagColor.Update.Builder()
+    block(builder)
+    return builder.build().let { update ->
+        this?.applyUpdate(update) ?: ClanTagColor().applyUpdate(update)
     }
 }

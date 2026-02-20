@@ -101,7 +101,13 @@ class ClanServiceImpl : CoreClanService {
     }
 
     fun callClanMemberUpdatedListeners(clan: Clan, memberUuid: UUID, added: Boolean) {
-        callClanListeners<ClanUpdateMemberListener> { it.onClanMemberUpdated(clan, memberUuid, added) }
+        callClanListeners<ClanUpdateMemberListener> {
+            it.onClanMemberUpdated(
+                clan,
+                memberUuid,
+                added
+            )
+        }
     }
 
     override suspend fun findClanByPlayer(playerUuid: UUID): Clan? {
@@ -203,7 +209,7 @@ class ClanServiceImpl : CoreClanService {
     }
 
     override suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean {
-        val updatedTagColor = clan.clanTagColor.applyUpdate(update, Clan.DEFAULT_CLAN_TAG_COLORS)
+        val updatedTagColor = clan.clanTagColor.update(update)
 
         val updated = ClanRepository.updateTagColor(
             clan.id,
@@ -225,7 +231,11 @@ class ClanServiceImpl : CoreClanService {
         return ClanInviteServiceImpl.get().fetchPendingInvites(clan.id)
     }
 
-    override suspend fun invitePlayer(clan: ClanImpl, invitee: UUID, invitedBy: UUID): ClanInviteResult {
+    override suspend fun invitePlayer(
+        clan: ClanImpl,
+        invitee: UUID,
+        invitedBy: UUID
+    ): ClanInviteResult {
         return ClanInviteServiceImpl.get().createInvite(clan.id, invitee, invitedBy)
     }
 

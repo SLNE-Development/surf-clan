@@ -21,7 +21,7 @@ data class ClanImpl(
     override val name: String,
     override val tag: String,
     override val createdByUuid: SerializableStringUUID,
-    override var clanTagColor: ClanTagColor,
+    override var clanTagColor: ClanTagColor?,
     override var description: String?,
     override var discordInvite: String?,
     override var members: Set<ClanMemberImpl>,

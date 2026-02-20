@@ -49,13 +49,15 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
 }
 
 private suspend fun changeColor(sender: Player, update: ClanTagColor.Update) {
-    val clan = Clan.byPlayer(sender.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+    val clan =
+        Clan.byPlayer(sender.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
     if (!clan.hasMemberPermission(sender.uniqueId, ClanPermission.OPTIONS_TAG_COLOR)) {
         throw CommandAPI.failWithString("Du hast keine Berechtigung, die Farbe des Clan-Tags zu ändern.")
     }
 
     clan.changeClanTagColor(update)
+
     sender.sendText {
         appendSuccessPrefix()
         success("Die Farbe des Clan-Tags wurde erfolgreich geändert.")

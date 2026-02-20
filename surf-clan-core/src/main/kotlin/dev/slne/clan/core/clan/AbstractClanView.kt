@@ -22,14 +22,12 @@ abstract class AbstractClanView : ClanView {
         return getMember(uuid)?.hasPermission(permission) ?: false
     }
 
-    override fun getRichClanTag(): Component {
-        return BitmapProvider.translateToComponent(
-            tag,
-            clanTagColor.foregroundColor,
-            clanTagColor.backgroundColor,
-            clanTagColor.shadowColor
-        )
-    }
+    override fun getRichClanTag(): Component = BitmapProvider.translateToComponent(
+        tag,
+        getClanTagColorOrDefault().foregroundColor,
+        getClanTagColorOrDefault().backgroundColor,
+        getClanTagColorOrDefault().shadowColor
+    )
 
     override fun renderClanTag(minSize: Int): Component {
         if (tag.isBlank()) return Component.empty()

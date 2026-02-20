@@ -65,31 +65,34 @@ class ClanRepositoryImpl : ClanRepository {
             .let(::createClanDAOOrNull)
     }
 
-    override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> = suspendTransaction {
-        val memberCount = ClanMembersTable.id.count()
+    override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> =
+        suspendTransaction {
+            val memberCount = ClanMembersTable.id.count()
 
-        ClansTable
-            .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
-            .select(ClansTable.columns + memberCount)
-            .groupBy(ClansTable.id)
-            .orderBy(memberCount, SortOrder.DESC)
-            .map { row ->
-                createClanDAO(row, emptySet())
-            }
-            .toList()
-    }
+            ClansTable
+                .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
+                .select(ClansTable.columns + memberCount)
+                .groupBy(ClansTable.id)
+                .orderBy(memberCount, SortOrder.DESC)
+                .map { row ->
+                    createClanDAO(row, emptySet())
+                }
+                .toList()
+        }
 
-    override suspend fun updateDescription(clanID: ULong, description: String?): Boolean = suspendTransaction {
-        ClansTable.update({ ClansTable.id eq clanID }) {
-            it[ClansTable.description] = description
-        } > 0
-    }
+    override suspend fun updateDescription(clanID: ULong, description: String?): Boolean =
+        suspendTransaction {
+            ClansTable.update({ ClansTable.id eq clanID }) {
+                it[ClansTable.description] = description
+            } > 0
+        }
 
-    override suspend fun updateDiscordInvite(clanID: ULong, discordInvite: String?): Boolean = suspendTransaction {
-        ClansTable.update({ ClansTable.id eq clanID }) {
-            it[ClansTable.discordInvite] = discordInvite
-        } > 0
-    }
+    override suspend fun updateDiscordInvite(clanID: ULong, discordInvite: String?): Boolean =
+        suspendTransaction {
+            ClansTable.update({ ClansTable.id eq clanID }) {
+                it[ClansTable.discordInvite] = discordInvite
+            } > 0
+        }
 
     override suspend fun updateTagColor(
         clanID: ULong,
@@ -193,7 +196,6 @@ class ClanRepositoryImpl : ClanRepository {
             }
             .toSet()
 
-        ShadowColor.none()
         return createClanDAO(clanRow, members)
     }
 
@@ -205,7 +207,7 @@ class ClanRepositoryImpl : ClanRepository {
         createdByUuid = row[ClansTable.createdBy],
         description = row[ClansTable.description],
         discordInvite = row[ClansTable.discordInvite],
-        clanTagColor = ClanTagColor.withDefaultsAsFallback(
+        clanTagColor = ClanTagColor.clanTagColorOrNull(
             foreground = row[ClansTable.tagForegroundColor],
             background = row[ClansTable.tagBackgroundColor],
             shadow = row[ClansTable.tagShadowColor]
