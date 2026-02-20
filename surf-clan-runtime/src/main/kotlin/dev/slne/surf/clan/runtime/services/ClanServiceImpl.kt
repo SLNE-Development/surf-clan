@@ -209,7 +209,7 @@ class ClanServiceImpl : CoreClanService {
     }
 
     override suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean {
-        val updatedTagColor = clan.getClanTagColor().applyUpdate(update)
+        val updatedTagColor = clan.getClanTagColorOrDefault().applyUpdate(update)
 
         val updated = ClanRepository.updateTagColor(
             clan.id,

@@ -24,9 +24,9 @@ abstract class AbstractClanView : ClanView {
 
     override fun getRichClanTag(): Component = BitmapProvider.translateToComponent(
         tag,
-        getClanTagColor().foregroundColor,
-        getClanTagColor().backgroundColor,
-        getClanTagColor().shadowColor
+        getClanTagColorOrDefault().foregroundColor,
+        getClanTagColorOrDefault().backgroundColor,
+        getClanTagColorOrDefault().shadowColor
     )
 
     override fun renderClanTag(minSize: Int): Component {

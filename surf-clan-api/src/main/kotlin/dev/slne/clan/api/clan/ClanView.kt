@@ -127,5 +127,5 @@ interface ClanView {
     fun renderClanTag(minSize: Int = 0): Component
 
     fun broadcast(message: Component)
-    fun getClanTagColor() = clanTagColor ?: Clan.DEFAULT_CLAN_TAG_COLORS
+    fun getClanTagColorOrDefault() = clanTagColor ?: Clan.DEFAULT_CLAN_TAG_COLORS
 }
