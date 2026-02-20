@@ -56,11 +56,7 @@ private suspend fun changeColor(sender: Player, update: ClanTagColor.Update) {
         throw CommandAPI.failWithString("Du hast keine Berechtigung, die Farbe des Clan-Tags zu ändern.")
     }
 
-    println("CURRENT COLOR: ${clan.clanTagColor}")
-
     clan.changeClanTagColor(update)
-
-    println("NEW COLOR: ${clan.clanTagColor}")
 
     sender.sendText {
         appendSuccessPrefix()
