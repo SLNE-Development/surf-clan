@@ -106,3 +106,15 @@ data class ClanTagColor(
         )
     }
 }
+
+fun ClanTagColor?.update(update: ClanTagColor.Update): ClanTagColor {
+    return this?.applyUpdate(update) ?: ClanTagColor().applyUpdate(update)
+}
+
+fun ClanTagColor?.update(block: ClanTagColor.Update.Builder.() -> Unit): ClanTagColor {
+    val builder = ClanTagColor.Update.Builder()
+    block(builder)
+    return builder.build().let { update ->
+        this?.applyUpdate(update) ?: ClanTagColor().applyUpdate(update)
+    }
+}
