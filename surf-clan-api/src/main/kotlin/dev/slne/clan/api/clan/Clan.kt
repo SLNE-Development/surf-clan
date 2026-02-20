@@ -130,7 +130,7 @@ interface Clan : ClanView {
             ?: error("Failed to parse default clan tag background color")
         val DEFAULT_CLAN_TAG_FOREGROUND_COLOR: TextColor = TextColor.fromHexString("#f0f4f7")
             ?: error("Failed to parse default clan tag foreground color")
-        val DEFAULT_CLAN_TAG_SHADOW_COLOR: ShadowColor = ShadowColor.fromHexString("#899098")
+        val DEFAULT_CLAN_TAG_SHADOW_COLOR: ShadowColor = ShadowColor.fromHexString("#899098FF")
             ?: error("Failed to parse default clan tag shadow color")
 
         val DEFAULT_CLAN_TAG_COLORS = ClanTagColor(
