@@ -15,7 +15,7 @@ data class ClanViewImpl(
     override val createdByUuid: UUID,
     override val description: String?,
     override val discordInvite: String?,
-    override val clanTagColor: ClanTagColor,
+    override val clanTagColor: ClanTagColor?,
     override val members: Set<ClanMemberView>,
     override val updatedAt: OffsetDateTime,
     override val createdAt: OffsetDateTime,

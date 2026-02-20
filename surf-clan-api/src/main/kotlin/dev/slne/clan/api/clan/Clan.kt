@@ -6,7 +6,6 @@ import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
@@ -127,11 +126,12 @@ interface Clan : ClanView {
         /**
          * The default color for clan tags when no custom color is set.
          */
-        val DEFAULT_CLAN_TAG_BACKGROUND_COLOR: TextColor = Colors.WHITE
-
-        val DEFAULT_CLAN_TAG_FOREGROUND_COLOR: TextColor = Colors.WHITE
-
-        val DEFAULT_CLAN_TAG_SHADOW_COLOR: ShadowColor = ShadowColor.none()
+        val DEFAULT_CLAN_TAG_BACKGROUND_COLOR: TextColor = TextColor.fromHexString("#39434f")
+            ?: error("Failed to parse default clan tag background color")
+        val DEFAULT_CLAN_TAG_FOREGROUND_COLOR: TextColor = TextColor.fromHexString("#f0f4f7")
+            ?: error("Failed to parse default clan tag foreground color")
+        val DEFAULT_CLAN_TAG_SHADOW_COLOR: ShadowColor = ShadowColor.fromHexString("#899098")
+            ?: error("Failed to parse default clan tag shadow color")
 
         val DEFAULT_CLAN_TAG_COLORS = ClanTagColor(
             DEFAULT_CLAN_TAG_FOREGROUND_COLOR,
@@ -170,7 +170,8 @@ interface Clan : ClanView {
          * @param listener the listener to register
          * @see ClanListener
          */
-        fun registerListener(listener: ClanListener) = ClanService.instance.registerListener(listener)
+        fun registerListener(listener: ClanListener) =
+            ClanService.instance.registerListener(listener)
 
         /**
          * Unregisters a previously registered clan listener.
@@ -178,7 +179,8 @@ interface Clan : ClanView {
          * @param listener the listener to unregister
          * @see ClanListener
          */
-        fun unregisterListener(listener: ClanListener) = ClanService.instance.unregisterListener(listener)
+        fun unregisterListener(listener: ClanListener) =
+            ClanService.instance.unregisterListener(listener)
 
         /**
          * Retrieves the clan that a player is a member of.
@@ -257,6 +259,7 @@ interface Clan : ClanView {
     }
 }
 
-suspend inline fun Clan.changeClanTagColor(update: ClanTagColor.Update.Builder.() -> Unit) = changeClanTagColor(
-    ClanTagColor.update(update)
-)
+suspend inline fun Clan.changeClanTagColor(update: ClanTagColor.Update.Builder.() -> Unit) =
+    changeClanTagColor(
+        ClanTagColor.update(update)
+    )
