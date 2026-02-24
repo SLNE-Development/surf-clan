@@ -8,6 +8,7 @@ import dev.slne.surf.surfapi.core.api.util.requiredService
 import kotlinx.coroutines.*
 import org.jetbrains.annotations.MustBeInvokedByOverriders
 import java.nio.file.Path
+import kotlin.time.Duration.Companion.hours
 
 abstract class ClanInstance {
 
@@ -40,11 +41,10 @@ abstract class ClanInstance {
         val config = ClanConfig.getConfig().autoDisband
         if (!config.enabled) return
 
-        val checkIntervalMillis = config.checkIntervalHours.toLong() * 60 * 60 * 1000
+        val checkIntervalMillis = config.checkIntervalHours.hours.inWholeMilliseconds
 
         autoDisbandJob = scope.launch {
             while (isActive) {
-                delay(checkIntervalMillis)
                 try {
                     val count = CoreClanService.disbandInactiveClans(config.inactivityDays)
                     if (count > 0) {
@@ -55,6 +55,7 @@ abstract class ClanInstance {
                         .withCause(e)
                         .log("Failed to auto-disband inactive clans")
                 }
+                delay(checkIntervalMillis)
             }
         }
     }

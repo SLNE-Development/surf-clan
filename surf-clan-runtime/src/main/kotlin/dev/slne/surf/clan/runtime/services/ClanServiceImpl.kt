@@ -24,6 +24,7 @@ import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
 @AutoService(ClanService::class)
@@ -288,7 +289,7 @@ class ClanServiceImpl : CoreClanService {
 
     override suspend fun disbandInactiveClans(inactivityDays: Int): Int {
         val thresholdMillis =
-            System.currentTimeMillis() - (inactivityDays.toLong() * 24 * 60 * 60 * 1000)
+            System.currentTimeMillis() - inactivityDays.days.inWholeMilliseconds
         val inactiveClanIds = ClanRepository.findInactiveClanIds(thresholdMillis)
         var count = 0
         for (clanId in inactiveClanIds) {
