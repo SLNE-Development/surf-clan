@@ -27,6 +27,7 @@ data class ClanImpl(
     override var members: Set<ClanMemberImpl>,
     override val updatedAt: SerializableOffsetDateTime,
     override val createdAt: SerializableOffsetDateTime,
+    val lastActivity: Long? = null,
 ) : AbstractClanView(), Clan {
     override suspend fun setDescription(description: String?) {
         CoreClanService.updateDescription(this, description)

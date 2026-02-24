@@ -278,6 +278,29 @@ class ClanServiceImpl : CoreClanService {
         return deleted
     }
 
+    override suspend fun updateLastActivity(clan: ClanImpl): Boolean {
+        val updated = ClanRepository.updateLastActivity(clan.id)
+        if (updated) {
+            invalidateCachedClanByID(clan.id)
+        }
+        return updated
+    }
+
+    override suspend fun disbandInactiveClans(inactivityDays: Int): Int {
+        val thresholdMillis =
+            System.currentTimeMillis() - (inactivityDays.toLong() * 24 * 60 * 60 * 1000)
+        val inactiveClanIds = ClanRepository.findInactiveClanIds(thresholdMillis)
+        var count = 0
+        for (clanId in inactiveClanIds) {
+            val clan = findClanByID(clanId) ?: continue
+            if (delete(clan)) {
+                log.atInfo().log("Auto-disbanded inactive clan '%s' (id=%s)", clan.name, clan.id)
+                count++
+            }
+        }
+        return count
+    }
+
     override suspend fun computeTagSuggestions(input: String, limit: Int): Collection<String> {
         val normalized = normalizeTag(input)
         if (normalized.isEmpty()) {

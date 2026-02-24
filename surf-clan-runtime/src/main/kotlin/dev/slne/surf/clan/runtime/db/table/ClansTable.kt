@@ -27,6 +27,7 @@ object ClansTable : AuditableLongIdTable("clan_clans") {
     val description = char("description", 255).nullable().default(null)
     val createdBy = nativeUuid("created_by")
     val discordInvite = varchar("discord_invite", 255).nullable().default(null)
+    val lastActivity = long("last_activity").nullable().default(null)
 }
 
 private fun Table.optionalTextColor(name: String): Column<TextColor?> = integer(name)

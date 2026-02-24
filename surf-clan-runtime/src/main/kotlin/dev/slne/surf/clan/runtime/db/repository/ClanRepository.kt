@@ -37,6 +37,9 @@ interface ClanRepository {
 
     suspend fun delete(clanID: ULong): Boolean
 
+    suspend fun updateLastActivity(clanID: ULong): Boolean
+    suspend fun findInactiveClanIds(thresholdMillis: Long): List<ULong>
+
     suspend fun suggestTagsByPrefix(prefix: String, limit: Int): List<String>
 
     companion object : ClanRepository by INSTANCE

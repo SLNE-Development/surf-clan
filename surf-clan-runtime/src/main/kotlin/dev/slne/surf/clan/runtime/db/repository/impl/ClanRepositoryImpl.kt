@@ -132,6 +132,7 @@ class ClanRepositoryImpl : ClanRepository {
                 smt[this.name] = name
                 smt[this.tag] = tag
                 smt[this.createdBy] = owner
+                smt[this.lastActivity] = System.currentTimeMillis()
                 tagForegroundColor?.let { smt[this.tagForegroundColor] = it }
                 tagBackgroundColor?.let { smt[this.tagBackgroundColor] = it }
                 tagShadowColor?.let { smt[this.tagShadowColor] = it }
@@ -170,6 +171,24 @@ class ClanRepositoryImpl : ClanRepository {
     override suspend fun delete(clanID: ULong): Boolean = suspendTransaction {
         ClansTable.deleteWhere { ClansTable.id eq clanID } > 0
     }
+
+    override suspend fun updateLastActivity(clanID: ULong): Boolean = suspendTransaction {
+        ClansTable.update({ ClansTable.id eq clanID }) {
+            it[lastActivity] = System.currentTimeMillis()
+        } > 0
+    }
+
+    override suspend fun findInactiveClanIds(thresholdMillis: Long): List<ULong> =
+        suspendTransaction {
+            ClansTable
+                .select(ClansTable.id)
+                .where {
+                    (ClansTable.lastActivity.isNotNull()) and
+                            (ClansTable.lastActivity less thresholdMillis)
+                }
+                .map { it[ClansTable.id].value }
+                .toList()
+        }
 
     override suspend fun suggestTagsByPrefix(prefix: String, limit: Int): List<String> {
         if (prefix.isBlank()) return emptyList()
@@ -214,6 +233,7 @@ class ClanRepositoryImpl : ClanRepository {
         ),
         members = members,
         updatedAt = row[ClansTable.updatedAt],
-        createdAt = row[ClansTable.createdAt]
+        createdAt = row[ClansTable.createdAt],
+        lastActivity = row[ClansTable.lastActivity]
     )
 }

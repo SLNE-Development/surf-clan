@@ -32,6 +32,9 @@ interface CoreClanService : ClanService {
 
     suspend fun delete(clan: ClanImpl): Boolean
 
+    suspend fun updateLastActivity(clan: ClanImpl): Boolean
+    suspend fun disbandInactiveClans(inactivityDays: Int): Int
+
     suspend fun computeTagSuggestions(input: String, limit: Int = 100): Collection<String>
 
     companion object : CoreClanService by ClanService.Companion.instance as CoreClanService
