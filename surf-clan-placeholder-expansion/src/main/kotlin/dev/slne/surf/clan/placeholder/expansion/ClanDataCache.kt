@@ -22,7 +22,7 @@ object ClanDataCache : ClanUpdatedListener {
 
     private suspend fun loadClanData(uuid: UUID): CachedClanData {
         val clan = Clan.byPlayer(uuid) ?: return CachedClanData.Empty
-        return CachedClanData.Loaded(clan.name, clan.tag, clan.renderClanTag(minSize = 10))
+        return CachedClanData.Loaded(clan.name, clan.tag, clan.renderClanTag(minSize = 30))
     }
 
     fun getData(uuid: UUID): CachedClanData {
