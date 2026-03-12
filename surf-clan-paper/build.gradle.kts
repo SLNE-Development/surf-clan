@@ -9,6 +9,8 @@ surfPaperPluginApi {
     withSurfRedis()
     mainClass("dev.slne.clan.paper.PaperMain")
 
+    foliaSupported(true)
+    
     serverDependencies {
         registerSoft("MiniPlaceholders")
     }
