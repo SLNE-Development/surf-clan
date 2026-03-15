@@ -13,12 +13,14 @@ import java.util.*
 
 @AutoService(ClanInviteService::class)
 class ClanInviteServiceImpl : CoreClanInviteService {
-
     override suspend fun fetchPendingInvites(clanID: ULong): Set<ClanInviteImpl> {
         return ClanInviteRepository.fetchPendingInvites(clanID)
     }
 
-    override suspend fun getPendingInviteByPlayerAndClanName(invited: UUID, clanName: String): ClanInvite? {
+    override suspend fun getPendingInviteByPlayerAndClanName(
+        invited: UUID,
+        clanName: String
+    ): ClanInvite? {
         return ClanInviteRepository.getPendingInviteByPlayerAndClanName(invited, clanName)
     }
 
@@ -26,7 +28,11 @@ class ClanInviteServiceImpl : CoreClanInviteService {
         return ClanInviteRepository.getPendingInvitesByPlayer(invited)
     }
 
-    override suspend fun createInvite(clanID: ULong, invitee: UUID, invitedBy: UUID): ClanInviteResult {
+    override suspend fun createInvite(
+        clanID: ULong,
+        invitee: UUID,
+        invitedBy: UUID
+    ): ClanInviteResult {
         return ClanInviteRepository.createInvite(clanID, invitee, invitedBy)
     }
 
@@ -35,7 +41,8 @@ class ClanInviteServiceImpl : CoreClanInviteService {
     }
 
     override suspend fun acceptInvite(invite: ClanInviteImpl): ClanInviteAcceptResult {
-        val accepted = ClanInviteRepository.acceptInvite(invite.id, invite.invited, invite.invitedBy)
+        val accepted =
+            ClanInviteRepository.acceptInvite(invite.id, invite.invited, invite.invitedBy)
         if (!accepted) {
             return ClanInviteAcceptResult.AlreadyInClan
         } else {
@@ -51,6 +58,6 @@ class ClanInviteServiceImpl : CoreClanInviteService {
     }
 
     companion object {
-        fun get() = ClanInviteService.instance as ClanInviteServiceImpl
+        fun get() = ClanInviteService.INSTANCE as ClanInviteServiceImpl
     }
 }

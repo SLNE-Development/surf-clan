@@ -43,7 +43,8 @@ interface ClanMember : ClanMemberView {
          * @param listener the listener to register
          * @see ClanMemberListener
          */
-        fun registerListener(listener: ClanMemberListener) = ClanMemberService.instance.registerListener(listener)
+        fun registerListener(listener: ClanMemberListener) =
+            ClanMemberService.registerListener(listener)
 
         /**
          * Unregisters a previously registered clan member listener.
@@ -51,7 +52,8 @@ interface ClanMember : ClanMemberView {
          * @param listener the listener to unregister
          * @see ClanMemberListener
          */
-        fun unregisterListener(listener: ClanMemberListener) = ClanMemberService.instance.unregisterListener(listener)
+        fun unregisterListener(listener: ClanMemberListener) =
+            ClanMemberService.unregisterListener(listener)
 
         /**
          * Retrieves a clan member by their unique identifier.
@@ -59,7 +61,7 @@ interface ClanMember : ClanMemberView {
          * @param uuid the unique identifier of the member
          * @return the [ClanMember] instance, or `null` if no member exists with the given UUID
          */
-        suspend fun byUuid(uuid: UUID) = ClanMemberService.instance.findMemberByUuid(uuid)
+        suspend fun byUuid(uuid: UUID) = ClanMemberService.findMemberByUuid(uuid)
 
         /**
          * Retrieves a clan member by their player name.
@@ -67,6 +69,6 @@ interface ClanMember : ClanMemberView {
          * @param name the name of the member
          * @return the [ClanMember] instance, or `null` if no member exists with the given name
          */
-        suspend fun byName(name: String) = ClanMemberService.instance.findMemberByName(name)
+        suspend fun byName(name: String) = ClanMemberService.findMemberByName(name)
     }
 }

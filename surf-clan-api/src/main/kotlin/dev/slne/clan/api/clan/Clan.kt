@@ -170,7 +170,7 @@ interface Clan : ClanView {
          * @see ClanListener
          */
         fun registerListener(listener: ClanListener) =
-            ClanService.instance.registerListener(listener)
+            ClanService.registerListener(listener)
 
         /**
          * Unregisters a previously registered clan listener.
@@ -179,7 +179,7 @@ interface Clan : ClanView {
          * @see ClanListener
          */
         fun unregisterListener(listener: ClanListener) =
-            ClanService.instance.unregisterListener(listener)
+            ClanService.unregisterListener(listener)
 
         /**
          * Retrieves the clan that a player is a member of.
@@ -187,7 +187,7 @@ interface Clan : ClanView {
          * @param uuid the UUID of the player
          * @return the [Clan] the player belongs to, or `null` if they are not in any clan
          */
-        suspend fun byPlayer(uuid: UUID): Clan? = ClanService.instance.findClanByPlayer(uuid)
+        suspend fun byPlayer(uuid: UUID): Clan? = ClanService.findClanByPlayer(uuid)
 
         /**
          * Retrieves a clan by its unique identifier.
@@ -195,7 +195,7 @@ interface Clan : ClanView {
          * @param uuid the UUID of the clan
          * @return the [Clan] if found, or `null` otherwise
          */
-        suspend fun byUuid(uuid: UUID): Clan? = ClanService.instance.findClanByUuid(uuid)
+        suspend fun byUuid(uuid: UUID): Clan? = ClanService.findClanByUuid(uuid)
 
         /**
          * Retrieves a clan by its tag.
@@ -203,7 +203,7 @@ interface Clan : ClanView {
          * @param tag the clan tag to search for
          * @return the [Clan] if found, or `null` otherwise
          */
-        suspend fun byTag(tag: String): Clan? = ClanService.instance.findClanByTag(tag)
+        suspend fun byTag(tag: String): Clan? = ClanService.findClanByTag(tag)
 
         /**
          * Validates a clan name and tag against system rules.
@@ -216,7 +216,7 @@ interface Clan : ClanView {
          * @return a [ClanValidationResult] indicating if the inputs are valid
          */
         fun validateClanNameAndTag(name: String, tag: String): ClanValidationResult =
-            ClanService.instance.validateClanNameAndTag(name, tag)
+            ClanService.validateClanNameAndTag(name, tag)
 
         /**
          * Creates a new clan with the specified parameters.
@@ -253,12 +253,16 @@ interface Clan : ClanView {
             val builder = ClanCreateBuilder(name, tag, owner)
             builder.additional()
 
-            return ClanService.instance.createClan(builder.copy())
+            return ClanService.createClan(builder.copy())
         }
     }
 }
 
-suspend inline fun Clan.changeClanTagColor(update: ClanTagColor.Update.Builder.() -> Unit) =
-    changeClanTagColor(
-        ClanTagColor.update(update)
-    )
+suspend fun UUID.findClanByUuid() = Clan.byUuid(this)
+suspend fun UUID.findClanByPlayer() = Clan.byPlayer(this)
+
+suspend inline fun Clan.changeClanTagColor(
+    update: ClanTagColor.Update.Builder.() -> Unit
+) = changeClanTagColor(
+    ClanTagColor.update(update)
+)

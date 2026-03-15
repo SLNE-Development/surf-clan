@@ -8,5 +8,5 @@ surfCoreApi {
 }
 
 dependencies {
-    api(project(":surf-clan-core"))
+    api(projects.surfClanCore)
 }

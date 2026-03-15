@@ -7,8 +7,9 @@ import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import java.util.*
 
-interface ClanRepository {
+private val instance = requiredService<ClanRepository>()
 
+interface ClanRepository {
     suspend fun findClanByPlayer(playerUuid: UUID): ClanImpl?
     suspend fun findClanByUuid(clanUuid: UUID): ClanImpl?
     suspend fun findClanByTag(tag: String): ClanImpl?
@@ -39,7 +40,7 @@ interface ClanRepository {
 
     suspend fun suggestTagsByPrefix(prefix: String, limit: Int): List<String>
 
-    companion object : ClanRepository by INSTANCE
+    companion object : ClanRepository by instance {
+        val INSTANCE get() = instance
+    }
 }
-
-private val INSTANCE = requiredService<ClanRepository>()

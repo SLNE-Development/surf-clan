@@ -4,9 +4,9 @@ import com.google.auto.service.AutoService
 import dev.slne.clan.api.player.ClanPlayerService
 import dev.slne.clan.core.player.ClanPlayerImpl
 import dev.slne.clan.core.player.CoreClanPlayerService
-import dev.slne.surf.clan.runtime.db.repository.ClanPlayerRepository
 import dev.slne.clan.core.redis.RedisService
-import java.util.UUID
+import dev.slne.surf.clan.runtime.db.repository.ClanPlayerRepository
+import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
 @AutoService(ClanPlayerService::class)
@@ -26,8 +26,13 @@ class ClanPlayerServiceImpl : CoreClanPlayerService {
         }
     }
 
-    override suspend fun changeAcceptsClanInvites(playerImpl: ClanPlayerImpl, acceptsClanInvites: Boolean): Boolean {
-        val changed = ClanPlayerRepository.changeAcceptsClanInvites(playerImpl.id, acceptsClanInvites)
+    override suspend fun changeAcceptsClanInvites(
+        playerImpl: ClanPlayerImpl,
+        acceptsClanInvites: Boolean
+    ): Boolean {
+        val changed =
+            ClanPlayerRepository.changeAcceptsClanInvites(playerImpl.id, acceptsClanInvites)
+        
         if (changed) {
             cache.invalidate(playerImpl.uuid)
         }
@@ -36,6 +41,6 @@ class ClanPlayerServiceImpl : CoreClanPlayerService {
     }
 
     companion object {
-        fun get() = ClanPlayerService.instance as ClanPlayerServiceImpl
+        fun get() = ClanPlayerService.INSTANCE as ClanPlayerServiceImpl
     }
 }

@@ -4,7 +4,6 @@ import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import dev.slne.surf.surfapi.core.api.util.objectSetOf
 
 object ClanTagRules {
-
     private val prohibitedTags = ProhibitedCategory.entries
         .flatMap { it.tags }
         .mapTo(mutableObjectSetOf()) { it.uppercase() }
@@ -74,11 +73,46 @@ object ClanTagRules {
         ),
         SEXUAL(
             objectSetOf(
-                "SEX", "FUC", "XXX", "BBC", "DCK", "TTS", "VGN", "CUM", "FUCK", "ASS", "ANL", "MILF",
-                "ANAL", "COC", "TIT", "DIL", "CUCK", "BICH", "PORN", "BJOB", "GANG", "COCK"
+                "SEX",
+                "FUC",
+                "XXX",
+                "BBC",
+                "DCK",
+                "TTS",
+                "VGN",
+                "CUM",
+                "FUCK",
+                "ASS",
+                "ANL",
+                "MILF",
+                "ANAL",
+                "COC",
+                "TIT",
+                "DIL",
+                "CUCK",
+                "BICH",
+                "PORN",
+                "BJOB",
+                "GANG",
+                "COCK"
             )
         ),
-        VIOLENCE(objectSetOf("GUN", "BOM", "KLL", "RPE", "ABU", "HRT", "SHO", "STB", "HIT", "KIK", "BASH", "MAME")),
+        VIOLENCE(
+            objectSetOf(
+                "GUN",
+                "BOM",
+                "KLL",
+                "RPE",
+                "ABU",
+                "HRT",
+                "SHO",
+                "STB",
+                "HIT",
+                "KIK",
+                "BASH",
+                "MAME"
+            )
+        ),
         SELF_HARM(objectSetOf("CUT", "SUI", "KYS", "SLF", "HURT", "SLIT", "BURN", "HANG", "JUMP")),
         OFFENSIVE(
             objectSetOf(

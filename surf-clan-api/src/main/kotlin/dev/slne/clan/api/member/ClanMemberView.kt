@@ -14,7 +14,6 @@ import java.util.*
  */
 @ApiStatus.NonExtendable
 interface ClanMemberView {
-
     /**
      * The unique identifier of this clan member.
      */

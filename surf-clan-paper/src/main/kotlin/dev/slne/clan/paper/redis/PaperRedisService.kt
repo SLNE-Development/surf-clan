@@ -4,5 +4,4 @@ import com.google.auto.service.AutoService
 import dev.slne.clan.core.redis.RedisService
 
 @AutoService(RedisService::class)
-class PaperRedisService : RedisService() {
-}
+class PaperRedisService : RedisService()

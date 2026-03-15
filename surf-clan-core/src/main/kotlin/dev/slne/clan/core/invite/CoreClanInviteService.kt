@@ -14,6 +14,6 @@ interface CoreClanInviteService : ClanInviteService {
     suspend fun acceptInvite(invite: ClanInviteImpl): ClanInviteAcceptResult
     suspend fun revokeInvite(invite: ClanInviteImpl): Boolean
 
-    companion object : CoreClanInviteService by ClanInviteService.instance as CoreClanInviteService
+    companion object : CoreClanInviteService by ClanInviteService.INSTANCE as CoreClanInviteService
 }
 

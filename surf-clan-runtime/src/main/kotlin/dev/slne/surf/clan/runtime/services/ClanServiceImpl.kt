@@ -309,7 +309,7 @@ class ClanServiceImpl : CoreClanService {
 
     companion object {
         private val log = logger()
-        fun get() = ClanService.instance as ClanServiceImpl
+        fun get() = ClanService.INSTANCE as ClanServiceImpl
 
         private fun normalizeTag(tag: String) = tag.trim().uppercase()
     }

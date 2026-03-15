@@ -10,7 +10,7 @@ surfPaperPluginApi {
     mainClass("dev.slne.clan.paper.PaperMain")
 
     foliaSupported(true)
-    
+
     serverDependencies {
         registerSoft("MiniPlaceholders")
     }
@@ -19,6 +19,6 @@ surfPaperPluginApi {
 }
 
 dependencies {
-    api(project(":surf-clan-core"))
-    runtimeOnly(project(":surf-clan-runtime"))
+    api(projects.surfClanCore)
+    runtimeOnly(projects.surfClanRuntime)
 }

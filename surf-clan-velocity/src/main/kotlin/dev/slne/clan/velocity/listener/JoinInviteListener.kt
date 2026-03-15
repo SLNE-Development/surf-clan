@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
 
 object JoinInviteListener {
-
     @Subscribe
     fun onServerConnected(event: ServerConnectedEvent) {
         if (event.previousServer.isPresent) return
@@ -50,7 +49,9 @@ object JoinInviteListener {
                         semaphore.withPermit {
                             val clan = invite.getClan() ?: return@launch
                             val renderData = ClanInviteRenderData(
-                                clanInformationHover = Components.Clan.renderClanInformationHover(clan as ClanImpl),
+                                clanInformationHover = Components.Clan.renderClanInformationHover(
+                                    clan as ClanImpl
+                                ),
                                 clanName = clan.name
                             )
                             data.add(renderData)

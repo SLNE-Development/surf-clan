@@ -10,7 +10,7 @@ data class ClanConfig(
 ) {
     companion object : SpongeYmlConfigClass<ClanConfig>(
         ClanConfig::class.java,
-        ClanInstance.get().dataPath,
+        ClanInstance.dataPath,
         "config.yml"
     )
 }

@@ -24,7 +24,6 @@ import dev.slne.clan.api.clan.ClanView
  * @see dev.slne.clan.api.clan.Clan.unregisterListener
  */
 fun interface ClanDeletedListener : ClanListener {
-
     /**
      * Called when a clan has been deleted.
      *

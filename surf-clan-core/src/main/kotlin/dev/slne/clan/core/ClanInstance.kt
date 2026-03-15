@@ -6,30 +6,30 @@ import dev.slne.surf.surfapi.core.api.util.requiredService
 import org.jetbrains.annotations.MustBeInvokedByOverriders
 import java.nio.file.Path
 
-abstract class ClanInstance {
+private val instance = requiredService<ClanInstance>()
 
-    abstract val dataPath: Path
+interface ClanInstance {
+    val dataPath: Path
 
     @MustBeInvokedByOverriders
-    open suspend fun load() {
-        DatabaseService.instance.createTables()
+    suspend fun load() {
+        DatabaseService.createTables()
         CoreClanService.init()
         RedisService.get().connect()
     }
 
     @MustBeInvokedByOverriders
-    open suspend fun enable() {
+    suspend fun enable() {
 
     }
 
     @MustBeInvokedByOverriders
-    open suspend fun disable() {
+    suspend fun disable() {
         RedisService.get().disconnect()
-        DatabaseService.instance.disconnect()
+        DatabaseService.disconnect()
     }
 
-    companion object {
-        val instance = requiredService<ClanInstance>()
-        fun get() = instance
+    companion object : ClanInstance by instance {
+        val INSTANCE get() = instance
     }
 }

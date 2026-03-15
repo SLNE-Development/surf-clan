@@ -27,18 +27,18 @@ class VelocityMain @Inject constructor(
         suspendingPluginContainer.initialize(this)
 
         runBlocking {
-            ClanInstance.get().load()
+            ClanInstance.load()
         }
     }
 
     @Subscribe
     suspend fun onProxyInitialization(event: ProxyInitializeEvent) {
-        ClanInstance.get().enable()
+        ClanInstance.enable()
     }
 
     @Subscribe
     suspend fun onProxyShutdown(event: ProxyShutdownEvent) {
-        ClanInstance.get().disable()
+        ClanInstance.disable()
     }
 
     companion object {

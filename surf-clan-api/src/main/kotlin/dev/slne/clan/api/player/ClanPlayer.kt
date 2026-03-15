@@ -41,6 +41,6 @@ interface ClanPlayer {
          * @param uuid the unique identifier of the player
          * @return the [ClanPlayer] instance associated with the given UUID
          */
-        suspend fun byUuid(uuid: UUID): ClanPlayer = ClanPlayerService.instance.findByUuid(uuid)
+        suspend fun byUuid(uuid: UUID): ClanPlayer = ClanPlayerService.findByUuid(uuid)
     }
 }

@@ -18,6 +18,6 @@ velocityPluginFile {
 }
 
 dependencies {
-    api(project(":surf-clan-core"))
-    runtimeOnly(project(":surf-clan-runtime"))
+    api(projects.surfClanCore)
+    runtimeOnly(projects.surfClanRuntime)
 }

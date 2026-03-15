@@ -1,4 +1,3 @@
-import dev.slne.surf.surfapi.gradle.util.slneReleases
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 buildscript {
@@ -25,15 +24,3 @@ subprojects {
         }
     }
 }
-
-//subprojects {
-//    afterEvaluate {
-//        plugins.withType<PublishingPlugin> {
-//            configure<PublishingExtension> {
-//                repositories {
-//                    slneReleases()
-//                }
-//            }
-//        }
-//    }
-//}

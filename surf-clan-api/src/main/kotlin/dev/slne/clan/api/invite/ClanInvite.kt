@@ -53,7 +53,7 @@ interface ClanInvite : ClanInviteView {
          * @return a list of all pending invitations for the player, or an empty list if none exist
          */
         suspend fun pendingInvitesByPlayer(invited: UUID): List<ClanInvite> =
-            ClanInviteService.instance.getPendingInvitesByPlayer(invited)
+            ClanInviteService.INSTANCE.getPendingInvitesByPlayer(invited)
 
         /**
          * Retrieves a specific pending invitation for a player by clan name.
@@ -63,6 +63,6 @@ interface ClanInvite : ClanInviteView {
          * @return the pending invitation, or `null` if no matching invitation exists
          */
         suspend fun pendingInviteByPlayerAndClanName(invited: UUID, clanName: String): ClanInvite? =
-            ClanInviteService.instance.getPendingInviteByPlayerAndClanName(invited, clanName)
+            ClanInviteService.INSTANCE.getPendingInviteByPlayerAndClanName(invited, clanName)
     }
 }

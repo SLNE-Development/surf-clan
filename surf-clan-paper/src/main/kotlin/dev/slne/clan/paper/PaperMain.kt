@@ -6,15 +6,15 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class PaperMain : SuspendingJavaPlugin() {
     override suspend fun onLoadAsync() {
-        ClanInstance.get().load()
+        ClanInstance.load()
     }
 
     override suspend fun onEnableAsync() {
-        ClanInstance.get().enable()
+        ClanInstance.enable()
     }
 
     override suspend fun onDisableAsync() {
-        ClanInstance.get().disable()
+        ClanInstance.disable()
     }
 }
 

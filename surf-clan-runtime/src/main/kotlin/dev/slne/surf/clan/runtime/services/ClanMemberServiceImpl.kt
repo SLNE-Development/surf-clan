@@ -18,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 @AutoService(ClanMemberService::class)
 class ClanMemberServiceImpl : CoreClanMemberService {
-
     private val loadedMembers = Caffeine.newBuilder()
         .weakValues()
         .maximumSize(10_000)
@@ -113,6 +112,7 @@ class ClanMemberServiceImpl : CoreClanMemberService {
 
     companion object {
         private val log = logger()
-        fun get() = ClanMemberService.instance as ClanMemberServiceImpl
+        
+        fun get() = ClanMemberService.INSTANCE as ClanMemberServiceImpl
     }
 }

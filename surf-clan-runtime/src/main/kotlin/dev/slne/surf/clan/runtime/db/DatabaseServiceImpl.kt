@@ -13,7 +13,7 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.s
 
 @AutoService(DatabaseService::class)
 class DatabaseServiceImpl : DatabaseService {
-    val databaseApi = DatabaseApi.create(ClanInstance.get().dataPath)
+    val databaseApi = DatabaseApi.create(ClanInstance.dataPath)
 
     override suspend fun createTables() = suspendTransaction {
         SchemaUtils.create(

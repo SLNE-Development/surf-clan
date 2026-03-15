@@ -9,7 +9,6 @@ import io.github.miniplaceholders.api.utils.Tags
 import net.kyori.adventure.text.minimessage.tag.Tag
 
 object ClanExpansionProvider {
-
     fun provideExpansion(): Expansion {
         Clan.registerListener(ClanDataCache)
 
