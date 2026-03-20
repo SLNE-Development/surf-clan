@@ -18,5 +18,5 @@ velocityPluginFile {
 }
 
 dependencies {
-//    api(projects.surfClanCore.surfClanCoreClient)
+    api(projects.surfClanCore.surfClanCoreClient)
 }

@@ -8,5 +8,5 @@ surfCoreApi {
 }
 
 dependencies {
-//    api(projects.surfClanCore.surfClanCoreCommon)
+    api(projects.surfClanCore.surfClanCoreCommon)
 }

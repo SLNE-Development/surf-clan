@@ -17,7 +17,7 @@ allprojects {
 
 subprojects {
     afterEvaluate {
-        configure<KotlinJvmExtension> {
+        extensions.findByType<KotlinJvmExtension>()?.apply {
             compilerOptions {
                 optIn.add("dev.slne.clan.api.util.InternalClanApi")
             }
