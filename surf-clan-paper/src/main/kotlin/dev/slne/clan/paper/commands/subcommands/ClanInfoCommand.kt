@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.optionalArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
-import dev.slne.clan.core.clan.ClanImpl
-import dev.slne.clan.core.components.Components
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.clan.paper.commands.arguments.ClanByClanTagArgument
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend

@@ -11,9 +11,9 @@ surfMicroservice {
 
 surfCoreApi {
     withSurfRedis()
+    withCoreCommon()
 }
 
 dependencies {
     api(projects.surfClanApi)
-    api(projects.surfClanMicroserviceProtocol)
 }
