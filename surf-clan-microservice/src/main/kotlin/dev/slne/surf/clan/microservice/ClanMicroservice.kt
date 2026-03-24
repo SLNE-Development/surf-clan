@@ -2,6 +2,7 @@ package dev.slne.surf.clan.microservice
 
 import com.google.auto.service.AutoService
 import dev.slne.surf.clan.core.ClanCoreSerializerModule
+import dev.slne.surf.clan.core.ClanInstance
 import dev.slne.surf.clan.microservice.db.table.ClanInvitesTable
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClanPlayerTable
@@ -36,14 +37,23 @@ import dev.slne.surf.microservice.api.microservice.Microservice
 import dev.slne.surf.rabbitmq.api.ServerRabbitMQApi
 import kotlin.io.path.Path
 
+lateinit var clanMicroservice: ClanMicroservice
+
 @AutoService(Microservice::class)
 class ClanMicroservice : Microservice() {
-    private val configPath = Path("config")
+    val configPath = Path("config")
     val databaseApi = DatabaseApi.create(configPath)
     val rabbitApi = ServerRabbitMQApi.create("surf-clan", configPath, ClanCoreSerializerModule.module)
 
+    init {
+        clanMicroservice = this
+    }
+
     override suspend fun onBootstrap(args: List<String>) {
         createTables()
+
+        ClanInstance.load()
+        ClanInstance.enable()
 
         // Clan
         rabbitApi.registerRequestHandler(ClanCreateHandler)
@@ -89,6 +99,7 @@ class ClanMicroservice : Microservice() {
     }
 
     override suspend fun onDisable() {
+        ClanInstance.disable()
         rabbitApi.disconnect()
         databaseApi.shutdown()
     }
