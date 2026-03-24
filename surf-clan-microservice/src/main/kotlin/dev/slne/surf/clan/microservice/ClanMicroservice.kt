@@ -19,6 +19,16 @@ import dev.slne.surf.clan.microservice.handler.clan.UpdateClanDiscordInviteHandl
 import dev.slne.surf.clan.microservice.handler.clan.UpdateClanTagColorHandler
 import dev.slne.surf.clan.microservice.handler.invite.AcceptClanInviteHandler
 import dev.slne.surf.clan.microservice.handler.invite.CreateClanInviteHandler
+import dev.slne.surf.clan.microservice.handler.invite.DeleteInviteClanInviteHandler
+import dev.slne.surf.clan.microservice.handler.invite.FindPendingInviteByInvitedPlayerAndClanNameHandler
+import dev.slne.surf.clan.microservice.handler.invite.FindPendingInvitesByClanIDHandler
+import dev.slne.surf.clan.microservice.handler.invite.FindPendingInvitesByInvitedHandler
+import dev.slne.surf.clan.microservice.handler.member.ChangeClanMemberRoleHandler
+import dev.slne.surf.clan.microservice.handler.member.CreateClanMemberHandler
+import dev.slne.surf.clan.microservice.handler.member.DeleteClanMemberHandler
+import dev.slne.surf.clan.microservice.handler.member.FindClanMemberByUuidHandler
+import dev.slne.surf.clan.microservice.handler.player.FindClanPlayerByUuidHandler
+import dev.slne.surf.clan.microservice.handler.player.UpdateClanPlayerAcceptsInvitesHandler
 import dev.slne.surf.database.DatabaseApi
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.SchemaUtils
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
@@ -51,6 +61,20 @@ class ClanMicroservice : Microservice() {
         // Invite
         rabbitApi.registerRequestHandler(AcceptClanInviteHandler)
         rabbitApi.registerRequestHandler(CreateClanInviteHandler)
+        rabbitApi.registerRequestHandler(DeleteInviteClanInviteHandler)
+        rabbitApi.registerRequestHandler(FindPendingInviteByInvitedPlayerAndClanNameHandler)
+        rabbitApi.registerRequestHandler(FindPendingInvitesByClanIDHandler)
+        rabbitApi.registerRequestHandler(FindPendingInvitesByInvitedHandler)
+
+        // Member
+        rabbitApi.registerRequestHandler(ChangeClanMemberRoleHandler)
+        rabbitApi.registerRequestHandler(CreateClanMemberHandler)
+        rabbitApi.registerRequestHandler(DeleteClanMemberHandler)
+        rabbitApi.registerRequestHandler(FindClanMemberByUuidHandler)
+
+        // Player
+        rabbitApi.registerRequestHandler(FindClanPlayerByUuidHandler)
+        rabbitApi.registerRequestHandler(UpdateClanPlayerAcceptsInvitesHandler)
 
         rabbitApi.freezeAndConnect()
     }
