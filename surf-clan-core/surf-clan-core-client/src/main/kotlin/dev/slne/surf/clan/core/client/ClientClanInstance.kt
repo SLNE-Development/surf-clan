@@ -8,7 +8,6 @@ abstract class ClientClanInstance : ClanInstance {
 
     override suspend fun load() {
         super.load()
-
         RabbitService.connect()
         RedisService.get().connect()
     }

@@ -34,8 +34,8 @@ abstract class RedisService {
 
     suspend fun invalidateAllCaches() {
         supervisorScope {
-            launch { CoreClanService.Companion.invalidateCaches() }
-            launch { CoreClanPlayerService.Companion.invalidateCaches() }
+            launch { CoreClanService.invalidateCaches() }
+            launch { CoreClanPlayerService.invalidateCaches() }
         }
     }
 
