@@ -6,5 +6,5 @@ import java.nio.file.Path
 
 @AutoService(ClanInstance::class)
 class ClanMicroserviceInstance : ClanInstance {
-    override val dataPath: Path get() = clanMicroservice.configPath
+    override val dataPath: Path get() = clanMicroservice.dataPath
 }

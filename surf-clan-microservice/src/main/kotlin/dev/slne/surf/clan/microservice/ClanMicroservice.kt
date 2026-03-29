@@ -7,23 +7,8 @@ import dev.slne.surf.clan.microservice.db.table.ClanInvitesTable
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClanPlayerTable
 import dev.slne.surf.clan.microservice.db.table.ClansTable
-import dev.slne.surf.clan.microservice.handler.clan.ClanCreateHandler
-import dev.slne.surf.clan.microservice.handler.clan.ClanDeleteHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindAllClansWithoutMembersSortByMemberCountHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindClanByClanIDHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindClanByMemberHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindClanByTagHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindClanByUuidHandler
-import dev.slne.surf.clan.microservice.handler.clan.FindClanTagsByPrefixLimitedHandler
-import dev.slne.surf.clan.microservice.handler.clan.UpdateClanDescriptionHandler
-import dev.slne.surf.clan.microservice.handler.clan.UpdateClanDiscordInviteHandler
-import dev.slne.surf.clan.microservice.handler.clan.UpdateClanTagColorHandler
-import dev.slne.surf.clan.microservice.handler.invite.AcceptClanInviteHandler
-import dev.slne.surf.clan.microservice.handler.invite.CreateClanInviteHandler
-import dev.slne.surf.clan.microservice.handler.invite.DeleteInviteClanInviteHandler
-import dev.slne.surf.clan.microservice.handler.invite.FindPendingInviteByInvitedPlayerAndClanNameHandler
-import dev.slne.surf.clan.microservice.handler.invite.FindPendingInvitesByClanIDHandler
-import dev.slne.surf.clan.microservice.handler.invite.FindPendingInvitesByInvitedHandler
+import dev.slne.surf.clan.microservice.handler.clan.*
+import dev.slne.surf.clan.microservice.handler.invite.*
 import dev.slne.surf.clan.microservice.handler.member.ChangeClanMemberRoleHandler
 import dev.slne.surf.clan.microservice.handler.member.CreateClanMemberHandler
 import dev.slne.surf.clan.microservice.handler.member.DeleteClanMemberHandler
@@ -41,9 +26,9 @@ lateinit var clanMicroservice: ClanMicroservice
 
 @AutoService(Microservice::class)
 class ClanMicroservice : Microservice() {
-    val configPath = Path("config")
-    val databaseApi = DatabaseApi.create(configPath)
-    val rabbitApi = ServerRabbitMQApi.create("surf-clan", configPath, ClanCoreSerializerModule.module)
+    override val dataPath = Path("config")
+    val databaseApi = DatabaseApi.create(dataPath)
+    val rabbitApi = ServerRabbitMQApi.create("surf-clan", dataPath, ClanCoreSerializerModule.module)
 
     init {
         clanMicroservice = this
