@@ -18,11 +18,11 @@ data class ClanInviteImpl(
     val updatedAt: SerializableOffsetDateTime?
 ) : AbstractClanInviteView(), ClanInvite {
     override suspend fun accept(): ClanInviteAcceptResult {
-        return CoreClanInviteService.Companion.acceptInvite(this)
+        return CoreClanInviteService.acceptInvite(this)
     }
 
     override suspend fun revoke(): Boolean {
-        return CoreClanInviteService.Companion.revokeInvite(this)
+        return CoreClanInviteService.revokeInvite(this)
     }
 
     override fun view(): ClanInviteView = ClanInviteViewImpl(
