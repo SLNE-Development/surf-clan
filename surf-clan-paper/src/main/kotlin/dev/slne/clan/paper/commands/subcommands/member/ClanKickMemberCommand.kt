@@ -9,11 +9,10 @@ import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.ClanMemberArgument
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.core.api.common.surfCoreApi
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.command.args.awaiting
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.api.core.command.args.awaiting
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.service.PlayerLookupService
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 
 fun CommandAPICommand.clanKickMemberCommand() = subcommand("kick") {
     withPermission(ClanPermissions.CLAN_KICK_MEMBER_COMMAND)
@@ -22,7 +21,8 @@ fun CommandAPICommand.clanKickMemberCommand() = subcommand("kick") {
 
     playerExecutorSuspend { player, args ->
         val member = args.awaiting<ClanMember>("member")
-        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+        val clan = Clan.byPlayer(player.uniqueId)
+            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
         if (player.uniqueId == member.uuid) {
             throw CommandAPI.failWithString("Du kannst dich nicht selbst rauswerfen.")

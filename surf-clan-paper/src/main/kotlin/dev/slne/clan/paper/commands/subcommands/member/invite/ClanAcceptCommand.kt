@@ -8,12 +8,12 @@ import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteAcceptResult
 import dev.slne.clan.paper.commands.arguments.ClanInviteArgument
 import dev.slne.clan.paper.permission.ClanPermissions
+import dev.slne.surf.api.core.command.args.awaiting
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.components.Components
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.command.args.awaiting
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun CommandAPICommand.clanAcceptCommand() = subcommand("accept") {
     withPermission(ClanPermissions.CLAN_ACCEPT_INVITE_COMMAND)

@@ -6,17 +6,17 @@ import dev.jorel.commandapi.kotlindsl.optionalArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.member.ClanMemberRole
-import dev.slne.surf.clan.core.clan.ClanImpl
-import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.clan.paper.commands.arguments.ClanByClanTagArgument
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.command.args.awaitingOrNull
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
-import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
+import dev.slne.surf.api.core.command.args.awaitingOrNull
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.pagination.Pagination
+import dev.slne.surf.api.core.service.PlayerLookupService
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import java.util.concurrent.ConcurrentHashMap
@@ -55,14 +55,16 @@ fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
 
     playerExecutorSuspend { player, args ->
         val clan = args.awaitingOrNull<Clan>("clan") ?: run {
-            Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+            Clan.byPlayer(player.uniqueId)
+                ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
         }
 
         val data = ConcurrentHashMap.newKeySet<ClanMemberData>()
         supervisorScope {
             for (member in clan.members) {
                 launch {
-                    val name = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
+                    val name =
+                        PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
                     data.add(ClanMemberData(name, member.role))
                 }
             }

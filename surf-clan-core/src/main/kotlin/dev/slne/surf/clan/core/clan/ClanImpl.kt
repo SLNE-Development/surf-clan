@@ -7,8 +7,8 @@ import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.surf.api.core.util.mutableObjectSetOf
 import dev.slne.surf.clan.core.member.ClanMemberImpl
-import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.time.OffsetDateTime
@@ -57,7 +57,7 @@ data class ClanImpl(
         role: ClanMemberRole,
         addedBy: UUID?
     ): ClanMemberAddResult {
-        return CoreClanService.Companion.addMember(this, uuid, role, addedBy)
+        return CoreClanService.addMember(this, uuid, role, addedBy)
     }
 
     override suspend fun removeMember(member: ClanMember): Boolean {
@@ -65,7 +65,7 @@ data class ClanImpl(
     }
 
     override suspend fun removeMember(uuid: UUID): Boolean {
-        return CoreClanService.Companion.removeMember(this, uuid)
+        return CoreClanService.removeMember(this, uuid)
     }
 
     override fun getMember(uuid: UUID): ClanMember? {
@@ -73,7 +73,7 @@ data class ClanImpl(
     }
 
     override suspend fun delete(): Boolean {
-        return CoreClanService.Companion.delete(this)
+        return CoreClanService.delete(this)
     }
 
     override fun view() = ClanViewImpl(

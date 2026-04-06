@@ -6,8 +6,8 @@ import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.player.ClanPlayer
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 
 fun CommandAPICommand.clanPlayerSettingInviteCommand() = subcommand("invite") {
     withPermission(ClanPermissions.CLAN_PLAYER_SETTINGS_INVITE_COMMAND)

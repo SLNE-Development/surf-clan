@@ -1,8 +1,8 @@
 package dev.slne.clan.api.member
 
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.text
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.text
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import java.util.*

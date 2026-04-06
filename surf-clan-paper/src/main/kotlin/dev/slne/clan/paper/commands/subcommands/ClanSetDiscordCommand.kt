@@ -8,8 +8,8 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 
 private val DISCORD_LINK_REGEX =
     """^(?:https?://)?(?:www\.)?(?:discord\.gg|discord(?:app)?\.com/invite)/[A-Za-z0-9-]+/?$""".toRegex()
@@ -29,7 +29,8 @@ fun CommandAPICommand.clanSetDiscordCommand() = subcommand("setdiscord") {
 
     playerExecutorSuspend { player, args ->
         val rawLink = args.getUnchecked<String>("link")!!
-        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+        val clan = Clan.byPlayer(player.uniqueId)
+            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
         if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.DISCORD)) {
             throw CommandAPI.failWithString("Du hast keine Berechtigung, den Discord Link zu ändern.")

@@ -11,8 +11,8 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.color.ClanTagHexColorArgument
 import dev.slne.clan.paper.commands.arguments.color.ClanTagShadowHexColorArgument
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player

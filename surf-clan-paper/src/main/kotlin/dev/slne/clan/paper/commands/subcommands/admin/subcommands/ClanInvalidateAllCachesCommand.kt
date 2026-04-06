@@ -3,9 +3,9 @@ package dev.slne.clan.paper.commands.subcommands.admin.subcommands
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.paper.permission.ClanPermissions
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.anyExecutorSuspend
 import dev.slne.surf.clan.core.client.redis.RedisService
-import dev.slne.surf.surfapi.bukkit.api.command.executors.anyExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun CommandAPICommand.clanInvalidateAllCachesCommand() = subcommand("invalidateAllCaches") {
     withPermission(ClanPermissions.CLAN_ADMIN_INVALIDATE_CACHE_COMMAND)

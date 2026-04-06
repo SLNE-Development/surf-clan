@@ -2,7 +2,7 @@ package dev.slne.clan.api.member
 
 import dev.slne.clan.api.member.listener.ClanMemberListener
 import dev.slne.clan.api.util.InternalClanApi
-import dev.slne.surf.surfapi.core.api.util.requiredService
+import dev.slne.surf.api.core.util.requiredService
 import java.util.*
 
 private val service = requiredService<ClanMemberService>()

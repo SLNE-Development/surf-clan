@@ -1,10 +1,10 @@
 package dev.slne.surf.clan.core.client.redis
 
+import dev.slne.surf.api.core.util.requiredService
 import dev.slne.surf.clan.core.clan.CoreClanService
 import dev.slne.surf.clan.core.player.CoreClanPlayerService
 import dev.slne.surf.redis.RedisApi
 import dev.slne.surf.redis.event.RedisEvent
-import dev.slne.surf.surfapi.core.api.util.requiredService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope

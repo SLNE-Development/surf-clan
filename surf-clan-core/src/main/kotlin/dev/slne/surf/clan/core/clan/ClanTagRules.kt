@@ -1,7 +1,7 @@
 package dev.slne.surf.clan.core.clan
 
-import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
-import dev.slne.surf.surfapi.core.api.util.objectSetOf
+import dev.slne.surf.api.core.util.mutableObjectSetOf
+import dev.slne.surf.api.core.util.objectSetOf
 
 object ClanTagRules {
     private val prohibitedTags = ProhibitedCategory.entries

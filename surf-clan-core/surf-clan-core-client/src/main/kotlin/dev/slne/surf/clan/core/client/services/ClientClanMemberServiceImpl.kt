@@ -8,6 +8,8 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.clan.api.member.ClanMemberService
 import dev.slne.clan.api.member.listener.ClanMemberChangedRoleListener
 import dev.slne.clan.api.member.listener.ClanMemberListener
+import dev.slne.surf.api.core.service.PlayerLookupService
+import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.client.rabbit.rabbitApi
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.core.member.CoreClanMemberService
@@ -15,8 +17,6 @@ import dev.slne.surf.clan.core.protocol.member.changeRole.ChangeClanMemberRoleRe
 import dev.slne.surf.clan.core.protocol.member.create.CreateClanMemberRequestPacket
 import dev.slne.surf.clan.core.protocol.member.delete.DeleteClanMemberRequestPacket
 import dev.slne.surf.clan.core.protocol.member.findByUuid.FindClanMemberByUuidRequestPacket
-import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
-import dev.slne.surf.surfapi.core.api.util.logger
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 

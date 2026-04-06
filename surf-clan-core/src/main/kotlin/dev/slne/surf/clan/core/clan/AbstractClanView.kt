@@ -2,9 +2,9 @@ package dev.slne.surf.clan.core.clan
 
 import dev.slne.clan.api.clan.ClanView
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.surf.clan.core.config.ClanConfig
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
-import dev.slne.surf.core.api.common.surfCoreApi
+import dev.slne.surf.clan.core.config.ClanConfig
+import dev.slne.surf.core.api.common.SurfCoreApi
 import net.kyori.adventure.text.Component
 import java.util.*
 
@@ -40,7 +40,7 @@ abstract class AbstractClanView : ClanView {
         members.asSequence()
             .map { it.uuid }
             .distinct()
-            .mapNotNull { surfCoreApi.getPlayer(it) }
-            .forEach { surfCoreApi.sendText(it, message) }
+            .mapNotNull { SurfCoreApi.getPlayer(it) }
+            .forEach { SurfCoreApi.sendText(it, message) }
     }
 }

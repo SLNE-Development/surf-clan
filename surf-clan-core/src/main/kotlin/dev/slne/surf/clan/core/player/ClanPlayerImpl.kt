@@ -1,7 +1,7 @@
 package dev.slne.surf.clan.core.player
 
 import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.surf.surfapi.core.api.serializer.java.uuid.SerializableStringUUID
+import dev.slne.surf.api.core.serializer.java.uuid.SerializableStringUUID
 import kotlinx.serialization.Serializable
 
 @Serializable

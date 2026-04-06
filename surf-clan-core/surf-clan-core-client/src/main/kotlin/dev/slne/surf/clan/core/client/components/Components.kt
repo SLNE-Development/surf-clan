@@ -2,13 +2,13 @@ package dev.slne.surf.clan.core.client.components
 
 import dev.slne.clan.api.clan.Clan.Companion.DISCORD_LINK_REQUIRED_MEMBERS
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.CommonComponents
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
+import dev.slne.surf.api.core.service.PlayerLookupService
 import dev.slne.surf.clan.core.clan.ClanImpl
-import dev.slne.surf.surfapi.core.api.font.toSmallCaps
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.CommonComponents
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
-import dev.slne.surf.surfapi.core.api.service.PlayerLookupService
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
@@ -31,11 +31,13 @@ object Components {
 
             variableValue(clan.name)
             hoverEvent(hoverComponent)
-            clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) } ?: CommonComponents.DISCORD_LINK.clickEvent())
+            clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) }
+                ?: CommonComponents.DISCORD_LINK.clickEvent())
         }
 
         suspend fun renderClanInformation(clan: ClanImpl) = buildText {
-            val createdBy = PlayerLookupService.getUsername(clan.createdByUuid) ?: clan.createdByUuid.toString()
+            val createdBy =
+                PlayerLookupService.getUsername(clan.createdByUuid) ?: clan.createdByUuid.toString()
             info("Informationen".toSmallCaps(), TextDecoration.BOLD)
 
             appendNewline {

@@ -7,13 +7,13 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanValidationResult
+import dev.slne.clan.paper.permission.ClanPermissions
+import dev.slne.surf.api.core.messages.Colors
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.components.Components
-import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.Colors
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.format.TextDecoration
 
 fun CommandAPICommand.clanCreateCommand() = subcommand("create") {

@@ -5,14 +5,14 @@ import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
-import dev.slne.surf.clan.core.clan.ClanImpl
-import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.appendNewline
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.TextDecoration
@@ -25,7 +25,8 @@ fun CommandAPICommand.clanLeaveCommand() = subcommand("leave") {
     withPermission(ClanPermissions.CLAN_LEAVE_COMMAND)
 
     playerExecutorSuspend { player, args ->
-        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+        val clan = Clan.byPlayer(player.uniqueId)
+            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
         if (clan.createdByUuid == player.uniqueId) {
             throw CommandAPI.failWithString("Du bist der Besitzer des Clans und kannst ihn nicht verlassen. Nutze /clan disband um den Clan aufzulösen.")

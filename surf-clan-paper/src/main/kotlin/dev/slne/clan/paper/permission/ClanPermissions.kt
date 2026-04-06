@@ -1,6 +1,6 @@
 package dev.slne.clan.paper.permission
 
-import dev.slne.surf.surfapi.bukkit.api.permission.PermissionRegistry
+import dev.slne.surf.api.paper.permission.PermissionRegistry
 
 object ClanPermissions : PermissionRegistry() {
     private const val PREFIX = "surf.clan"
@@ -23,8 +23,10 @@ object ClanPermissions : PermissionRegistry() {
 
     val CLAN_OPTIONS_COMMAND = create("$COMMAND.options")
     val CLAN_OPTIONS_TAG_COLOR_COMMAND = create("$CLAN_OPTIONS_COMMAND.tagColor")
-    val CLAN_OPTIONS_TAG_COLOR_BACKGROUND_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.background")
-    val CLAN_OPTIONS_TAG_COLOR_FOREGROUND_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.foreground")
+    val CLAN_OPTIONS_TAG_COLOR_BACKGROUND_COMMAND =
+        create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.background")
+    val CLAN_OPTIONS_TAG_COLOR_FOREGROUND_COMMAND =
+        create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.foreground")
     val CLAN_OPTIONS_TAG_COLOR_SHADOW_COMMAND = create("$CLAN_OPTIONS_TAG_COLOR_COMMAND.shadow")
 
     val CLAN_PLAYER_COMMAND = create("$PREFIX.player")
