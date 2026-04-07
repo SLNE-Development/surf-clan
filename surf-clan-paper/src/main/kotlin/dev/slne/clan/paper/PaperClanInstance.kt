@@ -1,11 +1,12 @@
 package dev.slne.clan.paper
 
 import com.google.auto.service.AutoService
-import dev.slne.clan.core.ClanInstance
 import dev.slne.clan.paper.commands.clanCommand
+import dev.slne.surf.clan.core.ClanInstance
+import dev.slne.surf.clan.core.client.ClientClanInstance
 
 @AutoService(ClanInstance::class)
-class PaperClanInstance : ClanInstance {
+class PaperClanInstance : ClientClanInstance() {
     override val dataPath get() = plugin.dataPath
 
     override suspend fun enable() {

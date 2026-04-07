@@ -7,8 +7,8 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanValidationResult
-import dev.slne.clan.core.clan.ClanImpl
-import dev.slne.clan.core.components.Components
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
 import dev.slne.surf.surfapi.core.api.messages.Colors

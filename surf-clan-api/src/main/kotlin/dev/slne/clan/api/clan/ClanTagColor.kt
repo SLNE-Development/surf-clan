@@ -1,16 +1,15 @@
 package dev.slne.clan.api.clan
 
-import dev.slne.surf.surfapi.core.api.serializer.adventure.component.shadowcolor.SerializableShadowColor
-import dev.slne.surf.surfapi.core.api.serializer.adventure.component.textcolor.SerializableTextColor
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 
 @Serializable
 data class ClanTagColor(
-    val foregroundColor: SerializableTextColor = Clan.DEFAULT_CLAN_TAG_FOREGROUND_COLOR,
-    val backgroundColor: SerializableTextColor = Clan.DEFAULT_CLAN_TAG_BACKGROUND_COLOR,
-    val shadowColor: SerializableShadowColor = Clan.DEFAULT_CLAN_TAG_SHADOW_COLOR
+    val foregroundColor: @Contextual TextColor = Clan.DEFAULT_CLAN_TAG_FOREGROUND_COLOR,
+    val backgroundColor: @Contextual TextColor = Clan.DEFAULT_CLAN_TAG_BACKGROUND_COLOR,
+    val shadowColor: @Contextual ShadowColor = Clan.DEFAULT_CLAN_TAG_SHADOW_COLOR
 ) {
 
     @ConsistentCopyVisibility

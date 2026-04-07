@@ -1,12 +1,19 @@
+import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
+
 plugins {
-    id("dev.slne.surf.surfapi.gradle.velocity")
+    id("dev.slne.surf.surfapi.gradle.core")
+    id("dev.slne.surf.microservice")
 }
 
-surfVelocityApi {
+surfMicroservice {
+    withRabbitModule(RabbitModule.CLIENT_API)
+}
+
+surfCoreApi {
     withSurfRedis()
     withCoreCommon()
 }
 
 dependencies {
-    api(project(":surf-clan-api"))
+    api(projects.surfClanApi)
 }

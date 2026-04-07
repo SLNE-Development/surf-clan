@@ -14,7 +14,8 @@ rootProject.name = "surf-clan"
 
 include("surf-clan-api")
 include("surf-clan-core")
-include("surf-clan-velocity")
-include("surf-clan-runtime")
+include("surf-clan-core:surf-clan-core-client")
 include("surf-clan-placeholder-expansion")
 include("surf-clan-paper")
+include("surf-clan-velocity")
+include("surf-clan-microservice")

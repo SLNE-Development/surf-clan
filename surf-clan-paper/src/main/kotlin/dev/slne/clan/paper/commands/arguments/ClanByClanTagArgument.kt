@@ -5,8 +5,8 @@ import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.clan.Clan
-import dev.slne.clan.core.clan.CoreClanService
 import dev.slne.clan.paper.plugin
+import dev.slne.surf.clan.core.clan.CoreClanService
 import dev.slne.surf.surfapi.bukkit.api.command.args.SuspendCustomArgument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future

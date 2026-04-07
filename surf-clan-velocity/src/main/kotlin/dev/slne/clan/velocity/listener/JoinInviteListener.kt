@@ -4,8 +4,8 @@ import com.github.shynixn.mccoroutine.velocity.launch
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.player.ServerConnectedEvent
 import dev.slne.clan.api.invite.ClanInvite
-import dev.slne.clan.core.clan.ClanImpl
-import dev.slne.clan.core.components.Components
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.clan.velocity.plugin
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText

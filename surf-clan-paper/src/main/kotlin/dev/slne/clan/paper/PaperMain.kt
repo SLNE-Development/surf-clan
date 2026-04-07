@@ -1,7 +1,7 @@
 package dev.slne.clan.paper
 
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
-import dev.slne.clan.core.ClanInstance
+import dev.slne.surf.clan.core.ClanInstance
 import org.bukkit.plugin.java.JavaPlugin
 
 class PaperMain : SuspendingJavaPlugin() {

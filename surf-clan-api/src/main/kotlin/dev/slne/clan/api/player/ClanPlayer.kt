@@ -10,7 +10,6 @@ import java.util.*
  */
 @ApiStatus.NonExtendable
 interface ClanPlayer {
-
     /**
      * The unique identifier of this player.
      */

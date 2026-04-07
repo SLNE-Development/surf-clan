@@ -4,11 +4,11 @@ import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
-import dev.slne.clan.core.clan.ClanImpl
-import dev.slne.clan.core.clan.CoreClanService
-import dev.slne.clan.core.components.Components
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.clan.CoreClanService
+import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.surf.surfapi.bukkit.api.command.executors.anyExecutorSuspend
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
