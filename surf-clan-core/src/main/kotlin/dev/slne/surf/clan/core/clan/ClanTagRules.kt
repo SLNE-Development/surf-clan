@@ -121,7 +121,7 @@ object ClanTagRules {
             )
         ),
         CYBERCRIME(objectSetOf("DDOS", "PISH", "SCAM", "HAX", "BOT", "TOR", "DOX", "RAT", "HACK")),
-        GORE(objectSetOf("BLOD", "CORE", "GORE", "GUTS", "AMPT", "GASH", "SLSH", "SKIN")),
+        GORE(objectSetOf("BLOD", "GORE", "GUTS", "AMPT", "GASH", "SLSH", "SKIN")),
         PRE_BLOCKED(
             objectSetOf(
                 "GHG", "XYZ", "AAA", "PISS", "LGBT", "TEAM", "CAST", "PEDO", "QWE", "MAMA",
