@@ -9,6 +9,9 @@ import dev.slne.clan.api.clan.listener.*
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.surf.api.core.util.logger
+import dev.slne.surf.api.core.util.mutableObjectSetOf
+import dev.slne.surf.api.core.util.toObjectSet
 import dev.slne.surf.clan.core.clan.AbstractClanView
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.clan.ClanTagRules
@@ -29,9 +32,6 @@ import dev.slne.surf.clan.core.protocol.clan.updateDescription.UpdateClanDescrip
 import dev.slne.surf.clan.core.protocol.clan.updateDiscordInvite.UpdateClanDiscordInviteRequestPacket
 import dev.slne.surf.clan.core.protocol.clan.updateTagColor.UpdateClanTagColorRequestPacket
 import dev.slne.surf.redis.cache.RedisSetIndexes
-import dev.slne.surf.surfapi.core.api.util.logger
-import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
-import dev.slne.surf.surfapi.core.api.util.toObjectSet
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -283,7 +283,8 @@ class ClientClanServiceImpl : CoreClanService {
         role: ClanMemberRole,
         addedBy: UUID?
     ): ClanMemberAddResult {
-        val result = ClientClanMemberServiceImpl.get().addMember(clan.clanID, playerUuid, role, addedBy)
+        val result =
+            ClientClanMemberServiceImpl.get().addMember(clan.clanID, playerUuid, role, addedBy)
         if (result is ClanMemberAddResult.Success) {
             clan.members = clan.members.plusElement(result.member as ClanMemberImpl).toObjectSet()
             callClanMemberUpdatedListeners(clan, result.member.uuid, true)

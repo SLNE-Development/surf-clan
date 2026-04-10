@@ -7,17 +7,17 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.clan.paper.commands.arguments.OfflinePlayerArgument
 import dev.slne.clan.paper.permission.ClanPermissions
+import dev.slne.surf.api.core.command.args.awaiting
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.components.Components
+import dev.slne.surf.core.api.common.SurfCoreApi
 import dev.slne.surf.core.api.common.player.SurfPlayer
-import dev.slne.surf.core.api.common.surfCoreApi
 import dev.slne.surf.core.api.common.util.sendText
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.command.args.awaiting
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.event.ClickEvent
 
 fun CommandAPICommand.clanInviteCommand() = subcommand("invite") {
@@ -27,7 +27,8 @@ fun CommandAPICommand.clanInviteCommand() = subcommand("invite") {
 
     playerExecutorSuspend { player, args ->
         val invitee = args.awaiting<SurfPlayer>("invitee")
-        val clan = Clan.byPlayer(player.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+        val clan = Clan.byPlayer(player.uniqueId)
+            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
 
         if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.INVITE)) {
             throw CommandAPI.failWithString("Du hast keine Berechtigung, Spieler in den Clan einzuladen.")
@@ -47,7 +48,7 @@ fun CommandAPICommand.clanInviteCommand() = subcommand("invite") {
                     success(" eingeladen.")
                 }
 
-                surfCoreApi.getPlayer(invitee.uuid)?.sendText {
+                SurfCoreApi.getPlayer(invitee.uuid)?.sendText {
                     appendInfoPrefix()
                     info("Du wurdest von ")
                     variableValue(player.name)

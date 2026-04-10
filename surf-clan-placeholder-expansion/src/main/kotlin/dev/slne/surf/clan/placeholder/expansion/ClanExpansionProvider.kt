@@ -1,11 +1,11 @@
 package dev.slne.surf.clan.placeholder.expansion
 
 import dev.slne.clan.api.clan.Clan
+import dev.slne.surf.api.core.messages.adventure.uuid
 import dev.slne.surf.clan.placeholder.expansion.ClanDataCache.CachedClanData
-import dev.slne.surf.surfapi.core.api.messages.adventure.text
-import dev.slne.surf.surfapi.core.api.messages.adventure.uuid
 import io.github.miniplaceholders.api.Expansion
 import io.github.miniplaceholders.api.utils.Tags
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.tag.Tag
 
 object ClanExpansionProvider {

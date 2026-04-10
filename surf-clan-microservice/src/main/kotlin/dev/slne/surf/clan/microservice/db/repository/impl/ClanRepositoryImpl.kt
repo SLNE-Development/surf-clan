@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
@@ -13,7 +14,6 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import dev.slne.surf.database.utils.asDataIntegrityViolation
-import dev.slne.surf.surfapi.core.api.util.logger
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull

@@ -1,8 +1,8 @@
 import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
-import dev.slne.surf.surfapi.gradle.util.registerSoft
+import dev.slne.surf.api.gradle.util.registerSoft
 
 plugins {
-    id("dev.slne.surf.surfapi.gradle.paper-plugin")
+    id("dev.slne.surf.api.gradle.paper-plugin")
     id("dev.slne.surf.microservice")
 }
 

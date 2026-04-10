@@ -7,11 +7,11 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.paper.commands.arguments.ClanInviteArgument
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.core.api.common.surfCoreApi
+import dev.slne.surf.api.core.command.args.awaiting
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.core.api.common.SurfCoreApi
 import dev.slne.surf.core.api.common.util.sendText
-import dev.slne.surf.surfapi.bukkit.api.command.executors.playerExecutorSuspend
-import dev.slne.surf.surfapi.core.api.command.args.awaiting
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun CommandAPICommand.clanDenyCommand() = subcommand("deny") {
     withPermission(ClanPermissions.CLAN_DENY_INVITE_COMMAND)
@@ -31,7 +31,7 @@ fun CommandAPICommand.clanDenyCommand() = subcommand("deny") {
                 success("Du hast die Einladung abgelehnt.")
             }
 
-            surfCoreApi.getPlayer(invite.invitedBy)?.sendText {
+            SurfCoreApi.getPlayer(invite.invitedBy)?.sendText {
                 appendInfoPrefix()
                 variableValue(player.name)
                 info(" hat deine Clan-Einladung abgelehnt.")

@@ -3,7 +3,7 @@ package dev.slne.surf.clan.core.clan
 import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.invite.ClanInviteView
 import dev.slne.clan.api.member.ClanMemberView
-import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import dev.slne.surf.api.core.util.mutableObjectSetOf
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -21,7 +21,8 @@ data class ClanViewImpl(
     override val createdAt: OffsetDateTime,
 ) : AbstractClanView() {
     override suspend fun getPendingInvites(): Set<ClanInviteView> {
-        return CoreClanService.Companion.fetchPendingInvites(this).mapTo(mutableObjectSetOf()) { it.view() }
+        return CoreClanService.Companion.fetchPendingInvites(this)
+            .mapTo(mutableObjectSetOf()) { it.view() }
     }
 
     override fun getMember(uuid: UUID): ClanMemberView? {

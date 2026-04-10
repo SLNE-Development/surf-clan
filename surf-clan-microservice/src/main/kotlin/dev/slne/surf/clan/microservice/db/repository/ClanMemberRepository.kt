@@ -2,8 +2,8 @@ package dev.slne.surf.clan.microservice.db.repository
 
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.surf.api.core.util.requiredService
 import dev.slne.surf.clan.core.member.ClanMemberImpl
-import dev.slne.surf.surfapi.core.api.util.requiredService
 import java.util.*
 
 private val instance = requiredService<ClanMemberRepository>()

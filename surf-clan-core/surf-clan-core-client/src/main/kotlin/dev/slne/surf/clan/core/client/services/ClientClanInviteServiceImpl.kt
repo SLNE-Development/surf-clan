@@ -56,7 +56,7 @@ class ClientClanInviteServiceImpl : CoreClanInviteService {
     }
 
     override suspend fun acceptInvite(invite: ClanInviteImpl): ClanInviteAcceptResult {
-        val request = AcceptClanInviteRequestPacket(invite.clanID, invite.invited, invite.invitedBy)
+        val request = AcceptClanInviteRequestPacket(invite.id, invite.invited, invite.invitedBy)
         val accepted = rabbitApi.sendRequest(request).value
 
         if (!accepted) {

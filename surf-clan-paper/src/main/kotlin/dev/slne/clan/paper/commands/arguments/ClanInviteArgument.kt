@@ -6,7 +6,7 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.paper.plugin
-import dev.slne.surf.surfapi.bukkit.api.command.args.SuspendCustomArgument
+import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.launch
@@ -18,7 +18,8 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ConcurrentHashMap
 
 
-class ClanInviteArgument(nodeName: String) : SuspendCustomArgument<ClanInvite, String>(StringArgument(nodeName)) {
+class ClanInviteArgument(nodeName: String) :
+    SuspendCustomArgument<ClanInvite, String>(StringArgument(nodeName)) {
     companion object {
         private val suggestions = ArgumentSuggestions<CommandSender> { info, builder ->
             val player = info.sender as? Player ?: return@ArgumentSuggestions builder.buildFuture()

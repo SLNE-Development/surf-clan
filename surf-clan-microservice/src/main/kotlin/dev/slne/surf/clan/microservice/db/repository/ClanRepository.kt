@@ -1,8 +1,8 @@
 package dev.slne.surf.clan.microservice.db.repository
 
 import dev.slne.clan.api.clan.ClanCreationResult
+import dev.slne.surf.api.core.util.requiredService
 import dev.slne.surf.clan.core.clan.ClanImpl
-import dev.slne.surf.surfapi.core.api.util.requiredService
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import java.util.*

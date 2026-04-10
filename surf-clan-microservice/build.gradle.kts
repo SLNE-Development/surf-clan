@@ -1,7 +1,7 @@
 import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
 
 plugins {
-    id("dev.slne.surf.surfapi.gradle.core")
+    id("dev.slne.surf.api.gradle.core")
     id("dev.slne.surf.microservice")
 }
 
@@ -11,7 +11,7 @@ surfCoreApi {
 }
 
 surfMicroservice {
-    withRabbitModule(RabbitModule.SERVER_API)
+    withRabbitModule(RabbitModule.SERVER_API, true)
     withMicroserviceApi()
 }
 

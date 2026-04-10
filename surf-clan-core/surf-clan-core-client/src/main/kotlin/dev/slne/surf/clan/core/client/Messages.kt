@@ -1,20 +1,18 @@
 package dev.slne.surf.clan.core.client
 
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.buildText
 
 @DslMarker
 annotation class MessageMarker
 
 object Messages {
     val notInClanComponent = buildText {
-        appendPrefix()
-
+        appendErrorPrefix()
         error("Du bist in keinem Clan.")
     }
 
     fun unknownClanComponent(clanTag: String) = buildText {
-        appendPrefix()
-
+        appendErrorPrefix()
         error("Der Clan ")
         variableValue(clanTag)
         error(" existiert nicht.")

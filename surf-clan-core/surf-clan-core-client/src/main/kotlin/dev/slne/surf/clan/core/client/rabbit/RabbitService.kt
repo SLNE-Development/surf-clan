@@ -5,10 +5,13 @@ import dev.slne.surf.clan.core.ClanInstance
 import dev.slne.surf.rabbitmq.api.ClientRabbitMQApi
 
 object RabbitService {
-    val rabbitApi = ClientRabbitMQApi.create("surf-clan", ClanInstance.dataPath, ClanCoreSerializerModule.module)
+    val rabbitApi = ClientRabbitMQApi.create(
+        "surf-clan",
+        ClanInstance.dataPath,
+        ClanCoreSerializerModule.module
+    )
 
     suspend fun connect() {
-
         rabbitApi.freezeAndConnect()
     }
 
