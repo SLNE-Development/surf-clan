@@ -6,6 +6,7 @@ import com.sksamuel.aedile.core.asLoadingCache
 import com.sksamuel.aedile.core.expireAfterWrite
 import dev.slne.clan.api.clan.*
 import dev.slne.clan.api.clan.listener.*
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
@@ -30,6 +31,7 @@ import dev.slne.surf.clan.core.protocol.clan.findByUuid.FindClanByUuidRequestPac
 import dev.slne.surf.clan.core.protocol.clan.findTagsByPrefixLimited.FindClanTagsByPrefixLimitedRequestPacket
 import dev.slne.surf.clan.core.protocol.clan.updateDescription.UpdateClanDescriptionRequestPacket
 import dev.slne.surf.clan.core.protocol.clan.updateDiscordInvite.UpdateClanDiscordInviteRequestPacket
+import dev.slne.surf.clan.core.protocol.clan.updateNameAndTag.UpdateClanNameAndTagRequestPacket
 import dev.slne.surf.clan.core.protocol.clan.updateTagColor.UpdateClanTagColorRequestPacket
 import dev.slne.surf.redis.cache.RedisSetIndexes
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
@@ -258,6 +260,46 @@ class ClientClanServiceImpl : CoreClanService {
         return updated
     }
 
+    override suspend fun updateClanNameAndTag(
+        clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): ClanNameAndTag.UpdateResult {
+        if (!update.hasUpdates()) {
+            return ClanNameAndTag.UpdateResult.NothingChanged
+        }
+
+        val updatedNameAndTag = ClanNameAndTag(clan.name, clan.tag).applyUpdate(update)
+        if (updatedNameAndTag.name == clan.name && updatedNameAndTag.tag == clan.tag) {
+            return ClanNameAndTag.UpdateResult.NothingChanged
+        }
+
+        val validationResult = validateClanNameAndTag(updatedNameAndTag.name, updatedNameAndTag.tag)
+        if (validationResult != ClanValidationResult.Valid) {
+            return ClanNameAndTag.UpdateResult.ValidationFailed(validationResult)
+        }
+
+        val request = UpdateClanNameAndTagRequestPacket(
+            clan.clanID,
+            update.changedNameOrNull()?.takeIf { it != clan.name },
+            normalizeNullableTag(update.changedTagOrNull())?.takeIf { it != clan.tag }
+        )
+
+        if (request.name == null && request.tag == null) {
+            return ClanNameAndTag.UpdateResult.NothingChanged
+        }
+
+        val (updateResult) = rabbitApi.sendRequest(request)
+
+        if (updateResult.success) {
+            invalidateCachedClanByID(clan.clanID)
+            clan.name = updatedNameAndTag.name
+            clan.tag = normalizeTag(updatedNameAndTag.tag)
+            callClanUpdatedListeners(clan)
+        }
+
+        return updateResult
+    }
+
     override suspend fun fetchPendingInvites(clan: AbstractClanView): Set<ClanInviteImpl> {
         return ClientClanInviteServiceImpl.get().fetchPendingInvites(clan.clanID)
     }
@@ -355,5 +397,6 @@ class ClientClanServiceImpl : CoreClanService {
 
         fun get() = ClanService.INSTANCE as ClientClanServiceImpl
         private fun normalizeTag(tag: String) = tag.trim().uppercase()
+        private fun normalizeNullableTag(tag: String?) = tag?.let(::normalizeTag)
     }
 }

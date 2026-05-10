@@ -36,4 +36,5 @@ fun clanCommand() = commandAPICommand("clan") {
 
     clanOptionsCommand()
     clanListCommand()
+    clanRenameCommand()
 }

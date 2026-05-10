@@ -3,6 +3,7 @@ package dev.slne.surf.clan.microservice.services
 import com.google.auto.service.AutoService
 import dev.slne.clan.api.clan.*
 import dev.slne.clan.api.clan.listener.ClanListener
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
@@ -66,6 +67,13 @@ class ClanServiceImpl : CoreClanService {
     }
 
     override suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean {
+        throw NotImplementedError()
+    }
+
+    override suspend fun updateClanNameAndTag(
+        clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): ClanNameAndTag.UpdateResult {
         throw NotImplementedError()
     }
 

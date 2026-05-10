@@ -61,7 +61,8 @@ enum class ClanMemberRole(
         ClanPermission.DEMOTE,
         ClanPermission.PROMOTE,
         ClanPermission.DISCORD,
-        ClanPermission.OPTIONS_TAG_COLOR
+        ClanPermission.OPTIONS_TAG_COLOR,
+        ClanPermission.RENAME
     );
 
     private val permissions = EnumSet.noneOf(ClanPermission::class.java).apply {

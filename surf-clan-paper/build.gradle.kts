@@ -1,3 +1,4 @@
+import dev.slne.surf.api.gradle.util.registerRequired
 import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
 import dev.slne.surf.api.gradle.util.registerSoft
 
@@ -19,6 +20,7 @@ surfPaperPluginApi {
 
     serverDependencies {
         registerSoft("MiniPlaceholders")
+        registerRequired("surf-transaction-paper")
     }
 
     authors.addAll(listOf("twisti"))
@@ -26,4 +28,5 @@ surfPaperPluginApi {
 
 dependencies {
     api(projects.surfClanCore.surfClanCoreClient)
+    compileOnly("dev.slne.surf.transaction:surf-transaction-api:4.+")
 }

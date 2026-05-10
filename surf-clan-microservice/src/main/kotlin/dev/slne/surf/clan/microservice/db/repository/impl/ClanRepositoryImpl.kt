@@ -3,6 +3,7 @@ package dev.slne.surf.clan.microservice.db.repository.impl
 import com.google.auto.service.AutoService
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanTagColor
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.clan.ClanImpl
@@ -105,6 +106,47 @@ class ClanRepositoryImpl : ClanRepository {
             it[ClansTable.tagBackgroundColor] = tagBackgroundColor
             it[ClansTable.tagShadowColor] = tagShadowColor
         } > 0
+    }
+
+    override suspend fun updateClanNameAndTag(
+        clanID: ULong,
+        name: String?,
+        tag: String?
+    ): ClanNameAndTag.UpdateResult = suspendTransaction {
+        if (name != null && tag != null) {
+            try {
+                ClansTable.update({ ClansTable.id eq clanID }) {
+                    it[ClansTable.tag] = tag
+                    it[ClansTable.name] = name
+                }
+                ClanNameAndTag.UpdateResult.UpdatedNameAndTag
+            } catch (e: ExposedR2dbcException) {
+                e.asDataIntegrityViolation()
+                ClanNameAndTag.UpdateResult.TagOrNameAlreadyTaken
+            }
+        } else if (name != null) {
+            try {
+                ClansTable.update({ ClansTable.id eq clanID }) {
+                    it[ClansTable.name] = name
+                }
+                ClanNameAndTag.UpdateResult.UpdatedName
+            } catch (e: ExposedR2dbcException) {
+                e.asDataIntegrityViolation()
+                ClanNameAndTag.UpdateResult.NameAlreadyTaken
+            }
+        } else if (tag != null) {
+            try {
+                ClansTable.update({ ClansTable.id eq clanID }) {
+                    it[ClansTable.tag] = tag
+                }
+                ClanNameAndTag.UpdateResult.UpdatedTag
+            } catch (e: ExposedR2dbcException) {
+                e.asDataIntegrityViolation()
+                ClanNameAndTag.UpdateResult.TagAlreadyTaken
+            }
+        } else {
+            ClanNameAndTag.UpdateResult.NothingChanged
+        }
     }
 
     override suspend fun create(

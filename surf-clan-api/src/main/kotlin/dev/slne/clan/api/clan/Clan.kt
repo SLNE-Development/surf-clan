@@ -1,6 +1,7 @@
 package dev.slne.clan.api.clan
 
 import dev.slne.clan.api.clan.listener.ClanListener
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
@@ -44,6 +45,11 @@ interface Clan : ClanView {
     suspend fun setDiscordInvite(discordInvite: String?)
 
     suspend fun changeClanTagColor(update: ClanTagColor.Update)
+
+    /**
+     * Updates the clan's name and tag.
+     */
+    suspend fun updateClanNameAndTag(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult
 
     /**
      * Retrieves all pending invitations sent by this clan.
@@ -164,6 +170,11 @@ interface Clan : ClanView {
         const val MAX_TAG_LENGTH = 4
 
         /**
+         * The cost for renaming a clan.
+         */
+        const val CLAN_RENAME_COST = 5_000.0
+
+        /**
          * Registers a listener to receive clan-related events.
          *
          * @param listener the listener to register
@@ -266,3 +277,10 @@ suspend inline fun Clan.changeClanTagColor(
 ) = changeClanTagColor(
     ClanTagColor.update(update)
 )
+
+/**
+ * Updates the clan's name and tag.
+ */
+suspend inline fun Clan.updateClanNameAndTag(
+    update: ClanNameAndTag.Update.Builder.() -> Unit
+) = updateClanNameAndTag(ClanNameAndTag.update(update))
