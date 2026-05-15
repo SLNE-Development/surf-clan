@@ -5,6 +5,7 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
 import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.adventure.clickSuggestsCommand
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.args.asyncSignedMessageArgument
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -55,5 +56,6 @@ class ClanChatCommand(name: String) : CommandAPICommand(name) {
         spacer(":")
         appendSpace()
         white(message.message())
+        clickSuggestsCommand("/clan chat ")
     }
 }
