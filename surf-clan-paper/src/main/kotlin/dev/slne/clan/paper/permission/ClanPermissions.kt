@@ -38,4 +38,5 @@ object ClanPermissions : PermissionRegistry() {
     val CLAN_ADMIN_INVALIDATE_CACHE_COMMAND = create("$CLAN_ADMIN_COMMAND.invalidateCache")
 
     val CLAN_LIST_COMMAND = create("$PREFIX.list")
+    val CLAN_CHAT_COMMAND = create("$PREFIX.chat")
 }
