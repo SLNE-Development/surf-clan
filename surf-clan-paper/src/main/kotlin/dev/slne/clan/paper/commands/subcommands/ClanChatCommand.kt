@@ -11,7 +11,6 @@ import dev.slne.surf.api.paper.command.args.asyncSignedMessageArgument
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.api.paper.util.getPrefixedName
 import dev.slne.surf.chat.api.SurfChatApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.kyori.adventure.chat.SignedMessage
 import org.bukkit.entity.Player
@@ -35,16 +34,14 @@ class ClanChatCommand(name: String) : CommandAPICommand(name) {
             }
 
 
-            coroutineScope {
-                playerClan.members.forEach { member ->
-                    launch {
-                        SurfChatApi.sendSignedMessage(
-                            message,
-                            player.uniqueId,
-                            member.uuid,
-                            formatClanChatMessage(message, player)
-                        )
-                    }
+            playerClan.members.forEach { member ->
+                launch {
+                    SurfChatApi.sendSignedMessage(
+                        message,
+                        player.uniqueId,
+                        member.uuid,
+                        formatClanChatMessage(message, player)
+                    )
                 }
             }
         }
