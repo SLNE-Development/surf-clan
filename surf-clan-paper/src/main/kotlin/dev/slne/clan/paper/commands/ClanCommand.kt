@@ -10,6 +10,7 @@ import dev.slne.clan.paper.commands.subcommands.member.invite.clanDenyCommand
 import dev.slne.clan.paper.commands.subcommands.member.invite.clanInviteCommand
 import dev.slne.clan.paper.commands.subcommands.member.role.clanDemoteMemberCommand
 import dev.slne.clan.paper.commands.subcommands.member.role.clanPromoteMemberCommand
+import dev.slne.clan.paper.commands.subcommands.member.whoIsOnlineCommand
 import dev.slne.clan.paper.commands.subcommands.player.clanPlayerCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 
@@ -36,4 +37,5 @@ fun clanCommand() = commandAPICommand("clan") {
 
     clanOptionsCommand()
     clanListCommand()
+    whoIsOnlineCommand()
 }
