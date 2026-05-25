@@ -3,6 +3,9 @@ package dev.slne.surf.clan.microservice
 import com.google.auto.service.AutoService
 import dev.slne.surf.clan.core.ClanCoreSerializerModule
 import dev.slne.surf.clan.core.ClanInstance
+import dev.slne.surf.clan.core.rpc.ClanInviteRpcService
+import dev.slne.surf.clan.core.rpc.ClanMemberRpcService
+import dev.slne.surf.clan.core.rpc.ClanPlayerRpcService
 import dev.slne.surf.clan.core.rpc.ClanRpcService
 import dev.slne.surf.clan.microservice.db.table.ClanInvitesTable
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
@@ -16,6 +19,9 @@ import dev.slne.surf.clan.microservice.handler.member.DeleteClanMemberHandler
 import dev.slne.surf.clan.microservice.handler.member.FindClanMemberByUuidHandler
 import dev.slne.surf.clan.microservice.handler.player.FindClanPlayerByUuidHandler
 import dev.slne.surf.clan.microservice.handler.player.UpdateClanPlayerAcceptsInvitesHandler
+import dev.slne.surf.clan.microservice.rpc.ClanInviteRpcServiceImpl
+import dev.slne.surf.clan.microservice.rpc.ClanMemberRpcServiceImpl
+import dev.slne.surf.clan.microservice.rpc.ClanPlayerRpcServiceImpl
 import dev.slne.surf.clan.microservice.rpc.ClanRpcServiceImpl
 import dev.slne.surf.database.DatabaseApi
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.SchemaUtils
@@ -74,6 +80,9 @@ class ClanMicroservice : Microservice() {
         rabbitApi.registerRequestHandler(UpdateClanPlayerAcceptsInvitesHandler)
 
         rabbitApi.registerRpcService<ClanRpcService>(ClanRpcServiceImpl)
+        rabbitApi.registerRpcService<ClanInviteRpcService>(ClanInviteRpcServiceImpl)
+        rabbitApi.registerRpcService<ClanMemberRpcService>(ClanMemberRpcServiceImpl)
+        rabbitApi.registerRpcService<ClanPlayerRpcService>(ClanPlayerRpcServiceImpl)
 
         rabbitApi.freezeAndConnect()
     }

@@ -10,13 +10,9 @@ import dev.slne.clan.api.member.listener.ClanMemberChangedRoleListener
 import dev.slne.clan.api.member.listener.ClanMemberListener
 import dev.slne.surf.api.core.service.PlayerLookupService
 import dev.slne.surf.api.core.util.logger
-import dev.slne.surf.clan.core.client.rabbit.rabbitApi
+import dev.slne.surf.clan.core.client.rpc.clanMemberRpcService
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.core.member.CoreClanMemberService
-import dev.slne.surf.clan.core.protocol.member.changeRole.ChangeClanMemberRoleRequestPacket
-import dev.slne.surf.clan.core.protocol.member.create.CreateClanMemberRequestPacket
-import dev.slne.surf.clan.core.protocol.member.delete.DeleteClanMemberRequestPacket
-import dev.slne.surf.clan.core.protocol.member.findByUuid.FindClanMemberByUuidRequestPacket
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -70,8 +66,7 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
         val member = loadedMembers.getIfPresent(uuid)
         if (member != null) return member
 
-        val request = FindClanMemberByUuidRequestPacket(uuid)
-        val loaded = rabbitApi.sendRequest(request).member ?: return null
+        val loaded = clanMemberRpcService.findMemberByUUID(uuid) ?: return null
         loadedMembers.put(uuid, loaded)
 
         return loaded
@@ -83,8 +78,7 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
         role: ClanMemberRole,
         invitedBy: UUID?
     ): ClanMemberAddResult {
-        val request = CreateClanMemberRequestPacket(clanID, player, role, invitedBy)
-        val result = rabbitApi.sendRequest(request).result
+        val result = clanMemberRpcService.createMember(clanID, player, role, invitedBy)
 
         if (result is ClanMemberAddResult.Success) {
             ClientClanServiceImpl.get().invalidateCachedClanByID(clanID)
@@ -94,8 +88,7 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
     }
 
     override suspend fun removeMember(clanID: ULong, player: UUID): Boolean {
-        val request = DeleteClanMemberRequestPacket(clanID, player)
-        val result = rabbitApi.sendRequest(request).value
+        val result = clanMemberRpcService.deleteMember(clanID, player)
 
         if (result) {
             ClientClanServiceImpl.get().invalidateCachedClanByID(clanID)
@@ -108,8 +101,7 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
         member: ClanMemberImpl,
         role: ClanMemberRole
     ): Boolean {
-        val request = ChangeClanMemberRoleRequestPacket(member.ID, role)
-        val changed = rabbitApi.sendRequest(request).value
+        val changed = clanMemberRpcService.changeMemberRole(member.ID, role)
 
         if (changed) {
             ClientClanServiceImpl.get().invalidateCachedClanByMember(member.uuid)
