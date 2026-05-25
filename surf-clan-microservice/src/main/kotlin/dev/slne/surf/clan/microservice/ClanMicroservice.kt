@@ -3,6 +3,7 @@ package dev.slne.surf.clan.microservice
 import com.google.auto.service.AutoService
 import dev.slne.surf.clan.core.ClanCoreSerializerModule
 import dev.slne.surf.clan.core.ClanInstance
+import dev.slne.surf.clan.core.rpc.ClanRpcService
 import dev.slne.surf.clan.microservice.db.table.ClanInvitesTable
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClanPlayerTable
@@ -15,6 +16,7 @@ import dev.slne.surf.clan.microservice.handler.member.DeleteClanMemberHandler
 import dev.slne.surf.clan.microservice.handler.member.FindClanMemberByUuidHandler
 import dev.slne.surf.clan.microservice.handler.player.FindClanPlayerByUuidHandler
 import dev.slne.surf.clan.microservice.handler.player.UpdateClanPlayerAcceptsInvitesHandler
+import dev.slne.surf.clan.microservice.rpc.ClanRpcServiceImpl
 import dev.slne.surf.database.DatabaseApi
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.SchemaUtils
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
@@ -70,6 +72,8 @@ class ClanMicroservice : Microservice() {
         // Player
         rabbitApi.registerRequestHandler(FindClanPlayerByUuidHandler)
         rabbitApi.registerRequestHandler(UpdateClanPlayerAcceptsInvitesHandler)
+
+        rabbitApi.registerRpcService<ClanRpcService>(ClanRpcServiceImpl)
 
         rabbitApi.freezeAndConnect()
     }
