@@ -42,7 +42,7 @@ private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
         rowRenderer { member, _ ->
             listOf(
                 buildText {
-                    darkSpacer(">>")
+                    darkSpacer(">")
                     appendSpace()
                     if (member.currentServer != null) {
                         append {
