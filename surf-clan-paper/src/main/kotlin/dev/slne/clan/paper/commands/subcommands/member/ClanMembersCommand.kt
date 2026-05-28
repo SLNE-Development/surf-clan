@@ -19,6 +19,7 @@ import dev.slne.surf.clan.core.client.components.Components
 import dev.slne.surf.core.api.common.SurfCoreApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import net.kyori.adventure.text.format.TextDecoration
 import java.util.concurrent.ConcurrentHashMap
 
 data class ClanMemberData(
@@ -38,21 +39,25 @@ private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
 
         resultsPerPage = 10
 
-        rowRenderer { member, i ->
+        rowRenderer { member, _ ->
             listOf(
                 buildText {
+                    darkSpacer(">>")
+                    appendSpace()
                     if (member.currentServer != null) {
                         append {
-                            success(member.memberName)
+                            darkSpacer("[")
+                            success("🌎", TextDecoration.BOLD)
+                            darkSpacer("]")
+                            appendSpace()
+                            white(member.memberName)
                             hoverEvent(buildText {
-                                success("online auf ${member.currentServer}")
+                                success("Online auf ")
+                                variableValue(member.currentServer)
                             })
                         }
                     } else {
-                        spacer(member.memberName)
-                        hoverEvent(buildText {
-                            spacer("offline")
-                        })
+                        white(member.memberName)
                     }
                     appendSpace()
                     spacer("(")
@@ -97,7 +102,7 @@ fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
         player.sendMessage(
             pagination.renderComponent(
                 data.sortedWith(
-                    compareBy<ClanMemberData, String?>(nullsLast(naturalOrder())) { it.currentServer }
+                    compareBy<ClanMemberData, String?>(nullsLast(reverseOrder())) { it.currentServer }
                         .thenBy { it.memberName }
                         .thenBy { it.role.name }
                 )
