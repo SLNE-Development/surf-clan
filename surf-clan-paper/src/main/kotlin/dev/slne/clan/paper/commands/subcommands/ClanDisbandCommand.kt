@@ -8,7 +8,6 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
-import dev.slne.surf.api.core.messages.adventure.appendNewline
 import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -68,7 +67,7 @@ private fun disbandHoverText() = buildText {
     error("Auch der Support kann keine Daten wiederherstellen.")
 }
 
-private fun createDisbandClickEvent(oldClanUuid: UUID): ClickEvent = ClickEvent.callback(
+private fun createDisbandClickEvent(oldClanUuid: UUID): ClickEvent<*> = ClickEvent.callback(
     ClickCallback.widen({ clicked ->
         plugin.launch {
             handleDisbandClick(clicked, oldClanUuid)
