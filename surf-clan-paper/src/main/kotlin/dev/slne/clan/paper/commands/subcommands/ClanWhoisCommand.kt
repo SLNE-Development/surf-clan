@@ -19,7 +19,7 @@ fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
     surfOfflinePlayerArgument("target")
 
     playerExecutorSuspend { player, args ->
-        val target = args.awaiting<SurfPlayer>("player")
+        val target = args.awaiting<SurfPlayer?>("target")
         val targetName = target.lastKnownName ?: target.uuid.toString()
         val clan = Clan.byPlayer(target.uuid)
 
