@@ -16,7 +16,7 @@ import net.kyori.adventure.text.event.ClickEvent
 fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
     withPermission(ClanPermissions.CLAN_WHOIS_COMMAND)
 
-    arguments(OfflinePlayerArgument("player"))
+    surfOfflinePlayerArgument("target")
 
     playerExecutorSuspend { player, args ->
         val target = args.awaiting<SurfPlayer>("player")
