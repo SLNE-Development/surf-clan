@@ -1,10 +1,8 @@
 package dev.slne.clan.paper.commands.subcommands
 
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.kotlindsl.arguments
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
-import dev.slne.clan.paper.commands.arguments.OfflinePlayerArgument
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
 import dev.slne.surf.api.core.messages.adventure.buildText
@@ -15,14 +13,20 @@ import net.kyori.adventure.text.event.ClickEvent
 
 fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
     withPermission(ClanPermissions.CLAN_WHOIS_COMMAND)
-
     surfOfflinePlayerArgument("target")
-
     playerExecutorSuspend { player, args ->
         val target = args.awaiting<SurfPlayer?>("target")
+
+        if (target == null) {
+            player.sendText {
+                appendErrorPrefix()
+                error("Der Spieler wurde nicht gefunden.")
+            }
+            return@playerExecutorSuspend
+        }
+
         val targetName = target.lastKnownName ?: target.uuid.toString()
         val clan = Clan.byPlayer(target.uuid)
-
         if (clan == null) {
             player.sendText {
                 appendInfoPrefix()
