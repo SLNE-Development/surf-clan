@@ -21,6 +21,7 @@ fun clanCommand() = commandAPICommand("clan") {
     clanDisbandCommand()
     clanLeaveCommand()
     clanInfoCommand()
+    clanWhoisCommand()
     clanSetDiscordCommand()
 
     clanInviteCommand()
