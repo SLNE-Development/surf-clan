@@ -4,7 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.api.core.command.args.awaiting
+import dev.slne.surf.api.core.command.args.awaitingOrNull
 import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -16,7 +16,7 @@ fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
     withPermission(ClanPermissions.CLAN_WHOIS_COMMAND)
     surfOfflinePlayerArgument("target")
     playerExecutorSuspend { player, args ->
-        val target = args.awaiting<SurfPlayer?>("target")
+        val target = args.awaitingOrNull<SurfPlayer?>("target")
 
         if (target == null) {
             player.sendText {
