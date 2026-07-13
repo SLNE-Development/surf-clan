@@ -9,6 +9,7 @@ import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.core.api.common.player.SurfPlayer
+import dev.slne.surf.core.api.paper.command.argument.surfOfflinePlayerArgument
 import net.kyori.adventure.text.event.ClickEvent
 
 fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
