@@ -21,7 +21,7 @@ fun CommandAPICommand.clanWhoisCommand() = subcommand("whois") {
         if (target == null) {
             player.sendText {
                 appendErrorPrefix()
-                error("Der Spieler wurde nicht gefunden!")
+                error("Der Spieler wurde nicht gefunden.")
             }
             return@playerExecutorSuspend
         }
