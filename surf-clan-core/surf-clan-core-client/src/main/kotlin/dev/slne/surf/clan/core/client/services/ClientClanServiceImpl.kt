@@ -21,18 +21,6 @@ import dev.slne.surf.clan.core.client.redis.RedisService
 import dev.slne.surf.clan.core.client.rpc.clanRpcService
 import dev.slne.surf.clan.core.invite.ClanInviteImpl
 import dev.slne.surf.clan.core.member.ClanMemberImpl
-import dev.slne.surf.clan.core.protocol.clan.create.CreateClanRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.delete.DeleteClanRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findAllWithoutMembersSortByMemberCount.FindAllClansWithoutMembersSortByMemberCountRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findByID.FindClanByClanIDRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findByMember.FindClanByMemberRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findByTag.FindClanByTagRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findByUuid.FindClanByUuidRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.findTagsByPrefixLimited.FindClanTagsByPrefixLimitedRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.updateDescription.UpdateClanDescriptionRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.updateDiscordInvite.UpdateClanDiscordInviteRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.updateNameAndTag.UpdateClanNameAndTagRequestPacket
-import dev.slne.surf.clan.core.protocol.clan.updateTagColor.UpdateClanTagColorRequestPacket
 import dev.slne.surf.redis.cache.RedisSetIndexes
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
 import java.util.*
@@ -120,7 +108,13 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     suspend fun invalidateCachedClanByID(id: ULong) {
-        cache.removeById(id.toString())
+        try {
+            cache.removeById(id.toString())
+        } catch (e: Exception) {
+            log.atWarning()
+                .withCause(e)
+                .log("Failed to invalidate clan cache for clan id $id")
+        }
     }
 
     override suspend fun findClanByPlayer(playerUuid: UUID): Clan? {
@@ -179,13 +173,14 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     override suspend fun createClan(properties: ClanCreateBuilder): ClanCreationResult {
-        val nameTagValidation = validateClanNameAndTag(properties.name, properties.tag)
+        val normalizedName = normalizeName(properties.name)
+        val nameTagValidation = validateClanNameAndTag(normalizedName, properties.tag)
         if (nameTagValidation != ClanValidationResult.Valid) {
             return ClanCreationResult.InvalidTagOrName(nameTagValidation)
         }
 
         val result = clanRpcService.createClan(
-            properties.name,
+            normalizedName,
             normalizeTag(properties.tag),
             properties.owner,
             properties.tagColor?.foregroundColor,
@@ -262,30 +257,33 @@ class ClientClanServiceImpl : CoreClanService {
         }
 
         val updatedNameAndTag = ClanNameAndTag(clan.name, clan.tag).applyUpdate(update)
-        if (updatedNameAndTag.name == clan.name && updatedNameAndTag.tag == clan.tag) {
+        val normalizedName = normalizeName(updatedNameAndTag.name)
+
+        if (normalizedName == clan.name && updatedNameAndTag.tag == clan.tag) {
             return ClanNameAndTag.UpdateResult.NothingChanged
         }
 
-        val validationResult = validateClanNameAndTag(updatedNameAndTag.name, updatedNameAndTag.tag)
+        val validationResult = validateClanNameAndTag(normalizedName, updatedNameAndTag.tag)
         if (validationResult != ClanValidationResult.Valid) {
             return ClanNameAndTag.UpdateResult.ValidationFailed(validationResult)
         }
 
-        val request = UpdateClanNameAndTagRequestPacket(
-            clan.clanID,
-            update.changedNameOrNull()?.takeIf { it != clan.name },
-            normalizeNullableTag(update.changedTagOrNull())?.takeIf { it != clan.tag }
-        )
+        val finalName = normalizedName.takeIf { it != clan.name }
+        val finalTag = normalizeNullableTag(update.changedTagOrNull())?.takeIf { it != clan.tag }
 
-        if (request.name == null && request.tag == null) {
+        if (finalName == null && finalTag == null) {
             return ClanNameAndTag.UpdateResult.NothingChanged
         }
 
-        val (updateResult) = rabbitApi.sendRequest(request)
+        val updateResult = clanRpcService.updateClanNameAndTag(
+            clan.clanID,
+            finalName,
+            finalTag
+        )
 
-        if (updateResult.success) {
+        if (updateResult.isSuccess) {
             invalidateCachedClanByID(clan.clanID)
-            clan.name = updatedNameAndTag.name
+            clan.name = normalizedName
             clan.tag = normalizeTag(updatedNameAndTag.tag)
             callClanUpdatedListeners(clan)
         }
@@ -388,6 +386,7 @@ class ClientClanServiceImpl : CoreClanService {
         private val log = logger()
 
         fun get() = ClanService.INSTANCE as ClientClanServiceImpl
+        private fun normalizeName(name: String) = name.trim()
         private fun normalizeTag(tag: String) = tag.trim().uppercase()
         private fun normalizeNullableTag(tag: String?) = tag?.let(::normalizeTag)
     }

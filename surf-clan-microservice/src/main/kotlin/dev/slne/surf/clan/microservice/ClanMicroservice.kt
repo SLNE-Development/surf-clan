@@ -60,7 +60,6 @@ class ClanMicroservice : Microservice() {
         rabbitApi.registerRequestHandler(UpdateClanDescriptionHandler)
         rabbitApi.registerRequestHandler(UpdateClanDiscordInviteHandler)
         rabbitApi.registerRequestHandler(UpdateClanTagColorHandler)
-        rabbitApi.registerRequestHandler(UpdateClanNameAndTagRequestHandler)
 
         // Invite
         rabbitApi.registerRequestHandler(AcceptClanInviteHandler)

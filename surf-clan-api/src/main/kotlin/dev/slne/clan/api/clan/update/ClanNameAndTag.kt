@@ -42,46 +42,46 @@ data class ClanNameAndTag(
 
     @Serializable
     sealed interface UpdateResult {
-        val success: Boolean
+        val isSuccess: Boolean
 
         @Serializable
         data object UpdatedName : UpdateResult {
-            override val success: Boolean = true
+            override val isSuccess: Boolean = true
         }
 
         @Serializable
         data object UpdatedTag : UpdateResult {
-            override val success: Boolean = true
+            override val isSuccess: Boolean = true
         }
 
         @Serializable
         data object UpdatedNameAndTag : UpdateResult {
-            override val success: Boolean = true
+            override val isSuccess: Boolean = true
         }
 
         @Serializable
         data object NothingChanged : UpdateResult {
-            override val success: Boolean = false
+            override val isSuccess: Boolean = false
         }
 
         @Serializable
         data object NameAlreadyTaken : UpdateResult {
-            override val success: Boolean = false
+            override val isSuccess: Boolean = false
         }
 
         @Serializable
         data object TagAlreadyTaken : UpdateResult {
-            override val success: Boolean = false
+            override val isSuccess: Boolean = false
         }
 
         @Serializable
         data object TagOrNameAlreadyTaken : UpdateResult {
-            override val success: Boolean = false
+            override val isSuccess: Boolean = false
         }
 
         @Serializable
         data class ValidationFailed(val result: ClanValidationResult) : UpdateResult {
-            override val success: Boolean = false
+            override val isSuccess: Boolean = false
         }
     }
 

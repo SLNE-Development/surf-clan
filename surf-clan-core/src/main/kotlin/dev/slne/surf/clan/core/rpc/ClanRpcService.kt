@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.core.rpc
 
 import dev.slne.clan.api.clan.ClanCreationResult
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.rabbitmq.api.rpc.RpcService
 import net.kyori.adventure.text.format.ShadowColor
@@ -38,4 +39,10 @@ interface ClanRpcService {
         tagBackgroundColor: TextColor?,
         tagShadowColor: ShadowColor?
     ): Boolean
+
+    suspend fun updateClanNameAndTag(
+        clanID: ULong,
+        name: String?,
+        tag: String?
+    ): ClanNameAndTag.UpdateResult
 }

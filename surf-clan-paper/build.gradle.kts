@@ -1,6 +1,7 @@
 import dev.slne.surf.api.gradle.util.registerRequired
-import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
 import dev.slne.surf.api.gradle.util.registerSoft
+import dev.slne.surf.api.gradle.util.slneReleases
+import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
 
 plugins {
     id("dev.slne.surf.api.gradle.paper-plugin")
@@ -31,4 +32,9 @@ dependencies {
     api(projects.surfClanCore.surfClanCoreClient)
     compileOnly("dev.slne.surf.chat:surf-chat-api:+")
     compileOnly("dev.slne.surf.transaction:surf-transaction-api:4.+")
+}
+
+repositories {
+    mavenLocal()
+    slneReleases()
 }
