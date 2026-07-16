@@ -17,8 +17,8 @@ import dev.slne.surf.clan.core.clan.AbstractClanView
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.clan.ClanTagRules
 import dev.slne.surf.clan.core.clan.CoreClanService
-import dev.slne.surf.clan.core.client.rabbit.rabbitApi
 import dev.slne.surf.clan.core.client.redis.RedisService
+import dev.slne.surf.clan.core.client.rpc.clanRpcService
 import dev.slne.surf.clan.core.invite.ClanInviteImpl
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.core.protocol.clan.create.CreateClanRequestPacket
@@ -53,8 +53,7 @@ class ClientClanServiceImpl : CoreClanService {
         .maximumSize(5_000)
         .expireAfterWrite(1.minutes)
         .asLoadingCache<String, List<String>> { bucketKey ->
-            val request = FindClanTagsByPrefixLimitedRequestPacket(bucketKey, 100)
-            rabbitApi.sendRequest(request).tags
+            clanRpcService.findClanTagsByPrefix(bucketKey, 100)
         }
 
     private val listeners = CopyOnWriteArrayList<ClanListener>()
@@ -126,31 +125,30 @@ class ClientClanServiceImpl : CoreClanService {
 
     override suspend fun findClanByPlayer(playerUuid: UUID): Clan? {
         return cache.findCachedByIndexOrLoadNullable(CacheIndexes.members, playerUuid) {
-            rabbitApi.sendRequest(FindClanByMemberRequestPacket(playerUuid)).clan
+            clanRpcService.findClanByMember(playerUuid)
         }
     }
 
     override suspend fun findClanByUuid(clanUuid: UUID): Clan? {
         return cache.findCachedByIndexOrLoadNullable(CacheIndexes.uuid, clanUuid) {
-            rabbitApi.sendRequest(FindClanByUuidRequestPacket(clanUuid)).clan
+            clanRpcService.findClanByClanUuid(clanUuid)
         }
     }
 
     override suspend fun findClanByTag(tag: String): Clan? {
         return cache.findCachedByIndexOrLoadNullable(CacheIndexes.tag, tag) {
-            rabbitApi.sendRequest(FindClanByTagRequestPacket(normalizeTag(tag))).clan
+            clanRpcService.findClanByTag(normalizeTag(tag))
         }
     }
 
     override suspend fun findClanByID(id: ULong): ClanImpl? {
         return cache.findCachedByIndexOrLoadNullable(CacheIndexes.id, id) {
-            rabbitApi.sendRequest(FindClanByClanIDRequestPacket(id)).clan
+            clanRpcService.findClanById(id)
         }
     }
 
     override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> {
-        val request = FindAllClansWithoutMembersSortByMemberCountRequestPacket()
-        return rabbitApi.sendRequest(request).result
+        return clanRpcService.findAllClansWithoutMembersSortByMemberCount()
     }
 
     override fun validateClanNameAndTag(
@@ -186,7 +184,7 @@ class ClientClanServiceImpl : CoreClanService {
             return ClanCreationResult.InvalidTagOrName(nameTagValidation)
         }
 
-        val request = CreateClanRequestPacket(
+        val result = clanRpcService.createClan(
             properties.name,
             normalizeTag(properties.tag),
             properties.owner,
@@ -196,7 +194,6 @@ class ClientClanServiceImpl : CoreClanService {
             properties.description,
             properties.discordInvite
         )
-        val result = rabbitApi.sendRequest(request).result
 
         if (result is ClanCreationResult.Success) {
             callClanCreatedListeners(result.clan)
@@ -209,8 +206,7 @@ class ClientClanServiceImpl : CoreClanService {
         clan: ClanImpl,
         description: String?
     ): Boolean {
-        val request = UpdateClanDescriptionRequestPacket(clan.clanID, description)
-        val updated = rabbitApi.sendRequest(request).value
+        val updated = clanRpcService.updateClanDescription(clan.clanID, description)
 
         if (updated) {
             invalidateCachedClanByID(clan.clanID)
@@ -225,8 +221,7 @@ class ClientClanServiceImpl : CoreClanService {
         clan: ClanImpl,
         discordInvite: String?
     ): Boolean {
-        val request = UpdateClanDiscordInviteRequestPacket(clan.clanID, discordInvite)
-        val updated = rabbitApi.sendRequest(request).value
+        val updated = clanRpcService.updateClanDiscordInvite(clan.clanID, discordInvite)
 
         if (updated) {
             invalidateCachedClanByID(clan.clanID)
@@ -242,14 +237,12 @@ class ClientClanServiceImpl : CoreClanService {
         update: ClanTagColor.Update
     ): Boolean {
         val updatedTagColor = clan.clanTagColor.update(update)
-
-        val request = UpdateClanTagColorRequestPacket(
+        val updated = clanRpcService.updateClanTagColor(
             clan.clanID,
             updatedTagColor.foregroundColor,
             updatedTagColor.backgroundColor,
             updatedTagColor.shadowColor
         )
-        val updated = rabbitApi.sendRequest(request).value
 
         if (updated) {
             invalidateCachedClanByID(clan.clanID)
@@ -349,8 +342,7 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     override suspend fun delete(clan: ClanImpl): Boolean {
-        val request = DeleteClanRequestPacket(clan.clanID)
-        val deleted = rabbitApi.sendRequest(request).value
+        val deleted = clanRpcService.deleteClan(clan.clanID)
 
         if (deleted) {
             invalidateCachedClanByID(clan.clanID)

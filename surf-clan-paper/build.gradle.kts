@@ -20,6 +20,7 @@ surfPaperPluginApi {
 
     serverDependencies {
         registerSoft("MiniPlaceholders")
+        registerSoft("surf-chat-paper")
         registerRequired("surf-transaction-paper")
     }
 
@@ -28,5 +29,6 @@ surfPaperPluginApi {
 
 dependencies {
     api(projects.surfClanCore.surfClanCoreClient)
+    compileOnly("dev.slne.surf.chat:surf-chat-api:+")
     compileOnly("dev.slne.surf.transaction:surf-transaction-api:4.+")
 }

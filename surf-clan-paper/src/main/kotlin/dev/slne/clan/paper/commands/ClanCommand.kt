@@ -12,6 +12,7 @@ import dev.slne.clan.paper.commands.subcommands.member.role.clanDemoteMemberComm
 import dev.slne.clan.paper.commands.subcommands.member.role.clanPromoteMemberCommand
 import dev.slne.clan.paper.commands.subcommands.player.clanPlayerCommand
 import dev.slne.clan.paper.permission.ClanPermissions
+import dev.slne.clan.paper.plugin
 
 fun clanCommand() = commandAPICommand("clan") {
     withPermission(ClanPermissions.CLAN_COMMAND)
@@ -20,6 +21,7 @@ fun clanCommand() = commandAPICommand("clan") {
     clanDisbandCommand()
     clanLeaveCommand()
     clanInfoCommand()
+    clanWhoisCommand()
     clanSetDiscordCommand()
 
     clanInviteCommand()
@@ -37,4 +39,8 @@ fun clanCommand() = commandAPICommand("clan") {
     clanOptionsCommand()
     clanListCommand()
     clanRenameCommand()
+
+    if (plugin.checkSurfChat()) {
+        withSubcommand(ClanChatCommand("chat"))
+    }
 }

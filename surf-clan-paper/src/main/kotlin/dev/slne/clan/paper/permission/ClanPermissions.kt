@@ -12,6 +12,7 @@ object ClanPermissions : PermissionRegistry() {
     val CLAN_DISBAND_COMMAND = create("$CLAN_COMMAND.disband")
     val CLAN_LEAVE_COMMAND = create("$CLAN_COMMAND.leave")
     val CLAN_INFO_COMMAND = create("$CLAN_COMMAND.info")
+    val CLAN_WHOIS_COMMAND = create("$CLAN_COMMAND.whois")
     val CLAN_SET_DISCORD_COMMAND = create("$CLAN_COMMAND.setDiscord")
     val CLAN_INVITE_COMMAND = create("$CLAN_COMMAND.invite")
     val CLAN_ACCEPT_INVITE_COMMAND = create("$CLAN_COMMAND.acceptInvite")
@@ -39,4 +40,5 @@ object ClanPermissions : PermissionRegistry() {
     val CLAN_ADMIN_INVALIDATE_CACHE_COMMAND = create("$CLAN_ADMIN_COMMAND.invalidateCache")
 
     val CLAN_LIST_COMMAND = create("$PREFIX.list")
+    val CLAN_CHAT_COMMAND = create("$PREFIX.chat")
 }

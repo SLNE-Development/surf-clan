@@ -1,6 +1,5 @@
 package dev.slne.clan.api.clan
 
-import net.kyori.adventure.text.format.TextColor
 import java.util.*
 
 /**
