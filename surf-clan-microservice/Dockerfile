@@ -9,7 +9,7 @@ FROM eclipse-temurin:25-jre
 RUN groupadd --system --gid 10001 app && \
     useradd --system --uid 10001 --gid app --home-dir /app --create-home app
 WORKDIR /app
-COPY --from=build --chown=app:app /workspace/build/libs/surf-clan-microservice-2.1.7-all.jar /app/app.jar
+COPY --from=build --chown=app:app /workspace/surf-clan-microservice/build/libs/surf-clan-microservice-2.1.7-all.jar /app/app.jar
 ENV JAVA_OPTS=""
 
 # RabbitMQ runtime environment (configure in Coolify; values are not embedded):
