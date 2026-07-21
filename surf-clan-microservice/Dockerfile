@@ -3,15 +3,13 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /workspace
 COPY . .
-RUN chmod +x gradlew && ./gradlew shadowJar --no-daemon
-
+RUN chmod +x gradlew && ./gradlew :surf-clan-microservice:prepareMicroserviceDockerArtifact --no-daemon
 FROM eclipse-temurin:25-jre
-RUN groupadd --system --gid 10001 app && \
-    useradd --system --uid 10001 --gid app --home-dir /app --create-home app
+RUN groupadd --system --gid 10001 app && useradd --system --uid 10001 --gid app --home-dir /app --create-home app
 WORKDIR /app
-COPY --from=build --chown=app:app /workspace/surf-clan-microservice/build/libs/surf-clan-microservice-2.1.7-all.jar /app/app.jar
+COPY --from=build --chown=app:app /workspace/surf-clan-microservice/build/docker/app.jar /app/app.jar
 ENV JAVA_OPTS=""
-
+#
 # RabbitMQ runtime environment (configure in Coolify; values are not embedded):
 # - SURF_RABBITMQ_HOST: RabbitMQ service host
 # - SURF_RABBITMQ_PORT: RabbitMQ service port
@@ -26,7 +24,7 @@ ENV JAVA_OPTS=""
 # - SURF_RABBITMQ_PERSIST_RESPONSES: whether responses are persistent
 # - SURF_RABBITMQ_OUTGOING_REQUEST_CHUNKING_ENABLED: whether outgoing requests may be chunked
 # - SURF_RABBITMQ_OUTGOING_RESPONSE_CHUNKING_ENABLED: whether outgoing responses may be chunked
-
+#
 # Database runtime environment (configure in Coolify; values are not embedded):
 # - SURF_DATABASE_LOG_LEVEL: database SQL log level
 # - SURF_DATABASE_TYPE: mariadb or postgresql
@@ -45,4 +43,4 @@ ENV JAVA_OPTS=""
 # - SURF_DATABASE_POOL_MAX_IDLE_TIME_MILLIS: maximum idle time in milliseconds
 # - SURF_DATABASE_POOL_MAX_LIFE_TIME_MILLIS: maximum connection lifetime in milliseconds
 USER app
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]
+ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]
