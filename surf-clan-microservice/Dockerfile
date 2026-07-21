@@ -9,6 +9,7 @@ RUN groupadd --system --gid 10001 app && useradd --system --uid 10001 --gid app 
 WORKDIR /app
 COPY --from=build --chown=app:app /workspace/surf-clan-microservice/build/docker/app.jar /app/app.jar
 ENV JAVA_OPTS=""
+ENV SURF_MICROSERVICE_COMMAND_SOCKET=/app/run/microservice.sock
 #
 # RabbitMQ runtime environment (configure in Coolify; values are not embedded):
 # - SURF_RABBITMQ_HOST: RabbitMQ service host
@@ -42,5 +43,10 @@ ENV JAVA_OPTS=""
 # - SURF_DATABASE_POOL_MAX_VALIDATION_TIME_MILLIS: maximum validation time in milliseconds
 # - SURF_DATABASE_POOL_MAX_IDLE_TIME_MILLIS: maximum idle time in milliseconds
 # - SURF_DATABASE_POOL_MAX_LIFE_TIME_MILLIS: maximum connection lifetime in milliseconds
+RUN printf '%s\n' \
+'#!/bin/sh' \
+'exec java -Xms8m -Xmx64m -XX:+ExitOnOutOfMemoryError -jar /app/app.jar __surf-command "$@"' \
+> /usr/local/bin/microservicectl \
+&& chmod 0555 /usr/local/bin/microservicectl
 USER app
 ENTRYPOINT ["sh", "-c", "exec java -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError $JAVA_OPTS -jar /app/app.jar \"$@\"", "--"]
