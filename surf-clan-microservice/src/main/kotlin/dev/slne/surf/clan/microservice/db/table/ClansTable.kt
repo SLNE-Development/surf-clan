@@ -14,8 +14,8 @@ object ClansTable : AuditableLongIdTable("clan_clans") {
     const val TAG_UQ_INDEX_NAME = "clan_clans_tag_uq_idx"
 
     val uuid = nativeUuid("uuid").uniqueIndex(UUID_UQ_INDEX_NAME).clientDefault { UUID.randomUUID() }
-    val name = char("name", 255).uniqueIndex(NAME_UQ_INDEX_NAME)
-    val tag = char("tag", 50).uniqueIndex(TAG_UQ_INDEX_NAME)
+    val name = varchar("name", 255).uniqueIndex(NAME_UQ_INDEX_NAME)
+    val tag = varchar("tag", 50).uniqueIndex(TAG_UQ_INDEX_NAME)
 
     val tagBackgroundColor = optionalTextColor("clan_tag_background_color")
     val tagForegroundColor = optionalTextColor("clan_tag_foreground_color")
@@ -24,7 +24,7 @@ object ClansTable : AuditableLongIdTable("clan_clans") {
         .nullable()
         .default(null)
 
-    val description = char("description", 255).nullable().default(null)
+    val description = varchar("description", 255).nullable().default(null)
     val createdBy = nativeUuid("created_by")
     val discordInvite = varchar("discord_invite", 255).nullable().default(null)
 }
