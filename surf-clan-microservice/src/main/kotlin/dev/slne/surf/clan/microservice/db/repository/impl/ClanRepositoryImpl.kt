@@ -178,9 +178,9 @@ class ClanRepositoryImpl : ClanRepository {
                 .select(ClansTable.tag)
                 .where { ClansTable.tag like "$prefix%" }
                 .orderBy(ClansTable.tag)
+                .limit(limit)
                 .map { it[ClansTable.tag] }
                 .toList()
-                .take(limit)
         }
     }
 
