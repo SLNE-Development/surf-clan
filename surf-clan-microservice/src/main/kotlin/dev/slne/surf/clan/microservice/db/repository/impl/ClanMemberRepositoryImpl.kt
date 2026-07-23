@@ -12,8 +12,8 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.eq
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import dev.slne.surf.database.utils.asDataIntegrityViolation
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.singleOrNull
 import java.util.*
 
 @AutoService(ClanMemberRepository::class)
@@ -57,8 +57,7 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
     override suspend fun findByUuid(uuid: UUID): ClanMemberImpl? = suspendTransaction {
         ClanMembersTable.selectAll()
             .where { ClanMembersTable.uuid eq uuid }
-            .limit(1)
-            .singleOrNull()
+            .firstOrNull()
             ?.let(::createMemberDAO)
     }
 

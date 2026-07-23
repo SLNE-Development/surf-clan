@@ -14,9 +14,9 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import dev.slne.surf.database.utils.asDataIntegrityViolation
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
@@ -120,8 +120,7 @@ class ClanRepositoryImpl : ClanRepository {
         val ownerAlreadyMember = ClanMembersTable
             .select(ClanMembersTable.id)
             .where { ClanMembersTable.uuid eq owner }
-            .limit(1)
-            .singleOrNull() != null
+            .firstOrNull() != null
 
         if (ownerAlreadyMember) {
             return@suspendTransaction ClanCreationResult.OwnerIsAlreadyInClan
@@ -179,9 +178,9 @@ class ClanRepositoryImpl : ClanRepository {
                 .select(ClansTable.tag)
                 .where { ClansTable.tag like "$prefix%" }
                 .orderBy(ClansTable.tag)
-                .limit(limit)
                 .map { it[ClansTable.tag] }
                 .toList()
+                .take(limit)
         }
     }
 

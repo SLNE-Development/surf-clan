@@ -20,13 +20,14 @@ import java.util.*
 
 @AutoService(ClanInviteRepository::class)
 class ClanInviteRepositoryImpl : ClanInviteRepository {
-    override suspend fun fetchPendingInvites(clanID: ULong): Set<ClanInviteImpl> = suspendTransaction {
-        ClanInvitesTable
-            .selectAll()
-            .where { ClanInvitesTable.clanId eq clanID }
-            .map(::createClanInviteDAO)
-            .toSet()
-    }
+    override suspend fun fetchPendingInvites(clanID: ULong): Set<ClanInviteImpl> =
+        suspendTransaction {
+            ClanInvitesTable
+                .selectAll()
+                .where { ClanInvitesTable.clanId eq clanID }
+                .map(::createClanInviteDAO)
+                .toSet()
+        }
 
     override suspend fun getPendingInviteByPlayerAndClanName(
         invited: UUID,
@@ -43,13 +44,14 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
             ?.let(::createClanInviteDAO)
     }
 
-    override suspend fun getPendingInvitesByPlayer(invited: UUID): List<ClanInviteImpl> = suspendTransaction {
-        ClanInvitesTable
-            .selectAll()
-            .where { ClanInvitesTable.invited eq invited }
-            .map(::createClanInviteDAO)
-            .toList()
-    }
+    override suspend fun getPendingInvitesByPlayer(invited: UUID): List<ClanInviteImpl> =
+        suspendTransaction {
+            ClanInvitesTable
+                .selectAll()
+                .where { ClanInvitesTable.invited eq invited }
+                .map(::createClanInviteDAO)
+                .toList()
+        }
 
     override suspend fun createInvite(
         clanID: ULong,
@@ -61,8 +63,7 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
         val invitesEnabled = ClanPlayerTable
             .select(ClanPlayerTable.acceptsClanInvites)
             .where { ClanPlayerTable.uuid eq invitee }
-            .limit(1)
-            .singleOrNull()
+            .firstOrNull()
             ?.get(ClanPlayerTable.acceptsClanInvites)
             ?: true
 
@@ -88,29 +89,29 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
         } > 0
     }
 
-    override suspend fun acceptInvite(inviteID: ULong, invitee: UUID, invitedBy: UUID): Boolean = suspendTransaction {
-        if (isAlreadyInClan(invitee)) return@suspendTransaction false
+    override suspend fun acceptInvite(inviteID: ULong, invitee: UUID, invitedBy: UUID): Boolean =
+        suspendTransaction {
+            if (isAlreadyInClan(invitee)) return@suspendTransaction false
 
-        val deletedRow = ClanInvitesTable.deleteReturning {
-            ClanInvitesTable.id eq inviteID and (ClanInvitesTable.invited eq invitee)
-        }.singleOrNull()
+            val deletedRow = ClanInvitesTable.deleteReturning {
+                ClanInvitesTable.id eq inviteID and (ClanInvitesTable.invited eq invitee)
+            }.singleOrNull()
 
-        if (deletedRow == null) return@suspendTransaction false
+            if (deletedRow == null) return@suspendTransaction false
 
-        ClanMembersTable.insert {
-            it[uuid] = invitee
-            it[addedBy] = invitedBy
-            it[clanId] = deletedRow[ClanInvitesTable.clanId]
+            ClanMembersTable.insert {
+                it[uuid] = invitee
+                it[addedBy] = invitedBy
+                it[clanId] = deletedRow[ClanInvitesTable.clanId]
+            }
+
+            true
         }
-
-        true
-    }
 
     private suspend fun isAlreadyInClan(invitee: UUID): Boolean = ClanMembersTable
         .select(ClanMembersTable.id)
         .where { ClanMembersTable.uuid eq invitee }
-        .limit(1)
-        .singleOrNull() != null
+        .firstOrNull() != null
 
 
     fun createClanInviteDAO(row: ResultRow): ClanInviteImpl = ClanInviteImpl(
