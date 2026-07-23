@@ -48,7 +48,7 @@ suspend fun migrateLegacyClanUuidColumns() {
 
                 IF legacy_type IN ('text', 'character varying', 'character') THEN
                     EXECUTE format(
-                        'ALTER TABLE %I.%I ALTER COLUMN %I TYPE uuid USING NULLIF(BTRIM(%I::text), '''')::uuid',
+                        'ALTER TABLE %I.%I ALTER COLUMN %I TYPE uuid USING BTRIM(%I::text)::uuid',
                         current_schema(),
                         '$table',
                         '$column',
