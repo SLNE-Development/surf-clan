@@ -83,7 +83,7 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
     }
 
     override suspend fun deleteInvite(clanID: ULong, invitee: UUID): Boolean = suspendTransaction {
-        ClanInvitesTable.deleteWhere(limit = 1) {
+        ClanInvitesTable.deleteWhere {
             ClanInvitesTable.clanId eq clanID and (ClanInvitesTable.invited eq invitee)
         } > 0
     }
