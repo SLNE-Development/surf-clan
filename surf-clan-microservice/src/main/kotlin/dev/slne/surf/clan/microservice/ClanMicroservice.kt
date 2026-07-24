@@ -7,6 +7,7 @@ import dev.slne.surf.clan.core.rpc.ClanInviteRpcService
 import dev.slne.surf.clan.core.rpc.ClanMemberRpcService
 import dev.slne.surf.clan.core.rpc.ClanPlayerRpcService
 import dev.slne.surf.clan.core.rpc.ClanRpcService
+import dev.slne.surf.clan.microservice.db.migration.migrateLegacyClanUuidColumns
 import dev.slne.surf.clan.microservice.db.table.ClanInvitesTable
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClanPlayerTable
@@ -94,6 +95,7 @@ class ClanMicroservice : Microservice() {
             ClanPlayerTable,
             ClanInvitesTable
         )
+        migrateLegacyClanUuidColumns()
     }
 
     override suspend fun onDisable() {
