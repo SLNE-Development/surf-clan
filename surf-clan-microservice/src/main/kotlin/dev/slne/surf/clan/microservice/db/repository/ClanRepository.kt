@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.microservice.db.repository
 
 import dev.slne.clan.api.clan.ClanCreationResult
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.surf.api.core.util.requiredService
 import dev.slne.surf.clan.core.clan.ClanImpl
 import net.kyori.adventure.text.format.ShadowColor
@@ -14,6 +15,7 @@ interface ClanRepository {
     suspend fun findClanByUuid(clanUuid: UUID): ClanImpl?
     suspend fun findClanByTag(tag: String): ClanImpl?
     suspend fun findClanByID(id: ULong): ClanImpl?
+    suspend fun findClanByName(name: String): ClanImpl?
     suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl>
 
     suspend fun updateDescription(clanID: ULong, description: String?): Boolean
@@ -24,6 +26,12 @@ interface ClanRepository {
         tagBackgroundColor: TextColor?,
         tagShadowColor: ShadowColor?
     ): Boolean
+
+    suspend fun updateClanNameAndTag(
+        clanID: ULong,
+        name: String?,
+        tag: String?
+    ): ClanNameAndTag.UpdateResult
 
     suspend fun create(
         name: String,

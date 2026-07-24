@@ -21,6 +21,7 @@ object ClanPermissions : PermissionRegistry() {
     val CLAN_DEMOTE_MEMBER_COMMAND = create("$CLAN_COMMAND.demoteMember")
     val CLAN_KICK_MEMBER_COMMAND = create("$CLAN_COMMAND.kickMember")
     val CLAN_VIEW_MEMBERS_COMMAND = create("$CLAN_COMMAND.viewMembers")
+    val CLAN_RENAME_COMMAND = create("$CLAN_COMMAND.rename")
 
     val CLAN_OPTIONS_COMMAND = create("$COMMAND.options")
     val CLAN_OPTIONS_TAG_COLOR_COMMAND = create("$CLAN_OPTIONS_COMMAND.tagColor")

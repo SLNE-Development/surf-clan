@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.core.client.components
 
 import dev.slne.clan.api.clan.Clan.Companion.DISCORD_LINK_REQUIRED_MEMBERS
+import dev.slne.clan.api.clan.ClanValidationResult
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.font.toSmallCaps
 import dev.slne.surf.api.core.messages.Colors
@@ -83,6 +84,52 @@ object Components {
                     clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) }
                         ?: CommonComponents.DISCORD_LINK.clickEvent())
                 }
+            }
+        }
+
+        fun renderClanValidation(result: ClanValidationResult) = buildText {
+            when (result) {
+                is ClanValidationResult.NameOutOfRange -> {
+                    error("Der Name muss zwischen ")
+                    variableValue(result.min)
+                    error(" und ")
+                    variableValue(result.max)
+                    error(" Zeichen lang sein.")
+                }
+
+                is ClanValidationResult.TagOutOfRange -> {
+                    error("Der Tag muss zwischen ")
+                    variableValue(result.min)
+                    error(" und ")
+                    variableValue(result.max)
+                    error(" Zeichen lang sein.")
+                }
+
+                is ClanValidationResult.InvalidTagCharacters -> {
+                    error("Der Clan-Tag enthält ungültige Zeichen: ")
+                    for (entry in result.characters.char2BooleanEntrySet()) {
+                        val char = entry.charKey
+                        val valid = entry.booleanValue
+
+                        if (valid) {
+                            text(char, Colors.GRAY)
+                        } else {
+                            append {
+                                text(char, Colors.ERROR)
+                                decorate(TextDecoration.UNDERLINED)
+                            }
+                        }
+                    }
+
+                    appendNewErrorPrefixedLine()
+                    error("Er darf nur aus Buchstaben und Zahlen bestehen.")
+                }
+
+                ClanValidationResult.TagViolation -> {
+                    error("Der Clan-Tag ist nicht erlaubt.")
+                }
+
+                else -> Unit
             }
         }
     }

@@ -44,5 +44,10 @@ enum class ClanPermission {
     /**
      * Permission to change the color of the clan tag.
      */
-    OPTIONS_TAG_COLOR
+    OPTIONS_TAG_COLOR,
+
+    /**
+     * Permission to change the clan's name and tag.
+     */
+    RENAME
 }

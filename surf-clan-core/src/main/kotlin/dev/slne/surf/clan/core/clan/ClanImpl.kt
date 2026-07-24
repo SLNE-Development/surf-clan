@@ -2,6 +2,7 @@ package dev.slne.surf.clan.core.clan
 
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanTagColor
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
@@ -18,8 +19,8 @@ import java.util.*
 data class ClanImpl(
     override val clanID: ULong,
     override val uuid: @Contextual UUID,
-    override val name: String,
-    override val tag: String,
+    override var name: String,
+    override var tag: String,
     override val createdByUuid: @Contextual UUID,
     override var clanTagColor: ClanTagColor?,
     override var description: String?,
@@ -38,6 +39,14 @@ data class ClanImpl(
 
     override suspend fun changeClanTagColor(update: ClanTagColor.Update) {
         CoreClanService.updateTagColor(this, update)
+    }
+
+    override suspend fun updateClanNameAndTag(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult {
+        return CoreClanService.updateClanNameAndTag(this, update)
+    }
+
+    override suspend fun testClanNameAndTagUpdate(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult {
+        return CoreClanService.testClanNameAndTagUpdate(this, update)
     }
 
     override suspend fun getPendingInvites(): Set<ClanInvite> {

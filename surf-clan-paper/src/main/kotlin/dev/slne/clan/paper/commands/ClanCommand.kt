@@ -38,7 +38,7 @@ fun clanCommand() = commandAPICommand("clan") {
 
     clanOptionsCommand()
     clanListCommand()
-
+    clanRenameCommand()
 
     if (plugin.checkSurfChat()) {
         withSubcommand(ClanChatCommand("chat"))

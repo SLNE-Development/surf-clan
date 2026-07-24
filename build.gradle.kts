@@ -1,3 +1,4 @@
+import dev.slne.surf.api.gradle.util.slneReleases
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 buildscript {

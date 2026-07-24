@@ -1,5 +1,7 @@
 package dev.slne.clan.api.util
 
+import dev.slne.surf.api.shared.api.annotation.InternalAPIMarker
+
 /**
  * Marks declarations that are internal to the Surf Clan API implementation.
  *
@@ -19,4 +21,5 @@ package dev.slne.clan.api.util
     message = "This API is internal to the Surf Clan implementation and is not intended for external use. " +
             "It may be changed or removed without notice in future versions."
 )
+@InternalAPIMarker
 annotation class InternalClanApi

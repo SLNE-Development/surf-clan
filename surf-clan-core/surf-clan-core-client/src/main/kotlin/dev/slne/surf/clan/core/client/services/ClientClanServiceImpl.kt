@@ -6,6 +6,7 @@ import com.sksamuel.aedile.core.asLoadingCache
 import com.sksamuel.aedile.core.expireAfterWrite
 import dev.slne.clan.api.clan.*
 import dev.slne.clan.api.clan.listener.*
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
@@ -22,6 +23,9 @@ import dev.slne.surf.clan.core.invite.ClanInviteImpl
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.redis.cache.RedisSetIndexes
 import it.unimi.dsi.fastutil.chars.Char2BooleanOpenHashMap
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
@@ -107,7 +111,13 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     suspend fun invalidateCachedClanByID(id: ULong) {
-        cache.removeById(id.toString())
+        try {
+            cache.removeById(id.toString())
+        } catch (e: Exception) {
+            log.atWarning()
+                .withCause(e)
+                .log("Failed to invalidate clan cache for clan id $id")
+        }
     }
 
     override suspend fun findClanByPlayer(playerUuid: UUID): Clan? {
@@ -125,6 +135,12 @@ class ClientClanServiceImpl : CoreClanService {
     override suspend fun findClanByTag(tag: String): Clan? {
         return cache.findCachedByIndexOrLoadNullable(CacheIndexes.tag, tag) {
             clanRpcService.findClanByTag(normalizeTag(tag))
+        }
+    }
+
+    override suspend fun findClanByName(name: String): Clan? {
+        return cache.findCachedByIndexOrLoadNullable(CacheIndexes.name, name) {
+            clanRpcService.findClanByName(normalizeName(name))
         }
     }
 
@@ -166,13 +182,14 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     override suspend fun createClan(properties: ClanCreateBuilder): ClanCreationResult {
-        val nameTagValidation = validateClanNameAndTag(properties.name, properties.tag)
+        val normalizedName = normalizeName(properties.name)
+        val nameTagValidation = validateClanNameAndTag(normalizedName, properties.tag)
         if (nameTagValidation != ClanValidationResult.Valid) {
             return ClanCreationResult.InvalidTagOrName(nameTagValidation)
         }
 
         val result = clanRpcService.createClan(
-            properties.name,
+            normalizedName,
             normalizeTag(properties.tag),
             properties.owner,
             properties.tagColor?.foregroundColor,
@@ -238,6 +255,113 @@ class ClientClanServiceImpl : CoreClanService {
         }
 
         return updated
+    }
+
+    override suspend fun testClanNameAndTagUpdate(
+        clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): ClanNameAndTag.UpdateResult {
+        val preResult = preClanNameAndTagUpdate(clan, update)
+        if (preResult is PreClanNameAndTagUpdateResult.Failed) {
+            return preResult.result
+        }
+
+        require(preResult is PreClanNameAndTagUpdateResult.Success)
+
+        val finalTag = preResult.finalTag
+        val finalName = preResult.finalName
+
+        val (clanByTagExists, clanByNameExists) = coroutineScope {
+            val clanByTagExists = async {
+                finalTag != null && findClanByTag(finalTag) != null
+            }
+
+            val clanByNameExists = async {
+                finalName != null && findClanByName(finalName) != null
+            }
+
+            clanByTagExists.await() to clanByNameExists.await()
+        }
+
+        if (clanByTagExists) {
+            return ClanNameAndTag.UpdateResult.TagAlreadyTaken
+        }
+
+        if (clanByNameExists) {
+            return ClanNameAndTag.UpdateResult.NameAlreadyTaken
+        }
+
+        return when {
+            finalTag != null && finalName != null -> ClanNameAndTag.UpdateResult.UpdatedNameAndTag
+            finalTag != null -> ClanNameAndTag.UpdateResult.UpdatedTag
+            finalName != null -> ClanNameAndTag.UpdateResult.UpdatedName
+            else -> ClanNameAndTag.UpdateResult.NothingChanged
+        }
+    }
+
+    override suspend fun updateClanNameAndTag(
+        clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): ClanNameAndTag.UpdateResult {
+        val preResult = preClanNameAndTagUpdate(clan, update)
+        if (preResult is PreClanNameAndTagUpdateResult.Failed) {
+            return preResult.result
+        }
+
+        require(preResult is PreClanNameAndTagUpdateResult.Success)
+
+        val finalName = preResult.finalName
+        val finalTag = preResult.finalTag
+
+        val updateResult = clanRpcService.updateClanNameAndTag(
+            clan.clanID,
+            finalName,
+            finalTag
+        )
+
+        if (updateResult.isSuccess) {
+            invalidateCachedClanByID(clan.clanID)
+            if (finalName != null) clan.name = finalName
+            if (finalTag != null) clan.tag = finalTag
+            callClanUpdatedListeners(clan)
+        }
+
+        return updateResult
+    }
+
+    private fun preClanNameAndTagUpdate(
+        clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): PreClanNameAndTagUpdateResult {
+        if (!update.hasUpdates()) {
+            return PreClanNameAndTagUpdateResult.Failed(ClanNameAndTag.UpdateResult.NothingChanged)
+        }
+
+        val updatedNameAndTag = ClanNameAndTag(clan.name, clan.tag).applyUpdate(update)
+        val normalizedName = normalizeName(updatedNameAndTag.name)
+
+        if (normalizedName == clan.name && updatedNameAndTag.tag == clan.tag) {
+            return PreClanNameAndTagUpdateResult.Failed(ClanNameAndTag.UpdateResult.NothingChanged)
+        }
+
+        val validationResult = validateClanNameAndTag(normalizedName, updatedNameAndTag.tag)
+        if (validationResult != ClanValidationResult.Valid) {
+            return PreClanNameAndTagUpdateResult.Failed(ClanNameAndTag.UpdateResult.ValidationFailed(validationResult))
+        }
+
+        val finalName = normalizedName.takeIf { it != clan.name }
+        val finalTag = normalizeNullableTag(update.changedTagOrNull())?.takeIf { it != clan.tag }
+
+        if (finalName == null && finalTag == null) {
+            return PreClanNameAndTagUpdateResult.Failed(ClanNameAndTag.UpdateResult.NothingChanged)
+        }
+
+        return PreClanNameAndTagUpdateResult.Success(finalName, finalTag)
+    }
+
+    sealed interface PreClanNameAndTagUpdateResult {
+        data class Failed(val result: ClanNameAndTag.UpdateResult) : PreClanNameAndTagUpdateResult
+        data class Success(val finalName: String?, val finalTag: String?) : PreClanNameAndTagUpdateResult
     }
 
     override suspend fun fetchPendingInvites(clan: AbstractClanView): Set<ClanInviteImpl> {
@@ -328,6 +452,7 @@ class ClientClanServiceImpl : CoreClanService {
         val id by indexOne(valueOf = { it.clanID })
         val tag by indexOne(normalize = { normalizeTag(it) }, valueOf = { it.tag })
         val uuid by indexOne(valueOf = { it.uuid })
+        val name by indexOne(normalize = { normalizeName(it) }, valueOf = { it.name })
         val members by index(valuesOf = { clan -> clan.members.map { it.uuid } })
     }
 
@@ -335,6 +460,8 @@ class ClientClanServiceImpl : CoreClanService {
         private val log = logger()
 
         fun get() = ClanService.INSTANCE as ClientClanServiceImpl
+        private fun normalizeName(name: String) = name.trim()
         private fun normalizeTag(tag: String) = tag.trim().uppercase()
+        private fun normalizeNullableTag(tag: String?) = tag?.let(::normalizeTag)
     }
 }

@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.microservice.rpc
 
 import dev.slne.clan.api.clan.ClanCreationResult
+import dev.slne.clan.api.clan.update.ClanNameAndTag
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.rpc.ClanRpcService
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
@@ -51,6 +52,10 @@ object ClanRpcServiceImpl : ClanRpcService {
         return ClanRepository.findClanByTag(tag)
     }
 
+    override suspend fun findClanByName(name: String): ClanImpl? {
+        return ClanRepository.findClanByName(name)
+    }
+
     override suspend fun findClanByClanUuid(clanUuid: UUID): ClanImpl? {
         return ClanRepository.findClanByUuid(clanUuid)
     }
@@ -82,5 +87,9 @@ object ClanRpcServiceImpl : ClanRpcService {
             tagBackgroundColor = tagBackgroundColor,
             tagShadowColor = tagShadowColor
         )
+    }
+
+    override suspend fun updateClanNameAndTag(clanID: ULong, name: String?, tag: String?): ClanNameAndTag.UpdateResult {
+        return ClanRepository.updateClanNameAndTag(clanID, name, tag)
     }
 }

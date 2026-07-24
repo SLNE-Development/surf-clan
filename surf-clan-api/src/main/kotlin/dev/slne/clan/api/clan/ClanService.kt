@@ -15,6 +15,7 @@ interface ClanService {
     suspend fun findClanByPlayer(playerUuid: UUID): Clan?
     suspend fun findClanByUuid(clanUuid: UUID): Clan?
     suspend fun findClanByTag(tag: String): Clan?
+    suspend fun findClanByName(name: String): Clan?
 
     fun validateClanNameAndTag(name: String, tag: String): ClanValidationResult
     suspend fun createClan(properties: ClanCreateBuilder): ClanCreationResult
