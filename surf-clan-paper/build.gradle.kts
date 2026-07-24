@@ -33,7 +33,3 @@ dependencies {
     compileOnly("dev.slne.surf.chat:surf-chat-api:+")
     compileOnly("dev.slne.surf.transaction:surf-transaction-api:4.+")
 }
-
-repositories {
-    slneReleases()
-}
