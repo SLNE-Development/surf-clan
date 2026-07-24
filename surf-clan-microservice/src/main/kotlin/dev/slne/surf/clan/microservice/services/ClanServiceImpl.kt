@@ -42,6 +42,10 @@ class ClanServiceImpl : CoreClanService {
         throw NotImplementedError()
     }
 
+    override suspend fun findClanByName(name: String): Clan? {
+        throw NotImplementedError()
+    }
+
     override suspend fun findClanByID(id: ULong): ClanImpl? {
         throw NotImplementedError()
     }
@@ -72,6 +76,13 @@ class ClanServiceImpl : CoreClanService {
 
     override suspend fun updateClanNameAndTag(
         clan: ClanImpl,
+        update: ClanNameAndTag.Update
+    ): ClanNameAndTag.UpdateResult {
+        throw NotImplementedError()
+    }
+
+    override suspend fun testClanNameAndTagUpdate(
+        impl: ClanImpl,
         update: ClanNameAndTag.Update
     ): ClanNameAndTag.UpdateResult {
         throw NotImplementedError()

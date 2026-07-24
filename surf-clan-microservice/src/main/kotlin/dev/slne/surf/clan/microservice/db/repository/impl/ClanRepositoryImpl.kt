@@ -66,6 +66,14 @@ class ClanRepositoryImpl : ClanRepository {
             .let(::createClanDAOOrNull)
     }
 
+    override suspend fun findClanByName(name: String): ClanImpl? = suspendTransaction {
+        joinClansWithMembers()
+            .selectAll()
+            .where { ClansTable.name eq name }
+            .toList()
+            .let(::createClanDAOOrNull)
+    }
+
     override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> =
         suspendTransaction {
             val memberCount = ClanMembersTable.id.count()

@@ -22,6 +22,7 @@ interface CoreClanService : ClanService {
     suspend fun updateDiscordInvite(clan: ClanImpl, discordInvite: String?): Boolean
     suspend fun updateTagColor(clan: ClanImpl, update: ClanTagColor.Update): Boolean
     suspend fun updateClanNameAndTag(clan: ClanImpl, update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult
+    suspend fun testClanNameAndTagUpdate(clan: ClanImpl, update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult
 
     suspend fun fetchPendingInvites(clan: AbstractClanView): Set<ClanInviteImpl>
     suspend fun invitePlayer(clan: ClanImpl, invitee: UUID, invitedBy: UUID): ClanInviteResult

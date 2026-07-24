@@ -52,6 +52,10 @@ object ClanRpcServiceImpl : ClanRpcService {
         return ClanRepository.findClanByTag(tag)
     }
 
+    override suspend fun findClanByName(name: String): ClanImpl? {
+        return ClanRepository.findClanByName(name)
+    }
+
     override suspend fun findClanByClanUuid(clanUuid: UUID): ClanImpl? {
         return ClanRepository.findClanByUuid(clanUuid)
     }

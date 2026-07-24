@@ -52,6 +52,11 @@ interface Clan : ClanView {
     suspend fun updateClanNameAndTag(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult
 
     /**
+     * Tests whether a proposed clan name and tag update would be valid without actually applying the changes.
+     */
+    suspend fun testClanNameAndTagUpdate(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult
+
+    /**
      * Retrieves all pending invitations sent by this clan.
      *
      * @return a set of mutable pending invitations, or an empty set if none exist
@@ -217,6 +222,14 @@ interface Clan : ClanView {
         suspend fun byTag(tag: String): Clan? = ClanService.findClanByTag(tag)
 
         /**
+         * Retrieves a clan by its name.
+         *
+         * @param name the clan name to search for
+         * @return the [Clan] if found, or `null` otherwise
+         */
+        suspend fun byName(name: String): Clan? = ClanService.findClanByName(name)
+
+        /**
          * Validates a clan name and tag against system rules.
          *
          * This should be called before attempting to create a clan to ensure the
@@ -284,3 +297,10 @@ suspend inline fun Clan.changeClanTagColor(
 suspend inline fun Clan.updateClanNameAndTag(
     update: ClanNameAndTag.Update.Builder.() -> Unit
 ) = updateClanNameAndTag(ClanNameAndTag.update(update))
+
+/**
+ * @see Clan.testClanNameAndTagUpdate
+ */
+suspend inline fun Clan.testClanNameAndTagUpdate(
+    update: ClanNameAndTag.Update.Builder.() -> Unit
+) = testClanNameAndTagUpdate(ClanNameAndTag.update(update))

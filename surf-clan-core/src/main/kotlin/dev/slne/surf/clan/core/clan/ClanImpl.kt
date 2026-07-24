@@ -45,6 +45,10 @@ data class ClanImpl(
         return CoreClanService.updateClanNameAndTag(this, update)
     }
 
+    override suspend fun testClanNameAndTagUpdate(update: ClanNameAndTag.Update): ClanNameAndTag.UpdateResult {
+        return CoreClanService.testClanNameAndTagUpdate(this, update)
+    }
+
     override suspend fun getPendingInvites(): Set<ClanInvite> {
         return CoreClanService.fetchPendingInvites(this)
     }

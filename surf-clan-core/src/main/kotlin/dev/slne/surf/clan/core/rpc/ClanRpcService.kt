@@ -28,6 +28,7 @@ interface ClanRpcService {
     suspend fun findClanById(clanID: ULong): ClanImpl?
     suspend fun findClanByMember(memberUuid: UUID): ClanImpl?
     suspend fun findClanByTag(tag: String): ClanImpl?
+    suspend fun findClanByName(name: String): ClanImpl?
     suspend fun findClanByClanUuid(clanUuid: UUID): ClanImpl?
     suspend fun findClanTagsByPrefix(prefix: String, limit: Int): List<String>
 

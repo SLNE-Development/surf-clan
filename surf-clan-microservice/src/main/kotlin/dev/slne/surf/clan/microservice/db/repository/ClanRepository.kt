@@ -15,6 +15,7 @@ interface ClanRepository {
     suspend fun findClanByUuid(clanUuid: UUID): ClanImpl?
     suspend fun findClanByTag(tag: String): ClanImpl?
     suspend fun findClanByID(id: ULong): ClanImpl?
+    suspend fun findClanByName(name: String): ClanImpl?
     suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl>
 
     suspend fun updateDescription(clanID: ULong, description: String?): Boolean

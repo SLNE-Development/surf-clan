@@ -9,7 +9,6 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.update.ClanNameAndTag
-import dev.slne.clan.api.clan.updateClanNameAndTag
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
@@ -44,7 +43,6 @@ fun CommandAPICommand.clanRenameCommand() = subcommand("rename") {
             throw CommandAPI.failWithString("Du hast keine Berechtigung, den Clan umzubenennen.")
         }
 
-        // TODO: Increase the price with every rename in the future
         player.showDialog(renameClanDialog(Clan.CLAN_RENAME_COST, clan.name, clan.tag))
     }
 }
@@ -133,8 +131,13 @@ private fun handleRename(
         return
     }
 
+    val nameUpdate = ClanNameAndTag.update {
+        if (nameChanged) name(newName)
+        if (tagChanged) tag(newTag)
+    }
+
     plugin.launch {
-        doRename(player, price, currentTag, currentName, newTag, newName, nameChanged, tagChanged)
+        doRename(player, price, currentTag, currentName, newTag, newName, nameChanged, tagChanged, nameUpdate)
     }
 }
 
@@ -146,7 +149,8 @@ private suspend fun doRename(
     newTag: String?,
     newName: String?,
     nameChanged: Boolean,
-    tagChanged: Boolean
+    tagChanged: Boolean,
+    nameUpdate: ClanNameAndTag.Update
 ) {
     val clan = Clan.byPlayer(player.uniqueId) ?: run {
         player.showDialog(
@@ -155,6 +159,12 @@ private suspend fun doRename(
                 text("Du bist nicht mehr in einem Clan.", Colors.INFO)
             )
         )
+        return
+    }
+
+    val testResult = clan.testClanNameAndTagUpdate(nameUpdate)
+    if (!testResult.isSuccess) {
+        player.showDialog(buildUpdateErrorDialog(testResult, newName, newTag))
         return
     }
 
@@ -169,11 +179,7 @@ private suspend fun doRename(
         ),
         rollbackOn = PendingRollbackPolicy.Always
     ) {
-        val updateResult = clan.updateClanNameAndTag {
-            if (nameChanged) name(newName!!)
-            if (tagChanged) tag(newTag!!)
-        }
-
+        val updateResult = clan.updateClanNameAndTag(nameUpdate)
         PendingExecutionDecision.from(updateResult) { it.isSuccess }
     }
 
