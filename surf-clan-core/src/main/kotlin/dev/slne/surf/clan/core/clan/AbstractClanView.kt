@@ -13,7 +13,7 @@ abstract class AbstractClanView : ClanView {
     abstract val clanID: ULong
 
     override val activeMemberCount: Int
-        get() = {
+        get() {
             val now = OffsetDateTime.now()
             return members.count { it.isActiveAt(now) }
         }
