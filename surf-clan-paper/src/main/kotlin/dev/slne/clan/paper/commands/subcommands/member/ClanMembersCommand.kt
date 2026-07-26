@@ -10,6 +10,7 @@ import dev.slne.clan.paper.commands.arguments.ClanByClanTagArgument
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaitingOrNull
 import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.Colors
 import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.pagination.Pagination
 import dev.slne.surf.api.core.service.PlayerLookupService
@@ -20,13 +21,22 @@ import dev.slne.surf.core.api.common.SurfCoreApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import net.kyori.adventure.text.format.TextDecoration
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
+
+private val LAST_ACTIVE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 data class ClanMemberData(
     val memberName: String,
     val role: ClanMemberRole,
-    val currentServer: String?
-)
+    val currentServer: String?,
+    val lastActiveAt: OffsetDateTime,
+    val isActive: Boolean
+) {
+    /** Online first, then active but offline, then inactive. */
+    val activityRank get() = if (currentServer != null) 0 else if (isActive) 1 else 2
+}
 
 private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
     val clanInformationHover = Components.Clan.renderClanInformationHover(clan)
@@ -54,6 +64,20 @@ private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
                             hoverEvent(buildText {
                                 success("Online auf ")
                                 variableValue(member.currentServer)
+                            })
+                        }
+                    } else if (!member.isActive) {
+                        append {
+                            darkSpacer("[")
+                            text("💤", Colors.GRAY)
+                            darkSpacer("]")
+                            appendSpace()
+                            text(member.memberName, Colors.GRAY)
+                            hoverEvent(buildText {
+                                info("Zuletzt online am ")
+                                variableValue(LAST_ACTIVE_FORMATTER.format(member.lastActiveAt))
+                                appendNewline()
+                                info("Zählt nicht als aktives Mitglied.")
                             })
                         }
                     } else {
@@ -91,7 +115,9 @@ fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
                         ClanMemberData(
                             name,
                             member.role,
-                            SurfCoreApi.getPlayer(member.uuid)?.currentServer?.displayName
+                            SurfCoreApi.getPlayer(member.uuid)?.currentServer?.displayName,
+                            member.lastActiveAt,
+                            member.isActive
                         )
                     )
                 }
@@ -102,7 +128,8 @@ fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
         player.sendMessage(
             pagination.renderComponent(
                 data.sortedWith(
-                    compareBy<ClanMemberData, String?>(nullsLast(reverseOrder())) { it.currentServer }
+                    compareBy<ClanMemberData> { it.activityRank }
+                        .thenBy(nullsLast(reverseOrder())) { it.currentServer }
                         .thenBy { it.memberName }
                         .thenBy { it.role.name }
                 )

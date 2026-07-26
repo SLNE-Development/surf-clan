@@ -41,8 +41,8 @@ fun CommandAPICommand.clanSetDiscordCommand() = subcommand("setdiscord") {
         if (isNullLink) {
             clan.setDiscordInvite(null)
         } else {
-            if (clan.members.size < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
-                throw CommandAPI.failWithString("Dein Clan muss mindestens ${Clan.DISCORD_LINK_REQUIRED_MEMBERS} Mitglieder haben, um den Discord-Link ändern zu können.")
+            if (clan.activeMemberCount < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
+                throw CommandAPI.failWithString("Dein Clan muss mindestens ${Clan.DISCORD_LINK_REQUIRED_MEMBERS} aktive Mitglieder haben, um den Discord-Link ändern zu können.")
             }
 
             if (!rawLink.matches(DISCORD_LINK_REGEX)) {
