@@ -12,8 +12,10 @@ import dev.slne.surf.api.core.command.args.awaitingOrNull
 import dev.slne.surf.api.core.font.toSmallCaps
 import dev.slne.surf.api.core.messages.Colors
 import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
 import dev.slne.surf.api.core.messages.pagination.Pagination
 import dev.slne.surf.api.core.service.PlayerLookupService
+import dev.slne.surf.api.core.util.dateTimeFormatter
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.components.Components
@@ -21,11 +23,9 @@ import dev.slne.surf.core.api.common.SurfCoreApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import net.kyori.adventure.text.format.TextDecoration
+import java.time.Duration
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
-
-private val LAST_ACTIVE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 data class ClanMemberData(
     val memberName: String,
@@ -38,8 +38,43 @@ data class ClanMemberData(
     val activityRank get() = if (currentServer != null) 0 else if (isActive) 1 else 2
 }
 
+/**
+ * Renders how long ago [timestamp] was, in the coarsest unit that still carries information:
+ * "Gerade eben", "Vor 5 Minuten", "Vor 3 Stunden", "Vor 12 Tagen".
+ *
+ * A [timestamp] that is not in the past — clock skew between servers, or the created_at fallback
+ * landing a moment ahead — falls through to "Gerade eben" rather than rendering a negative amount.
+ */
+private fun formatTimeAgo(timestamp: OffsetDateTime, now: OffsetDateTime): String {
+    val elapsed = Duration.between(timestamp, now)
+
+    val days = elapsed.toDays()
+    if (days > 0) return "Vor $days ${if (days == 1L) "Tag" else "Tagen"}"
+
+    val hours = elapsed.toHours()
+    if (hours > 0) return "Vor $hours ${if (hours == 1L) "Stunde" else "Stunden"}"
+
+    val minutes = elapsed.toMinutes()
+    if (minutes > 0) return "Vor $minutes ${if (minutes == 1L) "Minute" else "Minuten"}"
+
+    return "Gerade eben"
+}
+
+/** Appends "Zuletzt online: Vor 3 Stunden (10.02.2026 19:30 Uhr)" to a hover. */
+private fun SurfComponentBuilder.appendLastSeen(
+    lastActiveAt: OffsetDateTime,
+    now: OffsetDateTime
+) {
+    info("Zuletzt online: ")
+    variableValue(formatTimeAgo(lastActiveAt, now))
+    spacer(" (")
+    variableValue("${dateTimeFormatter.format(lastActiveAt)} Uhr")
+    spacer(")")
+}
+
 private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
     val clanInformationHover = Components.Clan.renderClanInformationHover(clan)
+    val now = OffsetDateTime.now()
 
     return Pagination {
         title {
@@ -66,22 +101,21 @@ private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
                                 variableValue(member.currentServer)
                             })
                         }
-                    } else if (!member.isActive) {
+                    } else {
                         append {
-                            darkSpacer("[")
-                            text("💤", Colors.GRAY)
-                            darkSpacer("]")
-                            appendSpace()
-                            text(member.memberName, Colors.GRAY)
+                            if (member.isActive) {
+                                white(member.memberName)
+                            } else {
+                                darkSpacer("[")
+                                text("💤", Colors.GRAY)
+                                darkSpacer("]")
+                                appendSpace()
+                                text(member.memberName, Colors.GRAY)
+                            }
                             hoverEvent(buildText {
-                                info("Zuletzt online am ")
-                                variableValue(LAST_ACTIVE_FORMATTER.format(member.lastActiveAt))
-                                appendNewline()
-                                info("Zählt nicht als aktives Mitglied.")
+                                appendLastSeen(member.lastActiveAt, now)
                             })
                         }
-                    } else {
-                        white(member.memberName)
                     }
                     appendSpace()
                     spacer("(")
