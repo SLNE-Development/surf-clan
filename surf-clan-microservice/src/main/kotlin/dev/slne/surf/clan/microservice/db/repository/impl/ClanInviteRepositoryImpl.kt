@@ -14,7 +14,6 @@ import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.eq
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.inSubQuery
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
-import dev.slne.surf.database.utils.asDataIntegrityViolation
 import kotlinx.coroutines.flow.*
 import java.util.*
 
@@ -68,18 +67,17 @@ class ClanInviteRepositoryImpl : ClanInviteRepository {
 
         if (!invitesEnabled) return@suspendTransaction ClanInviteResult.InvitationsDisabled
 
-        try {
-            val row = ClanInvitesTable.insertReturning {
-                it[this.invited] = invitee
-                it[this.invitedBy] = invitedBy
-                it[this.clanId] = clanID
-            }.single()
+        // ON CONFLICT DO NOTHING rather than catching the constraint violation: PostgreSQL aborts the
+        // whole transaction on a failed statement, so catching one and returning normally makes the
+        // following COMMIT fail with PostgresqlRollbackException. No row back means the unique index
+        // on (invited, clan_id) already had one.
+        val row = ClanInvitesTable.insertReturning(ignoreErrors = true) {
+            it[this.invited] = invitee
+            it[this.invitedBy] = invitedBy
+            it[this.clanId] = clanID
+        }.singleOrNull() ?: return@suspendTransaction ClanInviteResult.AlreadyInvited
 
-            ClanInviteResult.Success(createClanInviteDAO(row))
-        } catch (e: ExposedR2dbcException) {
-            e.asDataIntegrityViolation()
-            ClanInviteResult.AlreadyInvited
-        }
+        ClanInviteResult.Success(createClanInviteDAO(row))
     }
 
     override suspend fun deleteInvite(clanID: ULong, invitee: UUID): Boolean = suspendTransaction {
