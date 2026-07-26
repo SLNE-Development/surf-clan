@@ -9,10 +9,12 @@ import dev.slne.clan.api.member.ClanMemberRole
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.jetbrains.annotations.ApiStatus
+import java.time.Duration
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.time.Duration.Companion.days
 
 /**
  * Represents a mutable clan with the ability to perform administrative actions.
@@ -142,6 +144,15 @@ interface Clan : ClanView {
          * The minimum number of members required before a Discord link can be set.
          */
         const val DISCORD_LINK_REQUIRED_MEMBERS = 30
+
+        /**
+         * A member counts as inactive once it has not been online anywhere on the network for
+         * longer than this.
+         *
+         * Must stay in sync with the threshold used by surf-web, which derives the same
+         * distinction from `"surf-core".surf_players.last_seen`.
+         */
+        val INACTIVE_AFTER = 90.days
 
         /**
          * The minimum allowed length for a clan name.

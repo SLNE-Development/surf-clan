@@ -6,9 +6,11 @@ import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanMemberRepository
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
+import dev.slne.surf.clan.microservice.db.table.SurfPlayersTable
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.ResultRow
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.and
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.eq
+import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.leftJoin
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import kotlinx.coroutines.flow.single
@@ -53,7 +55,9 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
     }
 
     override suspend fun findByUuid(uuid: UUID): ClanMemberImpl? = suspendTransaction {
-        ClanMembersTable.selectAll()
+        ClanMembersTable
+            .leftJoin(SurfPlayersTable, { ClanMembersTable.uuid }, { SurfPlayersTable.uuid })
+            .selectAll()
             .where { ClanMembersTable.uuid eq uuid }
             .limit(1)
             .singleOrNull()
@@ -61,13 +65,19 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
     }
 
     companion object {
-        fun createMemberDAO(row: ResultRow): ClanMemberImpl = ClanMemberImpl(
-            ID = row[ClanMembersTable.id].value,
-            uuid = row[ClanMembersTable.uuid],
-            role = row[ClanMembersTable.role],
-            addedBy = row[ClanMembersTable.addedBy],
-            createdAt = row[ClanMembersTable.createdAt],
-            updatedAt = row[ClanMembersTable.updatedAt]
-        )
+        fun createMemberDAO(row: ResultRow): ClanMemberImpl {
+            val createdAt = row[ClanMembersTable.createdAt]
+            val lastSeen = row.getOrNull(SurfPlayersTable.lastSeen)
+
+            return ClanMemberImpl(
+                ID = row[ClanMembersTable.id].value,
+                uuid = row[ClanMembersTable.uuid],
+                role = row[ClanMembersTable.role],
+                addedBy = row[ClanMembersTable.addedBy],
+                createdAt = createdAt,
+                updatedAt = row[ClanMembersTable.updatedAt],
+                lastActiveAt = lastSeen ?: createdAt
+            )
+        }
     }
 }

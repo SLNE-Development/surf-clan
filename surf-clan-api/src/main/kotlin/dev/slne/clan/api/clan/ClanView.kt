@@ -60,6 +60,14 @@ interface ClanView {
     val members: Set<ClanMemberView>
 
     /**
+     * The number of members that were online within [Clan.INACTIVE_AFTER].
+     *
+     * This is what all member thresholds count, so that inviting players who never play again does
+     * not unlock anything.
+     */
+    val activeMemberCount: Int
+
+    /**
      * The timestamp when this clan was last updated.
      */
     val updatedAt: OffsetDateTime
@@ -116,12 +124,12 @@ interface ClanView {
      *
      * This method returns the formatted clan tag only if the clan meets certain criteria:
      * - The tag must not be blank
-     * - The clan must have at least [minSize] members, OR the tag must be whitelisted
+     * - The clan must have at least [minSize] *active* members, OR the tag must be whitelisted
      *
      * If these conditions are not met, an empty component is returned. This is typically used
      * to prevent small or new clans from displaying tags until they reach a certain size.
      *
-     * @param minSize the minimum number of members required for the tag to be displayed (default: 0)
+     * @param minSize the minimum number of active members required for the tag to be displayed (default: 0)
      * @return the formatted clan tag component if criteria are met, otherwise an empty component
      */
     fun renderClanTag(minSize: Int = 0): Component

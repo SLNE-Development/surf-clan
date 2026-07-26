@@ -1,7 +1,9 @@
 package dev.slne.clan.api.member
 
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import org.jetbrains.annotations.ApiStatus
+import java.time.OffsetDateTime
 import java.util.*
 
 /**
@@ -32,6 +34,31 @@ interface ClanMemberView {
      * Returns `null` if the member is the clan founder or if the information is not available.
      */
     val addedBy: UUID?
+
+    /**
+     * When this member was last online anywhere on the network.
+     *
+     * Falls back to the date the member joined the clan when the network has no record of them,
+     * so this is never `null`.
+     */
+    val lastActiveAt: OffsetDateTime
+
+    /**
+     * Whether this member was online within [Clan.INACTIVE_AFTER].
+     */
+    val isActive: Boolean get() = isActiveAt(OffsetDateTime.now())
+
+    /**
+     * Whether this member was online within [Clan.INACTIVE_AFTER] as measured from [now].
+     *
+     * Callers that classify several members at once should pass a single [now], so that the result is
+     * one consistent snapshot instead of each member asking the clock separately.
+     *
+     * The comparison is inclusive to match the microservice, which orders clans by
+     * `coalesce(last_seen, created_at) >= cutoff` — the same rule must not use two different
+     * operators on the two sides.
+     */
+    fun isActiveAt(now: OffsetDateTime): Boolean
 
     /**
      * Checks whether this member has the specified permission based on their role.

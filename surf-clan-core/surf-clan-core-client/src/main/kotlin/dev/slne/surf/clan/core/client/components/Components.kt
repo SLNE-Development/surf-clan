@@ -63,7 +63,10 @@ object Components {
             }
 
             appendNewline {
-                appendLine("Mitglieder".toSmallCaps(), clan.members.size)
+                appendLine(
+                    "Mitglieder".toSmallCaps(),
+                    "${clan.activeMemberCount} aktiv / ${clan.members.size} gesamt"
+                )
             }
 
             appendNewline {
@@ -74,7 +77,7 @@ object Components {
                 appendLine("Erstellt am".toSmallCaps(), DATE_TIME_FORMATTER.format(clan.createdAt))
             }
 
-            if (clan.members.size >= DISCORD_LINK_REQUIRED_MEMBERS) {
+            if (clan.activeMemberCount >= DISCORD_LINK_REQUIRED_MEMBERS) {
                 appendNewline {
                     appendLine(
                         "Discord",
