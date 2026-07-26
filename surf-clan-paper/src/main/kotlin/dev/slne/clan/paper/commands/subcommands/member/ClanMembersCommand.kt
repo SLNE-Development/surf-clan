@@ -166,11 +166,11 @@ fun CommandAPICommand.clanMembersCommand() = subcommand("members") {
         val pagination = pagination(clan as ClanImpl)
         player.sendMessage(
             pagination.renderComponent(
+                // Aktivitätsstatus -> Clanrang -> Alphabet
                 data.sortedWith(
                     compareBy<ClanMemberData> { it.activityRank }
-                        .thenBy(nullsLast(reverseOrder())) { it.currentServer }
-                        .thenBy { it.memberName }
-                        .thenBy { it.role.name }
+                        .thenByDescending { it.role }
+                        .thenBy(String.CASE_INSENSITIVE_ORDER) { it.memberName }
                 )
             )
         )
