@@ -20,6 +20,7 @@ surfPaperPluginApi {
     serverDependencies {
         registerSoft("MiniPlaceholders")
         registerSoft("surf-chat-paper")
+        registerSoft("LuckPerms")
     }
 
     authors.addAll(listOf("twisti"))
