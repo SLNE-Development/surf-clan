@@ -103,15 +103,20 @@ private suspend fun pagination(clan: ClanImpl): Pagination<ClanMemberData> {
                         }
                     } else {
                         append {
+                            darkSpacer("[")
                             if (member.isActive) {
-                                white(member.memberName)
+                                text("🌎", Colors.GRAY)
                             } else {
-                                darkSpacer("[")
-                                text("💤", Colors.GRAY)
-                                darkSpacer("]")
-                                appendSpace()
-                                text(member.memberName, Colors.GRAY)
+                                // Two codepoints, so the trailing z can fade into a lighter blue.
+                                text("𝗓", Colors.PRIMARY)
+                                text("ᶻ", Colors.INFO)
                             }
+                            darkSpacer("]")
+                            appendSpace()
+                            text(
+                                member.memberName,
+                                if (member.isActive) Colors.WHITE else Colors.GRAY
+                            )
                             hoverEvent(buildText {
                                 appendLastSeen(member.lastActiveAt, now)
                             })
