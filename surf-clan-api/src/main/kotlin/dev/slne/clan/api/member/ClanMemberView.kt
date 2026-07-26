@@ -46,8 +46,20 @@ interface ClanMemberView {
     /**
      * Whether this member was online within [Clan.INACTIVE_AFTER].
      */
-    val isActive: Boolean
-        get() = lastActiveAt.isAfter(OffsetDateTime.now().minus(Clan.INACTIVE_AFTER))
+    val isActive: Boolean get() = isActiveAt(OffsetDateTime.now())
+
+    /**
+     * Whether this member was online within [Clan.INACTIVE_AFTER] as measured from [now].
+     *
+     * Callers that classify several members at once should pass a single [now], so that the result is
+     * one consistent snapshot instead of each member asking the clock separately.
+     *
+     * The comparison is inclusive to match the microservice, which orders clans by
+     * `coalesce(last_seen, created_at) >= cutoff` — the same rule must not use two different
+     * operators on the two sides.
+     */
+    fun isActiveAt(now: OffsetDateTime): Boolean =
+        !lastActiveAt.isBefore(now.minus(Clan.INACTIVE_AFTER))
 
     /**
      * Checks whether this member has the specified permission based on their role.

@@ -65,7 +65,11 @@ interface ClanView {
      * This is what all member thresholds count, so that inviting players who never play again does
      * not unlock anything.
      */
-    val activeMemberCount: Int get() = members.count { it.isActive }
+    val activeMemberCount: Int
+        get() {
+            val now = OffsetDateTime.now()
+            return members.count { it.isActiveAt(now) }
+        }
 
     /**
      * The timestamp when this clan was last updated.
