@@ -99,9 +99,18 @@ data class ClanTagColor(
             }
 
         return copy(
-            foregroundColor = update.foreground.resolve(foregroundColor, foregroundColor),
-            backgroundColor = update.background.resolve(backgroundColor, backgroundColor),
-            shadowColor = update.shadow.resolve(shadowColor, shadowColor),
+            foregroundColor = update.foreground.resolve(
+                foregroundColor,
+                Clan.DEFAULT_CLAN_TAG_FOREGROUND_COLOR
+            ),
+            backgroundColor = update.background.resolve(
+                backgroundColor,
+                Clan.DEFAULT_CLAN_TAG_BACKGROUND_COLOR
+            ),
+            shadowColor = update.shadow.resolve(
+                shadowColor,
+                Clan.DEFAULT_CLAN_TAG_SHADOW_COLOR
+            ),
         )
     }
 }

@@ -19,6 +19,7 @@ class PaperMain : SuspendingJavaPlugin() {
     }
 
     fun checkSurfChat() = pluginManager.isPluginEnabled("surf-chat-paper")
+    fun checkLuckPerms() = pluginManager.isPluginEnabled("LuckPerms")
 }
 
 val plugin get() = JavaPlugin.getPlugin(PaperMain::class.java)
