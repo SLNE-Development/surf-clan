@@ -42,7 +42,7 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
     }
 
     override suspend fun deleteMember(clanID: ULong, player: UUID): Boolean = suspendTransaction {
-        ClanMembersTable.deleteWhere(limit = 1) {
+        ClanMembersTable.deleteWhere {
             ClanMembersTable.clanId eq clanID and (ClanMembersTable.uuid eq player)
         } > 0
     }
