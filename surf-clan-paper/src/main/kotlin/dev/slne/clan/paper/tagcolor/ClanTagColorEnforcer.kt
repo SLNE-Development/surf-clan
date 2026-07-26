@@ -20,39 +20,38 @@ object ClanTagColorEnforcer {
         .build<UUID, Boolean>()
 
     suspend fun enforceForClanOf(playerUuid: UUID) {
-        val clan = Clan.byPlayer(playerUuid) ?: return
-        enforce(clan)
-    }
-
-    suspend fun enforce(clan: Clan) {
-        if (recentlyChecked.getIfPresent(clan.uuid) != null) return
-        recentlyChecked.put(clan.uuid, true)
-
         try {
-            val current = clan.getClanTagColorOrDefault()
-            if (current == Clan.DEFAULT_CLAN_TAG_COLORS) return
-
-            val owner = clan.members.find { member -> member.role == ClanMemberRole.OWNER }
-            if (owner == null) {
-                log.atWarning().log("Clan %s has no owner, skipping tag color check", clan.tag)
-                return
-            }
-
-            val resets = ClanTagColorPolicy.resetsFor(current, grantsOf(owner.uuid))
-            if (!resets.any) return
-
-            clan.changeClanTagColor(resets.toUpdate())
-
-            log.atInfo().log(
-                "Reset tag color of clan %s because its owner lacks the required permissions: %s",
-                clan.tag,
-                resets
-            )
+            val clan = Clan.byPlayer(playerUuid) ?: return
+            enforce(clan)
         } catch (e: Throwable) {
             log.atWarning()
                 .withCause(e)
-                .log("Failed to check the tag color of clan %s", clan.tag)
+                .log("Failed to check the clan tag color for player %s", playerUuid)
         }
+    }
+
+    private suspend fun enforce(clan: Clan) {
+        if (recentlyChecked.asMap().putIfAbsent(clan.uuid, true) != null) return
+
+        val current = clan.getClanTagColorOrDefault()
+        if (current == Clan.DEFAULT_CLAN_TAG_COLORS) return
+
+        val owner = clan.members.find { member -> member.role == ClanMemberRole.OWNER }
+        if (owner == null) {
+            log.atWarning().log("Clan %s has no owner, skipping tag color check", clan.tag)
+            return
+        }
+
+        val resets = ClanTagColorPolicy.resetsFor(current, grantsOf(owner.uuid))
+        if (!resets.any) return
+
+        clan.changeClanTagColor(resets.toUpdate())
+
+        log.atInfo().log(
+            "Reset tag color of clan %s because its owner lacks the required permissions: %s",
+            clan.tag,
+            resets
+        )
     }
 
     private suspend fun grantsOf(ownerUuid: UUID): ClanTagColorGrants {
