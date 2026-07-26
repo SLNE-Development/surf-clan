@@ -30,7 +30,7 @@ class ClanPlayerRepositoryImpl : ClanPlayerRepository {
         playerID: ULong,
         acceptsClanInvites: Boolean
     ): Boolean = suspendTransaction {
-        ClanPlayerTable.update {
+        ClanPlayerTable.update({ ClanPlayerTable.id eq playerID }) {
             it[this.acceptsClanInvites] = acceptsClanInvites
         } > 0
     }
