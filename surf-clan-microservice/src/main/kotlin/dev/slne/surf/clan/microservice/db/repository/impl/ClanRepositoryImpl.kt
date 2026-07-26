@@ -15,7 +15,6 @@ import dev.slne.surf.clan.microservice.db.table.SurfPlayersTable
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
-import dev.slne.surf.database.utils.asDataIntegrityViolation
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
@@ -137,30 +136,46 @@ class ClanRepositoryImpl : ClanRepository {
             return@suspendTransaction ClanCreationResult.OwnerIsAlreadyInClan
         }
 
-        val clanRow = try {
-            ClansTable.insertReturning { smt ->
-                smt[this.name] = name
-                smt[this.tag] = tag
-                smt[this.createdBy] = owner
-                tagForegroundColor?.let { smt[this.tagForegroundColor] = it }
-                tagBackgroundColor?.let { smt[this.tagBackgroundColor] = it }
-                tagShadowColor?.let { smt[this.tagShadowColor] = it }
-                description?.let { smt[this.description] = it }
-                discordInvite?.let { smt[this.discordInvite] = it }
-            }.single()
-        } catch (e: ExposedR2dbcException) {
-            val e = e.asDataIntegrityViolation()
-            val msg = e.message ?: throw e
-            return@suspendTransaction when {
-                ClansTable.TAG_UQ_INDEX_NAME in msg -> ClanCreationResult.ClanTagAlreadyExists
-                ClansTable.NAME_UQ_INDEX_NAME in msg -> ClanCreationResult.ClanNameAlreadyExists
-                else -> {
-                    log.atWarning()
-                        .withCause(e)
-                        .log("Failed to create clan due to data integrity violation")
-                    ClanCreationResult.ClanAlreadyExists
-                }
-            }
+        // Name and tag are checked up front because the caller needs to know which of the two
+        // collided, and ON CONFLICT DO NOTHING cannot tell them apart.
+        val nameTaken = ClansTable
+            .select(ClansTable.id)
+            .where { ClansTable.name eq name }
+            .limit(1)
+            .singleOrNull() != null
+
+        if (nameTaken) {
+            return@suspendTransaction ClanCreationResult.ClanNameAlreadyExists
+        }
+
+        val tagTaken = ClansTable
+            .select(ClansTable.id)
+            .where { ClansTable.tag eq tag }
+            .limit(1)
+            .singleOrNull() != null
+
+        if (tagTaken) {
+            return@suspendTransaction ClanCreationResult.ClanTagAlreadyExists
+        }
+
+        // The checks above leave a window for two concurrent creations, so still insert with
+        // ON CONFLICT DO NOTHING. Catching the violation instead is not an option: PostgreSQL aborts
+        // the whole transaction on a failed statement, and the following COMMIT would then fail with
+        // PostgresqlRollbackException. Losing the name/tag distinction in that rare race is the
+        // acceptable trade.
+        val clanRow = ClansTable.insertReturning(ignoreErrors = true) { smt ->
+            smt[this.name] = name
+            smt[this.tag] = tag
+            smt[this.createdBy] = owner
+            tagForegroundColor?.let { smt[this.tagForegroundColor] = it }
+            tagBackgroundColor?.let { smt[this.tagBackgroundColor] = it }
+            tagShadowColor?.let { smt[this.tagShadowColor] = it }
+            description?.let { smt[this.description] = it }
+            discordInvite?.let { smt[this.discordInvite] = it }
+        }.singleOrNull() ?: run {
+            log.atWarning()
+                .log("Clan %s (%s) lost a concurrent creation race for its name or tag", name, tag)
+            return@suspendTransaction ClanCreationResult.ClanAlreadyExists
         }
 
         val ownerRow = ClanMembersTable.insertReturning {
