@@ -14,7 +14,8 @@ data class ClanMemberImpl(
     override var role: ClanMemberRole,
     override val addedBy: SerializableStringUUID?,
     val createdAt: SerializableOffsetDateTime = OffsetDateTime.now(),
-    val updatedAt: SerializableOffsetDateTime? = OffsetDateTime.now()
+    val updatedAt: SerializableOffsetDateTime? = OffsetDateTime.now(),
+    override val lastActiveAt: SerializableOffsetDateTime = OffsetDateTime.now()
 ) : AbstractClanMemberView(), ClanMember {
     override suspend fun changeRole(role: ClanMemberRole): Boolean {
         return CoreClanMemberService.Companion.changeRole(this, role)
@@ -23,6 +24,7 @@ data class ClanMemberImpl(
     override fun view() = ClanMemberViewImpl(
         uuid = uuid,
         role = role,
-        addedBy = addedBy
+        addedBy = addedBy,
+        lastActiveAt = lastActiveAt
     )
 }

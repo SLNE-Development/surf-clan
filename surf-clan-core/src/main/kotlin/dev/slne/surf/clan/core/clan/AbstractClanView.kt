@@ -31,7 +31,9 @@ abstract class AbstractClanView : ClanView {
 
     override fun renderClanTag(minSize: Int): Component {
         if (tag.isBlank()) return Component.empty()
-        if (members.size < minSize && tag !in ClanConfig.getConfig().whitelistedTags) return Component.empty()
+        if (activeMemberCount < minSize && tag !in ClanConfig.getConfig().whitelistedTags) {
+            return Component.empty()
+        }
 
         return getRichClanTag()
     }
