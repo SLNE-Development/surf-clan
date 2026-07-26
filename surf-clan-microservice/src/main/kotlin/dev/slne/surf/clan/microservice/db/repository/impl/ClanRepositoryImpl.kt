@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.microservice.db.repository.impl
 
 import com.google.auto.service.AutoService
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
@@ -10,6 +11,7 @@ import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClansTable
+import dev.slne.surf.clan.microservice.db.table.SurfPlayersTable
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.core.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.*
 import dev.slne.surf.database.libs.org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
+import java.time.OffsetDateTime
 import java.util.*
 
 @AutoService(ClanRepository::class)
@@ -28,6 +31,7 @@ class ClanRepositoryImpl : ClanRepository {
 
     private fun joinClansWithMembers() = ClansTable
         .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
+        .leftJoin(SurfPlayersTable, { ClanMembersTable.uuid }, { SurfPlayersTable.uuid })
 
     override suspend fun findClanByPlayer(playerUuid: UUID): ClanImpl? = suspendTransaction {
         val clanIDSubQuery = ClanMembersTable
@@ -67,13 +71,19 @@ class ClanRepositoryImpl : ClanRepository {
 
     override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> =
         suspendTransaction {
-            val memberCount = ClanMembersTable.id.count()
+            val cutoff = OffsetDateTime.now().minus(Clan.INACTIVE_AFTER)
+            val lastActiveAt = Coalesce(SurfPlayersTable.lastSeen, ClanMembersTable.createdAt)
+            val activeMemberCount = Sum(
+                Case()
+                    .When(lastActiveAt greaterEq cutoff, intLiteral(1))
+                    .Else(intLiteral(0)),
+                IntegerColumnType()
+            )
 
-            ClansTable
-                .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
-                .select(ClansTable.columns + memberCount)
+            joinClansWithMembers()
+                .select(ClansTable.columns + activeMemberCount)
                 .groupBy(ClansTable.id)
-                .orderBy(memberCount, SortOrder.DESC)
+                .orderBy(activeMemberCount, SortOrder.DESC)
                 .map { row ->
                     createClanDAO(row, emptySet())
                 }
