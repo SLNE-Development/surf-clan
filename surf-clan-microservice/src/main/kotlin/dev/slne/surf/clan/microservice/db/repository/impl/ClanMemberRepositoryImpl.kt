@@ -69,14 +69,7 @@ class ClanMemberRepositoryImpl : ClanMemberRepository {
     companion object {
         fun createMemberDAO(row: ResultRow): ClanMemberImpl {
             val createdAt = row[ClanMembersTable.createdAt]
-
-            // The insert path in createMember has no join, so the column is not merely null there -
-            // it is absent from the row. hasValue tells those two cases apart.
-            val lastSeen = if (row.hasValue(SurfPlayersTable.lastSeen)) {
-                row[SurfPlayersTable.lastSeen]
-            } else {
-                null
-            }
+            val lastSeen = row.getOrNull(SurfPlayersTable.lastSeen)
 
             return ClanMemberImpl(
                 ID = row[ClanMembersTable.id].value,

@@ -14,6 +14,7 @@ import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.time.Duration.Companion.days
 
 /**
  * Represents a mutable clan with the ability to perform administrative actions.
@@ -151,7 +152,7 @@ interface Clan : ClanView {
          * Must stay in sync with the threshold used by surf-web, which derives the same
          * distinction from `"surf-core".surf_players.last_seen`.
          */
-        val INACTIVE_AFTER: Duration = Duration.ofDays(90)
+        val INACTIVE_AFTER = 90.days
 
         /**
          * The minimum allowed length for a clan name.

@@ -58,8 +58,7 @@ interface ClanMemberView {
      * `coalesce(last_seen, created_at) >= cutoff` — the same rule must not use two different
      * operators on the two sides.
      */
-    fun isActiveAt(now: OffsetDateTime): Boolean =
-        !lastActiveAt.isBefore(now.minus(Clan.INACTIVE_AFTER))
+    fun isActiveAt(now: OffsetDateTime): Boolean
 
     /**
      * Checks whether this member has the specified permission based on their role.

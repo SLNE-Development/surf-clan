@@ -71,7 +71,7 @@ class ClanRepositoryImpl : ClanRepository {
 
     override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> =
         suspendTransaction {
-            val cutoff = OffsetDateTime.now().minus(Clan.INACTIVE_AFTER)
+            val cutoff = OffsetDateTime.now().minusSeconds(Clan.INACTIVE_AFTER.inWholeSeconds)
             val lastActiveAt = Coalesce(SurfPlayersTable.lastSeen, ClanMembersTable.createdAt)
             val activeMemberCount = Sum(
                 Case()

@@ -66,10 +66,6 @@ interface ClanView {
      * not unlock anything.
      */
     val activeMemberCount: Int
-        get() {
-            val now = OffsetDateTime.now()
-            return members.count { it.isActiveAt(now) }
-        }
 
     /**
      * The timestamp when this clan was last updated.
