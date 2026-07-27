@@ -7,7 +7,7 @@ plugins {
 
 surfCoreApi {
     withSurfRedis()
-    withSurfDatabaseR2dbc("2.3.1", "dev.slne.surf.clan.libs.db")
+    withSurfDatabaseR2dbc("2.3.2", "dev.slne.surf.clan.libs.db")
 }
 
 surfMicroservice {
