@@ -335,6 +335,6 @@ class ClientClanServiceImpl : CoreClanService {
         private val log = logger()
 
         fun get() = ClanService.INSTANCE as ClientClanServiceImpl
-        private fun normalizeTag(tag: String) = tag.trim().uppercase()
+        private fun normalizeTag(tag: String) = ClanTagRules.normalize(tag)
     }
 }

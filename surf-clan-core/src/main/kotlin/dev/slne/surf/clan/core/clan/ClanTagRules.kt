@@ -8,8 +8,17 @@ object ClanTagRules {
         .flatMap { it.tags }
         .mapTo(mutableObjectSetOf()) { it.uppercase() }
 
+    /**
+     * Brings [tag] into the canonical form clan tags are stored and compared in.
+     *
+     * Tags are uppercase by definition, but rows created before that invariant existed still hold
+     * mixed case. Every read and every write has to pass through here, otherwise a normalized lookup
+     * misses a denormalized row and the clan becomes unreachable by its tag.
+     */
+    fun normalize(tag: String): String = tag.trim().uppercase()
+
     fun isValid(tag: String): Boolean =
-        tag.uppercase() !in prohibitedTags
+        normalize(tag) !in prohibitedTags
 
     enum class ProhibitedCategory(val tags: Set<String>) {
         NAZISM(

@@ -7,6 +7,7 @@ import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.clan.ClanTagRules
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
@@ -55,7 +56,7 @@ class ClanRepositoryImpl : ClanRepository {
     override suspend fun findClanByTag(tag: String): ClanImpl? = suspendTransaction {
         joinClansWithMembers()
             .selectAll()
-            .where { ClansTable.tag eq tag }
+            .where { ClansTable.tag.upperCase() eq ClanTagRules.normalize(tag) }
             .toList()
             .let(::createClanDAOOrNull)
     }
@@ -150,7 +151,7 @@ class ClanRepositoryImpl : ClanRepository {
 
         val tagTaken = ClansTable
             .select(ClansTable.id)
-            .where { ClansTable.tag eq tag }
+            .where { ClansTable.tag.upperCase() eq ClanTagRules.normalize(tag) }
             .limit(1)
             .singleOrNull() != null
 
@@ -199,13 +200,18 @@ class ClanRepositoryImpl : ClanRepository {
     override suspend fun suggestTagsByPrefix(prefix: String, limit: Int): List<String> {
         if (prefix.isBlank()) return emptyList()
 
+        val normalizedPrefix = ClanTagRules.normalize(prefix)
+        val tagUpperCase = ClansTable.tag.upperCase()
+
         return suspendTransaction {
             ClansTable
                 .select(ClansTable.tag)
-                .where { ClansTable.tag like "$prefix%" }
-                .orderBy(ClansTable.tag)
+                .where { tagUpperCase like "$normalizedPrefix%" }
+                .orderBy(tagUpperCase)
                 .limit(limit)
-                .map { it[ClansTable.tag] }
+                // Callers match suggestions against a normalized input, so a legacy mixed-case tag
+                // has to be reported uppercase or it never survives their prefix filter.
+                .map { ClanTagRules.normalize(it[ClansTable.tag]) }
                 .toList()
         }
     }
