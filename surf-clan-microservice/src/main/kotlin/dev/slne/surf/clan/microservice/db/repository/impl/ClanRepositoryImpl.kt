@@ -32,6 +32,26 @@ class ClanRepositoryImpl : ClanRepository {
         .leftJoin(ClanMembersTable, { ClansTable.id }, { ClanMembersTable.clanId })
         .leftJoin(SurfPlayersTable, { ClanMembersTable.uuid }, { SurfPlayersTable.uuid })
 
+    /**
+     * When a member was last online anywhere on the network, falling back to the day it joined the
+     * clan when surf-core has no record of it.
+     *
+     * Shared by the `/clan list` sort order and the inactive-clan cleanup, so that both decide
+     * activity by exactly one rule. The spec for member activity warns explicitly against letting
+     * the two sides drift apart.
+     */
+    private fun lastActiveAtExpression() =
+        Coalesce(SurfPlayersTable.lastSeen, ClanMembersTable.createdAt)
+
+    /**
+     * A member counts as active when its last activity is at or after this instant.
+     *
+     * Read once per query so that every row of that query is classified against the same moment
+     * instead of each row asking the clock separately.
+     */
+    private fun inactivityCutoff(): OffsetDateTime =
+        OffsetDateTime.now().minusSeconds(Clan.INACTIVE_AFTER.inWholeSeconds)
+
     override suspend fun findClanByPlayer(playerUuid: UUID): ClanImpl? = suspendTransaction {
         val clanIDSubQuery = ClanMembersTable
             .select(ClanMembersTable.clanId)
@@ -70,8 +90,8 @@ class ClanRepositoryImpl : ClanRepository {
 
     override suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl> =
         suspendTransaction {
-            val cutoff = OffsetDateTime.now().minusSeconds(Clan.INACTIVE_AFTER.inWholeSeconds)
-            val lastActiveAt = Coalesce(SurfPlayersTable.lastSeen, ClanMembersTable.createdAt)
+            val cutoff = inactivityCutoff()
+            val lastActiveAt = lastActiveAtExpression()
             val activeMemberCount = Sum(
                 Case()
                     .When(lastActiveAt greaterEq cutoff, intLiteral(1))
