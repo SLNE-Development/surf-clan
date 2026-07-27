@@ -134,6 +134,30 @@ class ClanRepositoryImpl : ClanRepository {
             .toList()
     }
 
+    override suspend fun deleteClansStillDeletable(clanIDs: Collection<ULong>): Int =
+        suspendTransaction {
+            if (clanIDs.isEmpty()) return@suspendTransaction 0
+
+            val cutoff = inactivityCutoff()
+            val memberCount = ClanMembersTable.id.count()
+            val lastActivity = Max(lastActiveAtExpression(), ClanMembersTable.createdAt.columnType)
+
+            // Repeating the condition is the whole point of this method. Between listing the
+            // candidates and running this statement a member can log in, which makes its clan active
+            // again. The id list alone would delete it anyway; the subquery re-decides, so such a
+            // clan survives without this code having to reason about transaction isolation.
+            val stillDeletable = joinClansWithMembers()
+                .select(ClansTable.id)
+                .groupBy(ClansTable.id)
+                .having { (memberCount eq 0L) or (lastActivity less cutoff) }
+
+            // One statement for all ids rather than one per clan: a run can have several hundred
+            // candidates. clan_members and clan_invites follow via ON DELETE CASCADE.
+            ClansTable.deleteWhere {
+                (ClansTable.id inList clanIDs) and (ClansTable.id inSubQuery stillDeletable)
+            }
+        }
+
     override suspend fun updateDescription(clanID: ULong, description: String?): Boolean =
         suspendTransaction {
             ClansTable.update({ ClansTable.id eq clanID }) {

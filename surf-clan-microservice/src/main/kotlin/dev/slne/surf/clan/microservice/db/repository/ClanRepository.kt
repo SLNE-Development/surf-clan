@@ -22,6 +22,14 @@ interface ClanRepository {
      */
     suspend fun findDeletableClans(): List<DeletableClan>
 
+    /**
+     * Deletes those of [clanIDs] that still qualify for deletion at the moment of the statement.
+     *
+     * The ids are a preselection, not the decision — see the implementation. Returns how many rows
+     * were actually removed, which may be fewer than [clanIDs] has entries.
+     */
+    suspend fun deleteClansStillDeletable(clanIDs: Collection<ULong>): Int
+
     suspend fun updateDescription(clanID: ULong, description: String?): Boolean
     suspend fun updateDiscordInvite(clanID: ULong, discordInvite: String?): Boolean
     suspend fun updateTagColor(
