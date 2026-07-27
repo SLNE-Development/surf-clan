@@ -7,6 +7,7 @@ import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.clan.ClanTagRules
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
@@ -55,7 +56,7 @@ class ClanRepositoryImpl : ClanRepository {
     override suspend fun findClanByTag(tag: String): ClanImpl? = suspendTransaction {
         joinClansWithMembers()
             .selectAll()
-            .where { ClansTable.tag eq tag }
+            .where { ClansTable.tag.upperCase() eq ClanTagRules.normalize(tag) }
             .toList()
             .let(::createClanDAOOrNull)
     }
@@ -148,9 +149,14 @@ class ClanRepositoryImpl : ClanRepository {
             return@suspendTransaction ClanCreationResult.ClanNameAlreadyExists
         }
 
+        // Normalized once and used for both the check and the insert: checking the canonical form
+        // but storing the raw one would keep creating the very mixed-case rows that made clans
+        // unreachable by tag in the first place.
+        val normalizedTag = ClanTagRules.normalize(tag)
+
         val tagTaken = ClansTable
             .select(ClansTable.id)
-            .where { ClansTable.tag eq tag }
+            .where { ClansTable.tag.upperCase() eq normalizedTag }
             .limit(1)
             .singleOrNull() != null
 
@@ -165,7 +171,7 @@ class ClanRepositoryImpl : ClanRepository {
         // acceptable trade.
         val clanRow = ClansTable.insertReturning(ignoreErrors = true) { smt ->
             smt[this.name] = name
-            smt[this.tag] = tag
+            smt[this.tag] = normalizedTag
             smt[this.createdBy] = owner
             tagForegroundColor?.let { smt[this.tagForegroundColor] = it }
             tagBackgroundColor?.let { smt[this.tagBackgroundColor] = it }
@@ -199,13 +205,25 @@ class ClanRepositoryImpl : ClanRepository {
     override suspend fun suggestTagsByPrefix(prefix: String, limit: Int): List<String> {
         if (prefix.isBlank()) return emptyList()
 
+        val normalizedPrefix = ClanTagRules.normalize(prefix)
+
+        // The prefix is raw command input while a tag only ever holds letters and digits, so anything
+        // else cannot prefix one. Rejecting it here also keeps LIKE metacharacters out of the
+        // pattern below, where a '%' would match every row and defeat both the prefix semantics and
+        // the index.
+        if (!normalizedPrefix.all { it.isLetterOrDigit() }) return emptyList()
+
+        val tagUpperCase = ClansTable.tag.upperCase()
+
         return suspendTransaction {
             ClansTable
                 .select(ClansTable.tag)
-                .where { ClansTable.tag like "$prefix%" }
-                .orderBy(ClansTable.tag)
+                .where { tagUpperCase like "$normalizedPrefix%" }
+                .orderBy(tagUpperCase)
                 .limit(limit)
-                .map { it[ClansTable.tag] }
+                // Callers match suggestions against a normalized input, so a legacy mixed-case tag
+                // has to be reported uppercase or it never survives their prefix filter.
+                .map { ClanTagRules.normalize(it[ClansTable.tag]) }
                 .toList()
         }
     }
