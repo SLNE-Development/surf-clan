@@ -9,6 +9,7 @@ import dev.slne.surf.api.core.util.logger
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import dev.slne.surf.clan.microservice.db.repository.ClanRepository
+import dev.slne.surf.clan.microservice.db.repository.DeletableClan
 import dev.slne.surf.clan.microservice.db.table.ClanMembersTable
 import dev.slne.surf.clan.microservice.db.table.ClansTable
 import dev.slne.surf.clan.microservice.db.table.SurfPlayersTable
@@ -108,6 +109,30 @@ class ClanRepositoryImpl : ClanRepository {
                 }
                 .toList()
         }
+
+    override suspend fun findDeletableClans(): List<DeletableClan> = suspendTransaction {
+        val cutoff = inactivityCutoff()
+        val memberCount = ClanMembersTable.id.count()
+        val lastActivity = Max(lastActiveAtExpression(), ClanMembersTable.createdAt.columnType)
+
+        joinClansWithMembers()
+            .select(ClansTable.id, ClansTable.name, ClansTable.tag, memberCount, lastActivity)
+            .groupBy(ClansTable.id)
+            // Two branches because the join is a leftJoin: a clan without members produces one row
+            // of nulls, so its Max is null, and `null < cutoff` is not true. Without the count
+            // branch that case would silently fall through.
+            .having { (memberCount eq 0L) or (lastActivity less cutoff) }
+            .map { row ->
+                DeletableClan(
+                    clanID = row[ClansTable.id].value,
+                    name = row[ClansTable.name],
+                    tag = row[ClansTable.tag],
+                    memberCount = row[memberCount],
+                    lastActivityAt = row[lastActivity]
+                )
+            }
+            .toList()
+    }
 
     override suspend fun updateDescription(clanID: ULong, description: String?): Boolean =
         suspendTransaction {

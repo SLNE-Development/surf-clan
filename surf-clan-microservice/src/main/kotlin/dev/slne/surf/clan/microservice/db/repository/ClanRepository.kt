@@ -16,6 +16,12 @@ interface ClanRepository {
     suspend fun findClanByID(id: ULong): ClanImpl?
     suspend fun fetchAllClansWithoutMembersSortByMemberCount(): Collection<ClanImpl>
 
+    /**
+     * Clans that cannot free themselves anymore: no members at all, or every member offline for
+     * longer than [dev.slne.clan.api.clan.Clan.INACTIVE_AFTER].
+     */
+    suspend fun findDeletableClans(): List<DeletableClan>
+
     suspend fun updateDescription(clanID: ULong, description: String?): Boolean
     suspend fun updateDiscordInvite(clanID: ULong, discordInvite: String?): Boolean
     suspend fun updateTagColor(
