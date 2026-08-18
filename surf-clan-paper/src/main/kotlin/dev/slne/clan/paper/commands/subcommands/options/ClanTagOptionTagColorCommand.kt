@@ -11,8 +11,10 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.color.ClanTagHexColorArgument
 import dev.slne.clan.paper.commands.arguments.color.ClanTagShadowHexColorArgument
 import dev.slne.clan.paper.permission.ClanPermissions
-import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.client.Messages
+import dev.slne.surf.clan.core.client.command.NO_TAG_COLOR_PERMISSION
+import dev.slne.surf.clan.core.client.command.clanTagColorChangedMessage
 import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -49,18 +51,14 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
 }
 
 private suspend fun changeColor(sender: Player, update: ClanTagColor.Update) {
-    val clan =
-        Clan.byPlayer(sender.uniqueId) ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+    val clan = Clan.byPlayer(sender.uniqueId)
+        ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
 
     if (!clan.hasMemberPermission(sender.uniqueId, ClanPermission.OPTIONS_TAG_COLOR)) {
-        throw CommandAPI.failWithString("Du hast keine Berechtigung, die Farbe des Clan-Tags zu ändern.")
+        throw CommandAPI.failWithString(NO_TAG_COLOR_PERMISSION)
     }
 
     clan.changeClanTagColor(update)
 
-    sender.sendText {
-        appendSuccessPrefix()
-        success("Die Farbe des Clan-Tags wurde erfolgreich geändert.")
-        success(" Es kann ein paar Minuten dauern, bis die Änderung Netzwerkweit sichtbar ist.")
-    }
+    sender.sendMessage(clanTagColorChangedMessage())
 }

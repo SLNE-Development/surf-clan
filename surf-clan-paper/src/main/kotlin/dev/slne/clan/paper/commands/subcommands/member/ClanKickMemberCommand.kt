@@ -10,9 +10,10 @@ import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.ClanMemberArgument
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
-import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.service.PlayerLookupService
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.client.Messages
+import dev.slne.surf.clan.core.client.command.*
 
 fun CommandAPICommand.clanKickMemberCommand() = subcommand("kick") {
     withPermission(ClanPermissions.CLAN_KICK_MEMBER_COMMAND)
@@ -22,39 +23,31 @@ fun CommandAPICommand.clanKickMemberCommand() = subcommand("kick") {
     playerExecutorSuspend { player, args ->
         val member = args.awaiting<ClanMember>("member")
         val clan = Clan.byPlayer(player.uniqueId)
-            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+            ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
 
         if (player.uniqueId == member.uuid) {
-            throw CommandAPI.failWithString("Du kannst dich nicht selbst rauswerfen.")
+            throw CommandAPI.failWithString(CANNOT_KICK_SELF)
         }
 
         if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.KICK)) {
-            throw CommandAPI.failWithString("Du hast keine Berechtigung, diesen Spieler aus dem Clan zu entfernen.")
+            throw CommandAPI.failWithString(NO_KICK_PERMISSION)
         }
 
         val executorMember = clan.getMember(player.uniqueId)
-            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+            ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
 
         if (member.role >= executorMember.role) {
-            throw CommandAPI.failWithString("Du kannst keine Spieler mit der selben oder einer höheren Rolle rauswerfen.")
+            throw CommandAPI.failWithString(CANNOT_KICK_SAME_OR_HIGHER_ROLE)
         }
 
         val removed = clan.removeMember(member)
 
         if (!removed) {
-            throw CommandAPI.failWithString("Fehler beim Entfernen des Spielers aus dem Clan.")
+            throw CommandAPI.failWithString(KICK_FAILED)
         }
 
         val memberName = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
 
-        val message = buildText {
-            appendInfoPrefix()
-            variableValue(memberName)
-            info(" wurde von ")
-            variableValue(player.name)
-            info(" aus dem Clan entfernt.")
-        }
-
-        clan.broadcast(message)
+        clan.broadcast(memberKickedMessage(memberName, player.name))
     }
 }

@@ -3,52 +3,24 @@ package dev.slne.clan.paper.commands.subcommands
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
-import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
-import dev.slne.surf.api.core.font.toSmallCaps
-import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
-import dev.slne.surf.api.core.messages.pagination.Pagination
 import dev.slne.surf.api.paper.command.executors.anyExecutorSuspend
-import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.clan.CoreClanService
-import dev.slne.surf.clan.core.client.components.Components
+import dev.slne.surf.clan.core.client.command.clanListPagination
+import dev.slne.surf.clan.core.client.command.handleClanListClick
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 
 
-private val pagination = Pagination<Clan> {
-    title { primary("Clans".toSmallCaps(), TextDecoration.BOLD) }
-
-    rowRenderer { clan, _ ->
-        listOf(
-            buildText {
-                spacer(">")
-                appendSpace()
-                variableValue(clan.name)
-                appendSpace()
-                info("(${clan.tag})")
-
-                val clanUuid = clan.uuid
-                clickEvent(ClickEvent.callback(ClickCallback.widen({ clicked ->
-                    plugin.launch {
-                        val clan = Clan.byUuid(clanUuid)
-                        if (clan == null) {
-                            clicked.sendText {
-                                appendErrorPrefix()
-                                error("Der Clan konnte nicht gefunden werden.")
-                            }
-                        } else {
-                            clicked.sendMessage(Components.Clan.renderClanInformation(clan as ClanImpl))
-                        }
-                    }
-                }, Player::class.java)))
-            }
-        )
-    }
+private val pagination = clanListPagination { clanUuid ->
+    ClickEvent.callback(ClickCallback.widen({ clicked ->
+        plugin.launch {
+            handleClanListClick(clicked, clanUuid)
+        }
+    }, Player::class.java))
 }
 
 fun CommandAPICommand.clanListCommand() = subcommand("list") {

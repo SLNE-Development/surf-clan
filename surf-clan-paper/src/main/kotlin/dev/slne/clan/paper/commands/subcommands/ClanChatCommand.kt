@@ -4,20 +4,19 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
-import dev.slne.surf.api.core.messages.adventure.buildText
-import dev.slne.surf.api.core.messages.adventure.clickSuggestsCommand
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.args.asyncSignedMessageArgument
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
-import dev.slne.surf.api.paper.util.getPrefixedName
 import dev.slne.surf.chat.api.SurfChatApi
 import dev.slne.surf.chat.api.message.MessageData
 import dev.slne.surf.chat.api.message.MessageType
+import dev.slne.surf.clan.core.client.Messages
+import dev.slne.surf.clan.core.client.chat.formatClanChatMessage
+import dev.slne.surf.clan.core.client.chat.prefixedName
 import dev.slne.surf.core.api.common.server.SurfServer
 import kotlinx.coroutines.launch
 import net.kyori.adventure.chat.SignedMessage
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -34,11 +33,13 @@ class ClanChatCommand(name: String) : CommandAPICommand(name) {
             if (playerClan == null) {
                 player.sendText {
                     appendErrorPrefix()
-                    error("Du bist in keinem Clan.")
+                    error(Messages.NOT_IN_CLAN)
                 }
                 return@playerExecutorSuspend
             }
 
+            val formattedMessage =
+                formatClanChatMessage(message.message(), prefixedName(player.uniqueId, player.name))
 
             playerClan.members.forEach { member ->
                 launch {
@@ -46,7 +47,7 @@ class ClanChatCommand(name: String) : CommandAPICommand(name) {
                         message,
                         player.uniqueId,
                         member.uuid,
-                        formatClanChatMessage(message, player)
+                        formattedMessage
                     )
                 }
             }
@@ -65,20 +66,5 @@ class ClanChatCommand(name: String) : CommandAPICommand(name) {
             SurfChatApi.logMessage(messageData)
             SurfChatApi.passAutoMod(messageData)
         }
-    }
-
-
-    private fun formatClanChatMessage(message: SignedMessage, sender: Player) = buildText {
-        darkSpacer(">>")
-        appendSpace()
-        primary("Clan")
-        appendSpace()
-        darkSpacer("|")
-        appendSpace()
-        append(sender.getPrefixedName())
-        spacer(":")
-        appendSpace()
-        white(message.message())
-        clickSuggestsCommand("/clan chat ")
     }
 }

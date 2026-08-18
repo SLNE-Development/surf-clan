@@ -8,10 +8,11 @@ import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.paper.commands.arguments.ClanInviteArgument
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
-import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.clan.core.client.command.INVITE_ALREADY_DENIED
+import dev.slne.surf.clan.core.client.command.inviteDeniedMessage
+import dev.slne.surf.clan.core.client.command.inviteDeniedNotification
 import dev.slne.surf.core.api.common.SurfCoreApi
-import dev.slne.surf.core.api.common.util.sendText
 
 fun CommandAPICommand.clanDenyCommand() = subcommand("deny") {
     withPermission(ClanPermissions.CLAN_DENY_INVITE_COMMAND)
@@ -24,17 +25,12 @@ fun CommandAPICommand.clanDenyCommand() = subcommand("deny") {
         val revoked = invite.revoke()
 
         if (!revoked) {
-            throw CommandAPI.failWithString("Diese Einladung wurde bereits abgelehnt.")
+            throw CommandAPI.failWithString(INVITE_ALREADY_DENIED)
         } else {
-            player.sendText {
-                appendSuccessPrefix()
-                success("Du hast die Einladung abgelehnt.")
-            }
+            player.sendMessage(inviteDeniedMessage())
 
-            SurfCoreApi.getPlayer(invite.invitedBy)?.sendText {
-                appendInfoPrefix()
-                variableValue(player.name)
-                info(" hat deine Clan-Einladung abgelehnt.")
+            SurfCoreApi.getPlayer(invite.invitedBy)?.let { inviter ->
+                SurfCoreApi.sendText(inviter, inviteDeniedNotification(player.name))
             }
         }
     }

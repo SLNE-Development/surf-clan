@@ -1,3 +1,4 @@
+import dev.slne.surf.api.gradle.util.slneReleases
 import dev.slne.surf.microservice.gradle.plugin.rabbit.RabbitModule
 
 plugins {
@@ -10,10 +11,22 @@ surfMicroservice {
 }
 
 surfCoreApi {
+    withCoreCommon()
     withSurfRedis()
 }
 
 dependencies {
     api(projects.surfClanApi)
     api(projects.surfClanCore)
+}
+
+sourceSets.test {
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().compileClasspath
+}
+
+publishing {
+    repositories {
+        slneReleases()
+    }
 }

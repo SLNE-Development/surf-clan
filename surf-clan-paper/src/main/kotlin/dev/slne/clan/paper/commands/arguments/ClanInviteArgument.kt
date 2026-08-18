@@ -7,15 +7,13 @@ import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
+import dev.slne.surf.clan.core.client.Messages
+import dev.slne.surf.clan.core.client.command.CLAN_INVITE_ARGUMENT_NEEDS_PLAYER
+import dev.slne.surf.clan.core.client.command.invitedClanNames
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.concurrent.ConcurrentHashMap
 
 
 class ClanInviteArgument(nodeName: String) :
@@ -24,27 +22,8 @@ class ClanInviteArgument(nodeName: String) :
         private val suggestions = ArgumentSuggestions<CommandSender> { info, builder ->
             val player = info.sender as? Player ?: return@ArgumentSuggestions builder.buildFuture()
             plugin.scope.future {
-                val invites = ClanInvite.pendingInvitesByPlayer(player.uniqueId)
-
-                if (invites.isEmpty()) return@future builder.build()
-
-                val clanNames = ConcurrentHashMap.newKeySet<String>()
-                val semaphore = Semaphore(64)
-                supervisorScope {
-                    for (invite in invites) {
-                        launch {
-                            semaphore.withPermit {
-                                val clan = invite.getClan()
-                                if (clan != null) {
-                                    clanNames.add(clan.name)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (clanInvite in clanNames) {
-                    builder.suggest(clanInvite)
+                for (clanName in invitedClanNames(player.uniqueId)) {
+                    builder.suggest(clanName)
                 }
 
                 builder.build()
@@ -60,9 +39,9 @@ class ClanInviteArgument(nodeName: String) :
     override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): ClanInvite {
         val clanName = info.currentInput
         val sender = info.sender as? Player
-            ?: throw CommandAPI.failWithString("Cannot parse clan invite argument without player sender.")
+            ?: throw CommandAPI.failWithString(CLAN_INVITE_ARGUMENT_NEEDS_PLAYER)
         val invite = ClanInvite.pendingInviteByPlayerAndClanName(sender.uniqueId, clanName)
 
-        return invite ?: throw CommandAPI.failWithString("No pending invite for clan '$clanName'.")
+        return invite ?: throw CommandAPI.failWithString(Messages.noPendingInviteForClan(clanName))
     }
 }

@@ -7,15 +7,13 @@ import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
-import dev.slne.surf.api.core.messages.adventure.appendNewline
-import dev.slne.surf.api.core.messages.adventure.buildText
-import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
-import dev.slne.surf.clan.core.clan.ClanImpl
-import dev.slne.surf.clan.core.client.components.Components
+import dev.slne.surf.clan.core.client.Messages
+import dev.slne.surf.clan.core.client.command.CLAN_OWNER_CANNOT_LEAVE
+import dev.slne.surf.clan.core.client.command.handleLeaveClick
+import dev.slne.surf.clan.core.client.command.leaveConfirmationMessage
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -26,76 +24,20 @@ fun CommandAPICommand.clanLeaveCommand() = subcommand("leave") {
 
     playerExecutorSuspend { player, args ->
         val clan = Clan.byPlayer(player.uniqueId)
-            ?: throw CommandAPI.failWithString("Du bist in keinem Clan.")
+            ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
 
         if (clan.createdByUuid == player.uniqueId) {
-            throw CommandAPI.failWithString("Du bist der Besitzer des Clans und kannst ihn nicht verlassen. Nutze /clan disband um den Clan aufzulösen.")
+            throw CommandAPI.failWithString(CLAN_OWNER_CANNOT_LEAVE)
         }
 
-        player.sendText {
-            appendWarningPrefix()
-            warning("Möchtest du den Clan ")
-            append(Components.Clan.renderClanInformationHover(clan as ClanImpl))
-            warning(" wirklich verlassen? Klicke ")
-            append {
-                error("HIER", TextDecoration.BOLD)
-                hoverEvent(createHoverEvent())
-                clickEvent(createConfirmCallback(clan.uuid))
-            }
-            warning(" um den Clan zu verlassen.")
-        }
+        player.sendMessage(leaveConfirmationMessage(clan, createConfirmCallback(clan.uuid)))
     }
-}
-
-private fun createHoverEvent() = buildText {
-    info("Klicke hier um den Clan zu verlassen.")
-    appendNewline(3)
-    error("Achtung: ", TextDecoration.BOLD)
-    error("Du kannst den Vorgang nicht rückgängig machen.")
-    appendNewline(2)
-    error("Wenn du den Clan verlässt, verlierst du alle Rechte")
-    appendNewline()
-    error("und benötigst erneut eine Einladung, um wieder den Clan beitreten zu können.")
 }
 
 private fun createConfirmCallback(originalClanUuid: UUID) = ClickEvent.callback(
     ClickCallback.widen({ clicked ->
         plugin.launch {
-            handleLeaveClick(clicked, originalClanUuid)
+            handleLeaveClick(clicked, clicked.uniqueId, clicked.name, originalClanUuid)
         }
     }, Player::class.java)
 ) { it.lifetime(1.minutes.toJavaDuration()) }
-
-private suspend fun handleLeaveClick(clicked: Player, originalClanUuid: UUID) {
-    val clan = Clan.byPlayer(clicked.uniqueId) ?: return clicked.sendText {
-        appendErrorPrefix()
-        error("Du bist nicht mehr in einem Clan.")
-    }
-
-    if (clan.uuid != originalClanUuid) return clicked.sendText {
-        appendErrorPrefix()
-        error("Der Clan, den du verlassen wolltest, hat sich geändert. Bitte versuche es erneut.")
-    }
-
-    val removed = clan.removeMember(clicked.uniqueId)
-
-    if (!removed) {
-        return clicked.sendText {
-            appendErrorPrefix()
-            error("Du bist nicht mehr in dem Clan.")
-        }
-    } else {
-        clicked.sendText {
-            appendErrorPrefix()
-            success("Du hast den Clan verlassen.")
-        }
-
-        val memberLeftMessage = buildText {
-            appendInfoPrefix()
-            variableValue(clicked.name)
-            info(" hat den Clan verlassen.")
-        }
-
-        clan.broadcast(memberLeftMessage)
-    }
-}

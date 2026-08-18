@@ -1,4 +1,4 @@
-package dev.slne.clan.paper.tagcolor
+package dev.slne.surf.clan.core.client.tagcolor
 
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanTagColor

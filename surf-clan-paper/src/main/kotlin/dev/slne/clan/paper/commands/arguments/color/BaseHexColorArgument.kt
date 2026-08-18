@@ -3,6 +3,7 @@ package dev.slne.clan.paper.commands.arguments.color
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.TextArgument
+import dev.slne.surf.clan.core.client.command.*
 
 abstract class BaseHexColorArgument<T>(
     nodeName: String,
@@ -12,12 +13,10 @@ abstract class BaseHexColorArgument<T>(
 
     val input = info.currentInput().trim()
 
-    val regex = Regex("^[0-9a-fA-F]{$requiredLength}$")
-
-    if (!regex.matches(input)) {
+    if (!isHexColor(input, requiredLength)) {
         throw CustomArgumentException.fromMessageBuilder(
             MessageBuilder()
-                .append("Invalid hex color: ")
+                .append(INVALID_HEX_COLOR)
                 .appendArgInput()
         )
     }
@@ -25,34 +24,16 @@ abstract class BaseHexColorArgument<T>(
     factory(input)
         ?: throw CustomArgumentException.fromMessageBuilder(
             MessageBuilder()
-                .append("Invalid hex color: ")
+                .append(INVALID_HEX_COLOR)
                 .appendArgInput()
         )
 }) {
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollection { _ ->
-            if (requiredLength == 6) {
-                listOf(
-                    "#FF6B6B",
-                    "#4ECDC4",
-                    "#1A1A2E",
-                    "#F7B801",
-                    "#6A4C93",
-                    "#00C2FF",
-                    "#2EC4B6",
-                    "#E71D36"
-                )
+            if (requiredLength == CLAN_TAG_COLOR_LENGTH) {
+                CLAN_TAG_COLOR_SUGGESTIONS
             } else {
-                listOf(
-                    "#FF6B6BCC",
-                    "#4ECDC480",
-                    "#1A1A2ECC",
-                    "#F7B80199",
-                    "#6A4C93B3",
-                    "#00C2FF66",
-                    "#2EC4B6AA",
-                    "#E71D3688"
-                )
+                CLAN_TAG_SHADOW_COLOR_SUGGESTIONS
             }
         })
     }

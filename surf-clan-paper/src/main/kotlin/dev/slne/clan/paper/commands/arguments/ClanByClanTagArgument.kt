@@ -8,6 +8,7 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import dev.slne.surf.clan.core.clan.CoreClanService
+import dev.slne.surf.clan.core.client.Messages
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import org.bukkit.command.CommandSender
@@ -32,8 +33,8 @@ class ClanByClanTagArgument(nodeName: String) :
 
     override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): Clan {
         val tag = info.currentInput
-        val clan =
-            Clan.byTag(tag) ?: throw CommandAPI.failWithString("Unknown clan with tag '$tag'")
+        val clan = Clan.byTag(tag)
+            ?: throw CommandAPI.failWithString(Messages.unknownClanWithTag(tag))
         return clan
     }
 }

@@ -10,6 +10,7 @@ import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaitingOrNull
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.Messages
 import dev.slne.surf.clan.core.client.components.Components
 
 
@@ -22,7 +23,7 @@ fun CommandAPICommand.clanInfoCommand() = subcommand("info") {
         val clan = args.awaitingOrNull<Clan>("clanTag") ?: Clan.byPlayer(player.uniqueId)
 
         if (clan == null) {
-            throw CommandAPI.failWithString("Du bist in keinem Clan.")
+            throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
         }
 
         player.sendMessage(Components.Clan.renderClanInformation(clan as ClanImpl))
