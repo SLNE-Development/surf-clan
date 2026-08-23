@@ -33,10 +33,6 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
         listeners.remove(listener)
     }
 
-    private inline fun <reified T : ClanMemberListener> getListeners(): List<T> {
-        return listeners.filterIsInstance<T>()
-    }
-
     private inline fun invokeListenerSafe(block: () -> Unit) {
         try {
             block()
@@ -48,8 +44,10 @@ class ClientClanMemberServiceImpl : CoreClanMemberService {
     }
 
     private inline fun <reified T : ClanMemberListener> callListeners(call: (T) -> Unit) {
-        for (listener in getListeners<T>()) {
-            invokeListenerSafe { call(listener) }
+        for (listener in listeners) {
+            if (listener is T) {
+                invokeListenerSafe { call(listener) }
+            }
         }
     }
 

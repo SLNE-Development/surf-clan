@@ -14,6 +14,12 @@ import kotlin.time.Duration.Companion.minutes
 object ClanTagColorEnforcer {
     private val log = logger()
 
+    private val FOREGROUND_NODE =
+        ClanPermissions.CLAN_OPTIONS_TAG_COLOR_FOREGROUND_COMMAND.lowercase()
+    private val BACKGROUND_NODE =
+        ClanPermissions.CLAN_OPTIONS_TAG_COLOR_BACKGROUND_COMMAND.lowercase()
+    private val SHADOW_NODE = ClanPermissions.CLAN_OPTIONS_TAG_COLOR_SHADOW_COMMAND.lowercase()
+
     private val recentlyChecked = Caffeine.newBuilder()
         .expireAfterWrite(15.minutes)
         .maximumSize(10_000)
@@ -62,15 +68,9 @@ object ClanTagColorEnforcer {
             val permissions = user.cachedData.permissionData
 
             return ClanTagColorGrants(
-                foreground = permissions.grants(
-                    ClanPermissions.CLAN_OPTIONS_TAG_COLOR_FOREGROUND_COMMAND
-                ),
-                background = permissions.grants(
-                    ClanPermissions.CLAN_OPTIONS_TAG_COLOR_BACKGROUND_COMMAND
-                ),
-                shadow = permissions.grants(
-                    ClanPermissions.CLAN_OPTIONS_TAG_COLOR_SHADOW_COMMAND
-                )
+                foreground = permissions.grants(FOREGROUND_NODE),
+                background = permissions.grants(BACKGROUND_NODE),
+                shadow = permissions.grants(SHADOW_NODE)
             )
         } finally {
             if (cachedUser == null) {
@@ -79,6 +79,6 @@ object ClanTagColorEnforcer {
         }
     }
 
-    private fun CachedPermissionData.grants(permission: String) =
-        checkPermission(permission.lowercase()).asBoolean()
+    private fun CachedPermissionData.grants(lowercasedNode: String) =
+        checkPermission(lowercasedNode).asBoolean()
 }

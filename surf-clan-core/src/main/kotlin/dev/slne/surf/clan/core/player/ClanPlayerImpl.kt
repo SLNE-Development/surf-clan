@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class ClanPlayerImpl(
     val ID: ULong,
     override val uuid: SerializableStringUUID,
-    override var acceptsClanInvites: Boolean = true
+    @field:Volatile override var acceptsClanInvites: Boolean = true
 ) : ClanPlayer {
 
     override suspend fun setAcceptsClanInvites(acceptsClanInvites: Boolean): Boolean {

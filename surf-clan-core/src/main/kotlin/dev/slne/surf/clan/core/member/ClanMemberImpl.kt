@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 data class ClanMemberImpl(
     val ID: ULong,
     override val uuid: SerializableStringUUID,
-    override var role: ClanMemberRole,
+    @field:Volatile override var role: ClanMemberRole,
     override val addedBy: SerializableStringUUID?,
     val createdAt: SerializableOffsetDateTime = OffsetDateTime.now(),
     val updatedAt: SerializableOffsetDateTime? = OffsetDateTime.now(),

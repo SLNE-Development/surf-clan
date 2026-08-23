@@ -18,7 +18,6 @@ import kotlinx.coroutines.sync.withPermit
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.event.ClickEvent
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
 
 object JoinInviteListener {
@@ -40,21 +39,20 @@ object JoinInviteListener {
                 return@launch
             }
 
-            val data = ConcurrentHashMap.newKeySet<ClanInviteRenderData>()
+            val data = arrayOfNulls<ClanInviteRenderData>(invites.size)
             val semaphore = Semaphore(64)
 
             supervisorScope {
-                for (invite in invites) {
+                invites.forEachIndexed { slot, invite ->
                     launch {
                         semaphore.withPermit {
                             val clan = invite.getClan() ?: return@launch
-                            val renderData = ClanInviteRenderData(
+                            data[slot] = ClanInviteRenderData(
                                 clanInformationHover = Components.Clan.renderClanInformationHover(
                                     clan as ClanImpl
                                 ),
                                 clanName = clan.name
                             )
-                            data.add(renderData)
                         }
                     }
                 }
@@ -65,7 +63,7 @@ object JoinInviteListener {
                 info("Du hast noch ".toSmallCaps())
                 variableValue(invites.size)
                 info(" offene Clan-Einladung${if (invites.size == 1) "" else "en"}.".toSmallCaps())
-                appendCollectionNewLine(data) { it.asComponent() }
+                appendCollectionNewLine(data.filterNotNull()) { it.asComponent() }
             }
         }
     }

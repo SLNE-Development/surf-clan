@@ -6,6 +6,7 @@ import dev.slne.clan.api.clan.ClanCreationResult
 import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.util.logger
+import dev.slne.surf.api.core.util.mutableObjectSetOf
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.clan.ClanTagRules
 import dev.slne.surf.clan.core.member.ClanMemberImpl
@@ -232,12 +233,10 @@ class ClanRepositoryImpl : ClanRepository {
         if (rows.isEmpty()) return null
 
         val clanRow = rows.first()
-        val members = rows
-            .mapNotNull { row ->
-                if (row.getOrNull(ClanMembersTable.id) == null) return@mapNotNull null
-                ClanMemberRepositoryImpl.createMemberDAO(row)
-            }
-            .toSet()
+        val members = rows.mapNotNullTo(mutableObjectSetOf(rows.size)) { row ->
+            if (row.getOrNull(ClanMembersTable.id) == null) return@mapNotNullTo null
+            ClanMemberRepositoryImpl.createMemberDAO(row)
+        }
 
         return createClanDAO(clanRow, members)
     }

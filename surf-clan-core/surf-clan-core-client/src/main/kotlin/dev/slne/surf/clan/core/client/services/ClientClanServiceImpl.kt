@@ -10,8 +10,6 @@ import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.util.logger
-import dev.slne.surf.api.core.util.mutableObjectSetOf
-import dev.slne.surf.api.core.util.toObjectSet
 import dev.slne.surf.clan.core.clan.AbstractClanView
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.clan.ClanTagRules
@@ -55,10 +53,6 @@ class ClientClanServiceImpl : CoreClanService {
         listeners.remove(listener)
     }
 
-    private inline fun <reified T : ClanListener> getListeners(): List<T> {
-        return listeners.filterIsInstance<T>()
-    }
-
     private inline fun invokeListenerSafe(block: () -> Unit) {
         try {
             block()
@@ -70,8 +64,10 @@ class ClientClanServiceImpl : CoreClanService {
     }
 
     private inline fun <reified T : ClanListener> callClanListeners(call: (T) -> Unit) {
-        for (listener in getListeners<T>()) {
-            invokeListenerSafe { call(listener) }
+        for (listener in listeners) {
+            if (listener is T) {
+                invokeListenerSafe { call(listener) }
+            }
         }
     }
 
@@ -151,10 +147,13 @@ class ClientClanServiceImpl : CoreClanService {
         }
 
         val charValidations = Char2BooleanOpenHashMap(tag.length)
+        var allCharsValid = true
         for (char in tag) {
-            charValidations[char] = char.isLetterOrDigit()
+            val valid = char.isLetterOrDigit()
+            charValidations[char] = valid
+            allCharsValid = allCharsValid && valid
         }
-        if (charValidations.values.any { it == false }) {
+        if (!allCharsValid) {
             return ClanValidationResult.InvalidTagCharacters(charValidations)
         }
 
@@ -268,7 +267,7 @@ class ClientClanServiceImpl : CoreClanService {
         val result =
             ClientClanMemberServiceImpl.get().addMember(clan.clanID, playerUuid, role, addedBy)
         if (result is ClanMemberAddResult.Success) {
-            clan.members = clan.members.plusElement(result.member as ClanMemberImpl).toObjectSet()
+            clan.addMemberLocally(result.member as ClanMemberImpl)
             callClanMemberUpdatedListeners(clan, result.member.uuid, true)
         }
 
@@ -281,7 +280,7 @@ class ClientClanServiceImpl : CoreClanService {
     ): Boolean {
         val result = ClientClanMemberServiceImpl.get().removeMember(clan.clanID, playerUuid)
         if (result) {
-            clan.members = clan.members.filterNotTo(mutableObjectSetOf()) { it.uuid == playerUuid }
+            clan.removeMemberLocally(playerUuid)
             callClanMemberUpdatedListeners(clan, playerUuid, false)
         }
 
@@ -308,9 +307,11 @@ class ClientClanServiceImpl : CoreClanService {
             return tagSuggestionBucketCache.underlying()
                 .asMap()
                 .values
+                .asSequence()
                 .flatMap { it.getNow(emptyList()) }
                 .distinct()
                 .take(limit)
+                .toList()
         }
 
         val cappedLimit = limit.coerceIn(1, 100)

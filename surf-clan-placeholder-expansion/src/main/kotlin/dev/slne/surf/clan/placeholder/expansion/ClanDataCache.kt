@@ -8,6 +8,7 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.listener.ClanUpdatedListener
 import net.kyori.adventure.text.Component
 import java.util.*
+import java.util.concurrent.CompletableFuture.completedFuture
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -30,11 +31,11 @@ object ClanDataCache : ClanUpdatedListener {
     }
 
     override fun onClanUpdated(clan: Clan) {
-        clan.members.forEach { member ->
-            val key = member.uuid
-            if (cache.underlying().getIfPresent(key) != null) {
-                cache.underlying().synchronous().refresh(key)
-            }
+        val updated = CachedClanData.Loaded(clan.name, clan.tag, clan.renderClanTag(minSize = 30))
+        val entries = cache.underlying().asMap()
+
+        for (member in clan.members) {
+            entries.computeIfPresent(member.uuid) { _, _ -> completedFuture(updated) }
         }
     }
 

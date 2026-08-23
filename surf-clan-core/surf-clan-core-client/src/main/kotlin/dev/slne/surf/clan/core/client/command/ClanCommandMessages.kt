@@ -18,7 +18,16 @@ const val CLAN_TAG_SHADOW_COLOR_LENGTH = 8
 /**
  * Whether [input] is a hex color of exactly [length] digits, written without a leading number sign.
  */
-fun isHexColor(input: String, length: Int) = Regex("^[0-9a-fA-F]{$length}$").matches(input)
+fun isHexColor(input: String, length: Int): Boolean {
+    if (input.length != length) return false
+
+    for (char in input) {
+        val isHexDigit = char in '0'..'9' || char in 'a'..'f' || char in 'A'..'F'
+        if (!isHexDigit) return false
+    }
+
+    return true
+}
 
 /** The hex colors offered for the foreground and background of a clan tag. */
 val CLAN_TAG_COLOR_SUGGESTIONS = listOf(

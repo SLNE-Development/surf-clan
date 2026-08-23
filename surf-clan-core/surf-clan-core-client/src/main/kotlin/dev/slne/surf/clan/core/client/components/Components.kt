@@ -38,6 +38,7 @@ object Components {
         suspend fun renderClanInformation(clan: ClanImpl) = buildText {
             val createdBy =
                 PlayerLookupService.getUsername(clan.createdByUuid) ?: clan.createdByUuid.toString()
+            val activeMemberCount = clan.activeMemberCount
             info("Informationen".toSmallCaps(), TextDecoration.BOLD)
 
             appendNewline {
@@ -65,7 +66,7 @@ object Components {
             appendNewline {
                 appendLine(
                     "Mitglieder".toSmallCaps(),
-                    "${clan.activeMemberCount} aktiv / ${clan.members.size} gesamt"
+                    "$activeMemberCount aktiv / ${clan.members.size} gesamt"
                 )
             }
 
@@ -77,7 +78,7 @@ object Components {
                 appendLine("Erstellt am".toSmallCaps(), DATE_TIME_FORMATTER.format(clan.createdAt))
             }
 
-            if (clan.activeMemberCount >= DISCORD_LINK_REQUIRED_MEMBERS) {
+            if (activeMemberCount >= DISCORD_LINK_REQUIRED_MEMBERS) {
                 appendNewline {
                     appendLine(
                         "Discord",

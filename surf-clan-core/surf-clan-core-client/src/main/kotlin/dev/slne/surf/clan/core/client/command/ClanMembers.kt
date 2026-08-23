@@ -17,7 +17,6 @@ import kotlinx.coroutines.supervisorScope
 import net.kyori.adventure.text.format.TextDecoration
 import java.time.Duration
 import java.time.OffsetDateTime
-import java.util.concurrent.ConcurrentHashMap
 
 data class ClanMemberData(
     val memberName: String,
@@ -64,35 +63,37 @@ private fun SurfComponentBuilder.appendLastSeen(
     spacer(")")
 }
 
+private val MEMBER_ORDER = compareBy<ClanMemberData> { it.activityRank }
+    .thenByDescending { it.role }
+    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.memberName }
+
 /**
  * Looks up every member of [clan], ordered by activity status, then clan rank, then name.
  */
 suspend fun collectClanMemberData(clan: Clan): List<ClanMemberData> {
-    val data = ConcurrentHashMap.newKeySet<ClanMemberData>()
+    val members = clan.members
+    val data = arrayOfNulls<ClanMemberData>(members.size)
+    val now = OffsetDateTime.now()
+
     supervisorScope {
-        for (member in clan.members) {
+        var index = 0
+        for (member in members) {
+            val slot = index++
             launch {
                 val name = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
 
-                data.add(
-                    ClanMemberData(
-                        name,
-                        member.role,
-                        SurfCoreApi.getPlayer(member.uuid)?.currentServer?.displayName,
-                        member.lastActiveAt,
-                        member.isActive
-                    )
+                data[slot] = ClanMemberData(
+                    name,
+                    member.role,
+                    SurfCoreApi.getPlayer(member.uuid)?.currentServer?.displayName,
+                    member.lastActiveAt,
+                    member.isActiveAt(now)
                 )
             }
         }
     }
 
-    // Aktivitätsstatus -> Clanrang -> Alphabet
-    return data.sortedWith(
-        compareBy<ClanMemberData> { it.activityRank }
-            .thenByDescending { it.role }
-            .thenBy(String.CASE_INSENSITIVE_ORDER) { it.memberName }
-    )
+    return data.filterNotNull().sortedWith(MEMBER_ORDER)
 }
 
 suspend fun clanMembersPagination(clan: ClanImpl): Pagination<ClanMemberData> {

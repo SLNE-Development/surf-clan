@@ -7,6 +7,8 @@ import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.member.ClanMember
 import dev.slne.clan.api.member.ClanMemberAddResult
 import dev.slne.clan.api.member.ClanMemberRole
+import dev.slne.clan.api.util.InternalClanApi
+import dev.slne.surf.api.core.util.freeze
 import dev.slne.surf.api.core.util.mutableObjectSetOf
 import dev.slne.surf.clan.core.member.ClanMemberImpl
 import kotlinx.serialization.Contextual
@@ -21,10 +23,10 @@ data class ClanImpl(
     override val name: String,
     override val tag: String,
     override val createdByUuid: @Contextual UUID,
-    override var clanTagColor: ClanTagColor?,
-    override var description: String?,
-    override var discordInvite: String?,
-    override var members: Set<ClanMemberImpl>,
+    @field:Volatile override var clanTagColor: ClanTagColor?,
+    @field:Volatile override var description: String?,
+    @field:Volatile override var discordInvite: String?,
+    @field:Volatile override var members: Set<ClanMemberImpl>,
     override val updatedAt: @Contextual OffsetDateTime,
     override val createdAt: @Contextual OffsetDateTime,
 ) : AbstractClanView(), Clan {
@@ -70,6 +72,14 @@ data class ClanImpl(
 
     override fun getMember(uuid: UUID): ClanMember? {
         return members.find { member -> member.uuid == uuid }
+    }
+
+    fun addMemberLocally(member: ClanMemberImpl): Unit = synchronized(this) {
+        members = mutableObjectSetOf(members).apply { add(member) }.freeze()
+    }
+
+    fun removeMemberLocally(uuid: UUID): Unit = synchronized(this) {
+        members = members.filterNotTo(mutableObjectSetOf()) { it.uuid == uuid }.freeze()
     }
 
     override suspend fun delete(): Boolean {

@@ -1,5 +1,6 @@
 package dev.slne.surf.clan.core.clan
 
+import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanView
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.surf.bitmap.common.provider.BitmapProvider
@@ -14,8 +15,8 @@ abstract class AbstractClanView : ClanView {
 
     override val activeMemberCount: Int
         get() {
-            val now = OffsetDateTime.now()
-            return members.count { it.isActiveAt(now) }
+            val cutoff = OffsetDateTime.now().minusSeconds(Clan.INACTIVE_AFTER.inWholeSeconds)
+            return members.count { !it.lastActiveAt.isBefore(cutoff) }
         }
 
     override fun isMember(uuid: UUID): Boolean {
@@ -29,12 +30,16 @@ abstract class AbstractClanView : ClanView {
         return getMember(uuid)?.hasPermission(permission) ?: false
     }
 
-    override fun getRichClanTag(): Component = BitmapProvider.translateToComponent(
-        tag,
-        getClanTagColorOrDefault().foregroundColor,
-        getClanTagColorOrDefault().backgroundColor,
-        getClanTagColorOrDefault().shadowColor
-    )
+    override fun getRichClanTag(): Component {
+        val color = getClanTagColorOrDefault()
+
+        return BitmapProvider.translateToComponent(
+            tag,
+            color.foregroundColor,
+            color.backgroundColor,
+            color.shadowColor
+        )
+    }
 
     override fun renderClanTag(minSize: Int): Component {
         if (tag.isBlank()) return Component.empty()
