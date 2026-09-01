@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/SLNE-Development/surf-cli/master/schema/surf-cli.schema.json",
+  "schemaVersion": 1,
+  "name": "surf-clan",
+  "group": "dev.slne.surf.clan",
+  "archetype": "multi-module-plugin",
+  "maintainers": [],
+  "lifecycle": "active",
+  "tags": [],
+  "modules": [
+    {
+      "id": "surf-clan-api",
+      "kind": "api"
+    },
+    {
+      "id": "surf-clan-core",
+      "kind": "core"
+    },
+    {
+      "id": "surf-clan-core-client",
+      "kind": "core"
+    },
+    {
+      "id": "surf-clan-placeholder-expansion",
+      "kind": "other"
+    },
+    {
+      "id": "surf-clan-paper",
+      "kind": "paper"
+    },
+    {
+      "id": "surf-clan-minestom",
+      "kind": "minestom"
+    },
+    {
+      "id": "surf-clan-velocity",
+      "kind": "velocity"
+    },
+    {
+      "id": "surf-clan-microservice",
+      "kind": "microservice"
+    }
+  ],
+  "dependencies": {
+    "surf-api": "+",
+    "surf-microservice": "+",
+    "surf-database-r2dbc": "2.3.2"
+  },
+  "runtime": {
+    "microservices": [
+      {
+        "module": "surf-clan-microservice",
+        "needs": [
+          "database",
+          "rabbitmq",
+          "redis"
+        ],
+        "defaultReplicas": 1,
+        "dependsOn": [],
+        "env": {}
+      }
+    ]
+  }
+}
