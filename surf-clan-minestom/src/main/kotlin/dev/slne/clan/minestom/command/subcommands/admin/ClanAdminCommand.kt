@@ -1,10 +1,14 @@
 package dev.slne.clan.minestom.command.subcommands.admin
 
+import dev.slne.clan.minestom.command.arguments.clanByClanTagArgument
+import dev.slne.clan.minestom.command.resolveClanArgument
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.anyExecutor
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.anyExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.command.clanConfigReloadedMessage
+import dev.slne.surf.clan.core.client.command.clanDeletedMessage
 import dev.slne.surf.clan.core.client.command.invalidatedCachesMessage
 import dev.slne.surf.clan.core.client.command.invalidatingCachesMessage
 import dev.slne.surf.clan.core.client.permission.ClanPermissions
@@ -17,6 +21,7 @@ fun CommandAPICommand.clanAdminCommand(): CommandAPICommand = withSubcommand(
 
         clanReloadCommand()
         clanInvalidateAllCachesCommand()
+        clanDeleteCommand()
     }
 )
 
@@ -42,6 +47,19 @@ private fun CommandAPICommand.clanInvalidateAllCachesCommand(): CommandAPIComman
             RedisService.get().invalidateAllCaches()
 
             source.sendMessage(invalidatedCachesMessage())
+        }
+    }
+)
+
+private fun CommandAPICommand.clanDeleteCommand(): CommandAPICommand = withSubcommand(
+    subcommand("delete") {
+        withPermission(ClanPermissions.CLAN_ADMIN_DELETE_COMMAND)
+        clanByClanTagArgument("clan")
+
+        anyExecutorSuspend { sender, arguments ->
+            val clan = arguments.resolveClanArgument("clan") as ClanImpl
+            val deleted = clan.delete()
+            sender.sendMessage(clanDeletedMessage(clan, deleted))
         }
     }
 )

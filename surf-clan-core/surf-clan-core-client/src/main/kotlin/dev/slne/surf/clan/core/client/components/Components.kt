@@ -18,21 +18,30 @@ object Components {
     private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
     object Clan {
-        suspend fun renderClanInformationHover(clan: ClanImpl) = buildText {
+        suspend fun renderClanInformationHover(
+            clan: ClanImpl,
+            withInvite: Boolean = true,
+        ) = buildText {
             val hoverComponent = buildText {
                 append(renderClanInformation(clan))
-                appendNewline()
-                appendNewline()
 
-                text("Klicke, um eine Einladung zum Clan-Discord", Colors.GRAY)
-                appendNewline()
-                text("zu erhalten.", Colors.GRAY)
+                if (withInvite) {
+                    appendNewline()
+                    appendNewline()
+
+                    text("Klicke, um eine Einladung zum Clan-Discord", Colors.GRAY)
+                    appendNewline()
+                    text("zu erhalten.", Colors.GRAY)
+                }
             }
 
             variableValue(clan.name)
             hoverEvent(hoverComponent)
-            clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) }
-                ?: CommonComponents.DISCORD_LINK.clickEvent())
+
+            if (withInvite) {
+                clickEvent(clan.discordInvite?.let { ClickEvent.openUrl(it) }
+                    ?: CommonComponents.DISCORD_LINK.clickEvent())
+            }
         }
 
         suspend fun renderClanInformation(clan: ClanImpl) = buildText {

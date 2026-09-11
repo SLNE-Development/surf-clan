@@ -14,13 +14,20 @@ import java.util.*
  */
 suspend fun CommandArguments.resolveClanArgumentOrOwn(node: String, player: UUID): Clan {
     if (node in this) {
-        val tag = getRaw(node).orEmpty()
-
-        return get<Deferred<Clan?>>(node).await()
-            ?: CommandAPI.failWithString(Messages.unknownClanWithTag(tag))
+        return resolveClanArgument(node)
     }
 
     return Clan.byPlayer(player) ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+}
+
+/**
+ * The clan the [node] argument names.
+ */
+suspend fun CommandArguments.resolveClanArgument(node: String): Clan {
+    val tag = getRaw(node).orEmpty()
+
+    return get<Deferred<Clan?>>(node).await()
+        ?: CommandAPI.failWithString(Messages.unknownClanWithTag(tag))
 }
 
 /**

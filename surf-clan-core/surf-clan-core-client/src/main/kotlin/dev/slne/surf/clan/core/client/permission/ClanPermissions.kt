@@ -38,6 +38,7 @@ object ClanPermissions {
     const val CLAN_ADMIN_COMMAND = "$PREFIX.admin"
     const val CLAN_ADMIN_RELOAD_COMMAND = "$CLAN_ADMIN_COMMAND.reload"
     const val CLAN_ADMIN_INVALIDATE_CACHE_COMMAND = "$CLAN_ADMIN_COMMAND.invalidateCache"
+    const val CLAN_ADMIN_DELETE_COMMAND = "$CLAN_ADMIN_COMMAND.delete"
 
     const val CLAN_LIST_COMMAND = "$PREFIX.list"
     const val CLAN_CHAT_COMMAND = "$PREFIX.chat"
