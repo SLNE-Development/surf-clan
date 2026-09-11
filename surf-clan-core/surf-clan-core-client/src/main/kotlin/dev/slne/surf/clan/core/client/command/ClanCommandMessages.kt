@@ -2,6 +2,8 @@ package dev.slne.surf.clan.core.client.command
 
 import dev.slne.clan.api.clan.Clan
 import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.clan.core.clan.ClanImpl
+import dev.slne.surf.clan.core.client.components.Components
 import net.kyori.adventure.text.event.ClickEvent
 
 const val NO_TAG_COLOR_PERMISSION = "Du hast keine Berechtigung, die Farbe des Clan-Tags zu ändern."
@@ -112,4 +114,18 @@ fun invalidatingCachesMessage() = buildText {
 
 fun invalidatedCachesMessage() = buildText {
     success("Caches invalidated.")
+}
+
+suspend fun clanDeletedMessage(clan: ClanImpl, deleted: Boolean) = buildText {
+    if (deleted) {
+        appendSuccessPrefix()
+        success("Der Clan ")
+        append(Components.Clan.renderClanInformationHover(clan, withInvite = false))
+        success(" wurde erfolgreich gelöscht.")
+    } else {
+        appendErrorPrefix()
+        error("Der Clan ")
+        append(Components.Clan.renderClanInformationHover(clan, withInvite = false))
+        error(" konnte nicht gelöscht werden.")
+    }
 }
