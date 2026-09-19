@@ -1,11 +1,10 @@
 package dev.slne.clan.paper.commands
 
-import dev.jorel.commandapi.CommandAPI
-import dev.slne.surf.api.core.messages.ComponentMessage
+import dev.jorel.commandapi.CommandAPIPaper
 import dev.slne.surf.api.core.messages.adventure.buildText
 
 fun failCommand(message: String): Nothing =
-    throw CommandAPI.failWithMessage(ComponentMessage(buildText {
+    throw CommandAPIPaper.failWithAdventureComponent(buildText {
         appendErrorPrefix()
         error(message)
-    }))
+    })
