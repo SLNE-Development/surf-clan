@@ -1,7 +1,7 @@
 package dev.slne.clan.minestom.command.subcommands.player
 
 import dev.slne.clan.api.player.ClanPlayer
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.booleanArgument
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
@@ -40,7 +40,7 @@ private fun CommandAPICommand.clanPlayerSettingInviteCommand(): CommandAPIComman
             val changed = clanPlayer.setAcceptsClanInvites(accept)
 
             if (!changed) {
-                CommandAPI.failWithString(NOTHING_CHANGED)
+                failCommand(NOTHING_CHANGED)
             }
 
             player.sendMessage(clanInvitesToggledMessage(accept))

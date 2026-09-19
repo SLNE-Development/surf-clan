@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.subcommands
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -25,10 +25,10 @@ fun CommandAPICommand.clanDisbandCommand() = subcommand("disband") {
     playerExecutorSuspend { player, args ->
         val playerUuid = player.uniqueId
         val clan =
-            Clan.byPlayer(playerUuid) ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+            Clan.byPlayer(playerUuid) ?: failCommand(Messages.NOT_IN_CLAN)
 
         clan.canBeDisbandedBy(playerUuid)?.let { error ->
-            throw CommandAPI.failWithString(error.message)
+            failCommand(error.message)
         }
 
         player.sendMessage(disbandConfirmationMessage(clan, createDisbandClickEvent(clan.uuid)))

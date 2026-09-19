@@ -3,7 +3,7 @@ package dev.slne.clan.minestom.command.subcommands.member.invite
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -24,18 +24,18 @@ fun CommandAPICommand.clanInviteCommand(): CommandAPICommand = withSubcommand(
 
         playerExecutorSuspend { player, args ->
             val invitee = args.get<Deferred<SurfPlayer?>>("invitee").await()
-                ?: CommandAPI.failWithString(Messages.PLAYER_NOT_FOUND)
+                ?: failCommand(Messages.PLAYER_NOT_FOUND)
             val clan = Clan.byPlayer(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (!clan.hasMemberPermission(player.uuid, ClanPermission.INVITE)) {
-                CommandAPI.failWithString(NO_INVITE_PERMISSION)
+                failCommand(NO_INVITE_PERMISSION)
             }
 
             when (clan.invite(invitee.uuid, player.uuid)) {
-                ClanInviteResult.AlreadyInClan -> CommandAPI.failWithString(INVITEE_ALREADY_IN_CLAN)
-                ClanInviteResult.AlreadyInvited -> CommandAPI.failWithString(INVITEE_ALREADY_INVITED)
-                ClanInviteResult.InvitationsDisabled -> CommandAPI.failWithString(
+                ClanInviteResult.AlreadyInClan -> failCommand(INVITEE_ALREADY_IN_CLAN)
+                ClanInviteResult.AlreadyInvited -> failCommand(INVITEE_ALREADY_INVITED)
+                ClanInviteResult.InvitationsDisabled -> failCommand(
                     INVITEE_DISABLED_INVITATIONS
                 )
 

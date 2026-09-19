@@ -1,6 +1,5 @@
 package dev.slne.clan.paper.commands.subcommands.member.invite
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.arguments
 import dev.jorel.commandapi.kotlindsl.subcommand
@@ -8,6 +7,7 @@ import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInviteResult
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.OfflinePlayerArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -25,16 +25,16 @@ fun CommandAPICommand.clanInviteCommand() = subcommand("invite") {
     playerExecutorSuspend { player, args ->
         val invitee = args.awaiting<SurfPlayer>("invitee")
         val clan = Clan.byPlayer(player.uniqueId)
-            ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+            ?: failCommand(Messages.NOT_IN_CLAN)
 
         if (!clan.hasMemberPermission(player.uniqueId, ClanPermission.INVITE)) {
-            throw CommandAPI.failWithString(NO_INVITE_PERMISSION)
+            failCommand(NO_INVITE_PERMISSION)
         }
 
         when (clan.invite(invitee.uuid, player.uniqueId)) {
-            ClanInviteResult.AlreadyInClan -> throw CommandAPI.failWithString(INVITEE_ALREADY_IN_CLAN)
-            ClanInviteResult.AlreadyInvited -> throw CommandAPI.failWithString(INVITEE_ALREADY_INVITED)
-            ClanInviteResult.InvitationsDisabled -> throw CommandAPI.failWithString(
+            ClanInviteResult.AlreadyInClan -> failCommand(INVITEE_ALREADY_IN_CLAN)
+            ClanInviteResult.AlreadyInvited -> failCommand(INVITEE_ALREADY_INVITED)
+            ClanInviteResult.InvitationsDisabled -> failCommand(
                 INVITEE_DISABLED_INVITATIONS
             )
 

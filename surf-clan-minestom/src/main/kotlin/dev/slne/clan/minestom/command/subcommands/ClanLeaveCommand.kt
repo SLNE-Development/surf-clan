@@ -1,7 +1,7 @@
 package dev.slne.clan.minestom.command.subcommands
 
 import dev.slne.clan.api.clan.Clan
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -25,10 +25,10 @@ fun CommandAPICommand.clanLeaveCommand(): CommandAPICommand = withSubcommand(
 
         playerExecutorSuspend { player, args ->
             val clan = Clan.byPlayer(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (clan.createdByUuid == player.uuid) {
-                CommandAPI.failWithString(CLAN_OWNER_CANNOT_LEAVE)
+                failCommand(CLAN_OWNER_CANNOT_LEAVE)
             }
 
             player.sendMessage(leaveConfirmationMessage(clan, createConfirmCallback(clan.uuid)))

@@ -1,11 +1,11 @@
 package dev.slne.clan.paper.commands.subcommands.member.invite
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.arguments
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.paper.commands.arguments.ClanInviteArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -25,7 +25,7 @@ fun CommandAPICommand.clanDenyCommand() = subcommand("deny") {
         val revoked = invite.revoke()
 
         if (!revoked) {
-            throw CommandAPI.failWithString(INVITE_ALREADY_DENIED)
+            failCommand(INVITE_ALREADY_DENIED)
         } else {
             player.sendMessage(inviteDeniedMessage())
 

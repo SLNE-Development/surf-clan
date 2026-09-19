@@ -1,8 +1,8 @@
 package dev.slne.clan.paper.commands.arguments
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import dev.slne.surf.clan.core.client.Messages
 import dev.slne.surf.core.api.common.SurfCoreApi
@@ -22,6 +22,6 @@ class OfflinePlayerArgument(nodeName: String) :
         val playerName = info.currentInput
         val player = SurfCoreApi.getOfflinePlayer(playerName)
 
-        return player ?: throw CommandAPI.failWithString(Messages.unknownPlayer(playerName))
+        return player ?: failCommand(Messages.unknownPlayer(playerName))
     }
 }

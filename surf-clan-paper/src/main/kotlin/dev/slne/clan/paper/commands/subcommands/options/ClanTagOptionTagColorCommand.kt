@@ -1,6 +1,5 @@
 package dev.slne.clan.paper.commands.subcommands.options
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.argument
 import dev.jorel.commandapi.kotlindsl.getValue
@@ -10,6 +9,7 @@ import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.paper.commands.arguments.color.ClanTagHexColorArgument
 import dev.slne.clan.paper.commands.arguments.color.ClanTagShadowHexColorArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.client.Messages
@@ -52,10 +52,10 @@ fun CommandAPICommand.clanTagColorCommand() = subcommand("tagcolor") {
 
 private suspend fun changeColor(sender: Player, update: ClanTagColor.Update) {
     val clan = Clan.byPlayer(sender.uniqueId)
-        ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+        ?: failCommand(Messages.NOT_IN_CLAN)
 
     if (!clan.hasMemberPermission(sender.uniqueId, ClanPermission.OPTIONS_TAG_COLOR)) {
-        throw CommandAPI.failWithString(NO_TAG_COLOR_PERMISSION)
+        failCommand(NO_TAG_COLOR_PERMISSION)
     }
 
     clan.changeClanTagColor(update)

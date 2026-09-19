@@ -3,8 +3,8 @@ package dev.slne.clan.minestom.command.subcommands.member.role
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.minestom.command.arguments.clanMemberArgument
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.clan.minestom.command.resolveClanMember
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -22,30 +22,30 @@ fun CommandAPICommand.clanPromoteMemberCommand(): CommandAPICommand = withSubcom
         playerExecutorSuspend { player, args ->
             val member = args.resolveClanMember("member")
             val clan = Clan.byPlayer(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
             val isInClan = clan.isMember(member.uuid)
 
             if (!isInClan) {
-                CommandAPI.failWithString(Messages.PLAYER_NOT_IN_YOUR_CLAN)
+                failCommand(Messages.PLAYER_NOT_IN_YOUR_CLAN)
             }
 
             if (member.uuid == player.uuid) {
-                CommandAPI.failWithString(CANNOT_PROMOTE_SELF)
+                failCommand(CANNOT_PROMOTE_SELF)
             }
 
             if (!clan.hasMemberPermission(player.uuid, ClanPermission.PROMOTE)) {
-                CommandAPI.failWithString(NO_PROMOTE_PERMISSION)
+                failCommand(NO_PROMOTE_PERMISSION)
             }
 
             val executorMember = clan.getMember(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (executorMember.role <= member.role) {
-                CommandAPI.failWithString(CANNOT_PROMOTE_SAME_OR_HIGHER_ROLE)
+                failCommand(CANNOT_PROMOTE_SAME_OR_HIGHER_ROLE)
             }
 
             if (!member.role.hasNextRole()) {
-                CommandAPI.failWithString(ALREADY_HIGHEST_ROLE)
+                failCommand(ALREADY_HIGHEST_ROLE)
             }
 
             val oldRole = member.role
@@ -53,7 +53,7 @@ fun CommandAPICommand.clanPromoteMemberCommand(): CommandAPICommand = withSubcom
             val changedRole = member.changeRole(newRole)
 
             if (!changedRole) {
-                CommandAPI.failWithString(ROLE_CHANGE_FAILED)
+                failCommand(ROLE_CHANGE_FAILED)
             }
 
             val memberName = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()

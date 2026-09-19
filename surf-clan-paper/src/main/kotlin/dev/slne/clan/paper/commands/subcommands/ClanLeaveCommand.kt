@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.subcommands
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -24,10 +24,10 @@ fun CommandAPICommand.clanLeaveCommand() = subcommand("leave") {
 
     playerExecutorSuspend { player, args ->
         val clan = Clan.byPlayer(player.uniqueId)
-            ?: throw CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+            ?: failCommand(Messages.NOT_IN_CLAN)
 
         if (clan.createdByUuid == player.uniqueId) {
-            throw CommandAPI.failWithString(CLAN_OWNER_CANNOT_LEAVE)
+            failCommand(CLAN_OWNER_CANNOT_LEAVE)
         }
 
         player.sendMessage(leaveConfirmationMessage(clan, createConfirmCallback(clan.uuid)))

@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.subcommands.player.subcommands.settings
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.player.ClanPlayer
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.client.command.NOTHING_CHANGED
@@ -23,7 +23,7 @@ fun CommandAPICommand.clanPlayerSettingInviteCommand() = subcommand("invite") {
         val changed = clanPlayer.setAcceptsClanInvites(accept)
 
         if (!changed) {
-            throw CommandAPI.failWithString(NOTHING_CHANGED)
+            failCommand(NOTHING_CHANGED)
         }
 
         player.sendMessage(clanInvitesToggledMessage(accept))

@@ -2,8 +2,8 @@ package dev.slne.clan.minestom.command.subcommands.member.invite
 
 import dev.slne.clan.api.invite.ClanInviteAcceptResult
 import dev.slne.clan.minestom.command.arguments.clanInviteArgument
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.clan.minestom.command.resolveClanInvite
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -23,7 +23,7 @@ fun CommandAPICommand.clanAcceptCommand(): CommandAPICommand = withSubcommand(
             val invite = args.resolveClanInvite("invite")
 
             when (val result = invite.accept()) {
-                ClanInviteAcceptResult.AlreadyInClan -> CommandAPI.failWithString(Messages.ALREADY_IN_CLAN)
+                ClanInviteAcceptResult.AlreadyInClan -> failCommand(Messages.ALREADY_IN_CLAN)
                 is ClanInviteAcceptResult.Accepted -> {
                     val clan = result.clan as ClanImpl
 

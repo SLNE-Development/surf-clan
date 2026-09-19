@@ -1,12 +1,12 @@
 package dev.slne.clan.paper.commands.subcommands.member.invite
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.argument
 import dev.jorel.commandapi.kotlindsl.subcommand
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.invite.ClanInviteAcceptResult
 import dev.slne.clan.paper.commands.arguments.ClanInviteArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.surf.api.core.command.args.awaiting
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -23,7 +23,7 @@ fun CommandAPICommand.clanAcceptCommand() = subcommand("accept") {
         val invite = args.awaiting<ClanInvite>("invite")
 
         when (val result = invite.accept()) {
-            ClanInviteAcceptResult.AlreadyInClan -> throw CommandAPI.failWithString(Messages.ALREADY_IN_CLAN)
+            ClanInviteAcceptResult.AlreadyInClan -> failCommand(Messages.ALREADY_IN_CLAN)
             is ClanInviteAcceptResult.Accepted -> {
                 val clan = result.clan as ClanImpl
 

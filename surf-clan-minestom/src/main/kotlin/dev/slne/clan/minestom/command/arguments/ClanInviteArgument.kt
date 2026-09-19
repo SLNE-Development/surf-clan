@@ -1,7 +1,7 @@
 package dev.slne.clan.minestom.command.arguments
 
 import dev.slne.clan.api.invite.ClanInvite
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.argument.Argument
 import dev.slne.minestom.lobby.api.command.commandapi.argument.CustomArgument
@@ -16,7 +16,7 @@ import net.minestom.server.entity.Player
 class ClanInviteArgument(nodeName: String) :
     CustomArgument<Deferred<ClanInvite?>, String>(StringArgument(nodeName), { info ->
         val sender = info.sender as? Player
-            ?: CommandAPI.failWithString(CLAN_INVITE_ARGUMENT_NEEDS_PLAYER)
+            ?: failCommand(CLAN_INVITE_ARGUMENT_NEEDS_PLAYER)
         val clanName = info.currentInput
 
         clanArgumentScope.async {
