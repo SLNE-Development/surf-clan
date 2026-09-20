@@ -1,8 +1,8 @@
 package dev.slne.clan.minestom.command.subcommands.member.invite
 
 import dev.slne.clan.minestom.command.arguments.clanInviteArgument
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.clan.minestom.command.resolveClanInvite
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -24,7 +24,7 @@ fun CommandAPICommand.clanDenyCommand(): CommandAPICommand = withSubcommand(
             val revoked = invite.revoke()
 
             if (!revoked) {
-                CommandAPI.failWithString(INVITE_ALREADY_DENIED)
+                failCommand(INVITE_ALREADY_DENIED)
             } else {
                 player.sendMessage(inviteDeniedMessage())
 

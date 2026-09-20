@@ -109,10 +109,12 @@ fun clanConfigReloadedMessage() = buildText {
 }
 
 fun invalidatingCachesMessage() = buildText {
+    appendInfoPrefix()
     info("Invalidated all caches...")
 }
 
 fun invalidatedCachesMessage() = buildText {
+    appendSuccessPrefix()
     success("Caches invalidated.")
 }
 

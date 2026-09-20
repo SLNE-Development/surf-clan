@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.arguments
 
 import com.github.shynixn.mccoroutine.folia.scope
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import dev.slne.surf.clan.core.clan.CoreClanService
@@ -34,7 +34,7 @@ class ClanByClanTagArgument(nodeName: String) :
     override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): Clan {
         val tag = info.currentInput
         val clan = Clan.byTag(tag)
-            ?: throw CommandAPI.failWithString(Messages.unknownClanWithTag(tag))
+            ?: failCommand(Messages.unknownClanWithTag(tag))
         return clan
     }
 }

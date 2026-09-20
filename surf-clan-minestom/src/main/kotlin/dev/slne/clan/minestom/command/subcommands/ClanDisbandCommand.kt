@@ -1,7 +1,7 @@
 package dev.slne.clan.minestom.command.subcommands
 
 import dev.slne.clan.api.clan.Clan
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -26,10 +26,10 @@ fun CommandAPICommand.clanDisbandCommand(): CommandAPICommand = withSubcommand(
         playerExecutorSuspend { player, args ->
             val playerUuid = player.uuid
             val clan =
-                Clan.byPlayer(playerUuid) ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                Clan.byPlayer(playerUuid) ?: failCommand(Messages.NOT_IN_CLAN)
 
             clan.canBeDisbandedBy(playerUuid)?.let { error ->
-                CommandAPI.failWithString(error.message)
+                failCommand(error.message)
             }
 
             player.sendMessage(disbandConfirmationMessage(clan, createDisbandClickEvent(clan.uuid)))

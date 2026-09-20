@@ -1,6 +1,6 @@
 package dev.slne.clan.minestom.command.arguments.color
 
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.argument.Argument
 import dev.slne.minestom.lobby.api.command.commandapi.argument.CustomArgument
@@ -22,10 +22,10 @@ abstract class BaseHexColorArgument<T>(
     val input = info.currentInput.trim()
 
     if (!isHexColor(input, requiredLength)) {
-        CommandAPI.failWithString("$INVALID_HEX_COLOR$input")
+        failCommand("$INVALID_HEX_COLOR$input")
     }
 
-    factory(input) ?: CommandAPI.failWithString("$INVALID_HEX_COLOR$input")
+    factory(input) ?: failCommand("$INVALID_HEX_COLOR$input")
 }) {
     init {
         replaceSuggestions(ArgumentSuggestions.strings(suggestions))

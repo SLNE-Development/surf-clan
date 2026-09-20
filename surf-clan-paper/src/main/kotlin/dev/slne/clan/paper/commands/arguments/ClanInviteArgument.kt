@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.arguments
 
 import com.github.shynixn.mccoroutine.folia.scope
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.invite.ClanInvite
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import dev.slne.surf.clan.core.client.Messages
@@ -39,9 +39,9 @@ class ClanInviteArgument(nodeName: String) :
     override suspend fun CoroutineScope.parse(info: CustomArgumentInfo<String>): ClanInvite {
         val clanName = info.currentInput
         val sender = info.sender as? Player
-            ?: throw CommandAPI.failWithString(CLAN_INVITE_ARGUMENT_NEEDS_PLAYER)
+            ?: failCommand(CLAN_INVITE_ARGUMENT_NEEDS_PLAYER)
         val invite = ClanInvite.pendingInviteByPlayerAndClanName(sender.uniqueId, clanName)
 
-        return invite ?: throw CommandAPI.failWithString(Messages.noPendingInviteForClan(clanName))
+        return invite ?: failCommand(Messages.noPendingInviteForClan(clanName))
     }
 }

@@ -3,7 +3,6 @@ package dev.slne.clan.minestom.command
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.member.ClanMember
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
 import dev.slne.minestom.lobby.api.command.commandapi.executor.CommandArguments
 import dev.slne.surf.clan.core.client.Messages
 import kotlinx.coroutines.Deferred
@@ -17,7 +16,7 @@ suspend fun CommandArguments.resolveClanArgumentOrOwn(node: String, player: UUID
         return resolveClanArgument(node)
     }
 
-    return Clan.byPlayer(player) ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+    return Clan.byPlayer(player) ?: failCommand(Messages.NOT_IN_CLAN)
 }
 
 /**
@@ -27,7 +26,7 @@ suspend fun CommandArguments.resolveClanArgument(node: String): Clan {
     val tag = getRaw(node).orEmpty()
 
     return get<Deferred<Clan?>>(node).await()
-        ?: CommandAPI.failWithString(Messages.unknownClanWithTag(tag))
+        ?: failCommand(Messages.unknownClanWithTag(tag))
 }
 
 /**
@@ -35,11 +34,11 @@ suspend fun CommandArguments.resolveClanArgument(node: String): Clan {
  */
 suspend fun CommandArguments.resolveClanMember(node: String): ClanMember =
     get<Deferred<ClanMember?>>(node).await()
-        ?: CommandAPI.failWithString(Messages.unknownClanMember(getRaw(node).orEmpty()))
+        ?: failCommand(Messages.unknownClanMember(getRaw(node).orEmpty()))
 
 /**
  * The pending clan invitation the [node] argument names.
  */
 suspend fun CommandArguments.resolveClanInvite(node: String): ClanInvite =
     get<Deferred<ClanInvite?>>(node).await()
-        ?: CommandAPI.failWithString(Messages.noPendingInviteForClan(getRaw(node).orEmpty()))
+        ?: failCommand(Messages.noPendingInviteForClan(getRaw(node).orEmpty()))

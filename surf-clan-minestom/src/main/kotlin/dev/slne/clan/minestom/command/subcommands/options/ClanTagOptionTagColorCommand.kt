@@ -5,7 +5,7 @@ import dev.slne.clan.api.clan.ClanTagColor
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.minestom.command.arguments.color.clanTagHexColorArgument
 import dev.slne.clan.minestom.command.arguments.color.clanTagShadowHexColorArgument
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -52,10 +52,10 @@ fun CommandAPICommand.clanTagColorCommand(): CommandAPICommand = withSubcommand(
 
 private suspend fun changeColor(sender: Player, update: ClanTagColor.Update) {
     val clan = Clan.byPlayer(sender.uuid)
-        ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+        ?: failCommand(Messages.NOT_IN_CLAN)
 
     if (!clan.hasMemberPermission(sender.uuid, ClanPermission.OPTIONS_TAG_COLOR)) {
-        CommandAPI.failWithString(NO_TAG_COLOR_PERMISSION)
+        failCommand(NO_TAG_COLOR_PERMISSION)
     }
 
     clan.changeClanTagColor(update)

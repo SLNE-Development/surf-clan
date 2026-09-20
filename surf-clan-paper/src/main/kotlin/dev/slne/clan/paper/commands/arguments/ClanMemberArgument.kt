@@ -1,10 +1,10 @@
 package dev.slne.clan.paper.commands.arguments
 
 import com.github.shynixn.mccoroutine.folia.scope
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.clan.api.member.ClanMember
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.args.SuspendCustomArgument
 import dev.slne.surf.clan.core.client.Messages
@@ -37,6 +37,6 @@ class ClanMemberArgument(nodeName: String) :
         val playerNameOrUuid = info.currentInput
 
         return findClanMember(playerNameOrUuid)
-            ?: throw CommandAPI.failWithString(Messages.unknownClanMember(playerNameOrUuid))
+            ?: failCommand(Messages.unknownClanMember(playerNameOrUuid))
     }
 }

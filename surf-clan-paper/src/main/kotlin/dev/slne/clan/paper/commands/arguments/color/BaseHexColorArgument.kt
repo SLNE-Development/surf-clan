@@ -3,6 +3,7 @@ package dev.slne.clan.paper.commands.arguments.color
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.TextArgument
+import dev.slne.clan.paper.commands.failCommand
 import dev.slne.surf.clan.core.client.command.*
 
 abstract class BaseHexColorArgument<T>(
@@ -10,23 +11,14 @@ abstract class BaseHexColorArgument<T>(
     private val requiredLength: Int,
     private val factory: (String) -> T?
 ) : CustomArgument<T, String>(TextArgument(nodeName), { info ->
-
     val input = info.currentInput().trim()
 
     if (!isHexColor(input, requiredLength)) {
-        throw CustomArgumentException.fromMessageBuilder(
-            MessageBuilder()
-                .append(INVALID_HEX_COLOR)
-                .appendArgInput()
-        )
+        failCommand("$INVALID_HEX_COLOR ${info.currentInput}")
     }
 
     factory(input)
-        ?: throw CustomArgumentException.fromMessageBuilder(
-            MessageBuilder()
-                .append(INVALID_HEX_COLOR)
-                .appendArgInput()
-        )
+        ?: failCommand("$INVALID_HEX_COLOR ${info.currentInput}")
 }) {
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollection { _ ->

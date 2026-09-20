@@ -2,7 +2,7 @@ package dev.slne.clan.minestom.command.subcommands
 
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.greedyStringArgument
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.includeSuggestions
@@ -23,10 +23,10 @@ fun CommandAPICommand.clanSetDiscordCommand(): CommandAPICommand = withSubcomman
         playerExecutorSuspend { player, args ->
             val rawLink = args.get<String>("link")
             val clan = Clan.byPlayer(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (!clan.hasMemberPermission(player.uuid, ClanPermission.DISCORD)) {
-                CommandAPI.failWithString(NO_DISCORD_PERMISSION)
+                failCommand(NO_DISCORD_PERMISSION)
             }
 
             val isNullLink = rawLink == REMOVE_DISCORD_LINK
@@ -35,11 +35,11 @@ fun CommandAPICommand.clanSetDiscordCommand(): CommandAPICommand = withSubcomman
                 clan.setDiscordInvite(null)
             } else {
                 if (clan.activeMemberCount < Clan.DISCORD_LINK_REQUIRED_MEMBERS) {
-                    CommandAPI.failWithString(NOT_ENOUGH_MEMBERS_FOR_DISCORD_LINK)
+                    failCommand(NOT_ENOUGH_MEMBERS_FOR_DISCORD_LINK)
                 }
 
                 if (!isValidDiscordInvite(rawLink)) {
-                    CommandAPI.failWithString(INVALID_DISCORD_LINK)
+                    failCommand(INVALID_DISCORD_LINK)
                 }
 
                 clan.setDiscordInvite(rawLink)

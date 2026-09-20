@@ -3,8 +3,8 @@ package dev.slne.clan.minestom.command.subcommands.member
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.minestom.command.arguments.clanMemberArgument
+import dev.slne.clan.minestom.command.failCommand
 import dev.slne.clan.minestom.command.resolveClanMember
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPI
 import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
 import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
@@ -22,27 +22,27 @@ fun CommandAPICommand.clanKickMemberCommand(): CommandAPICommand = withSubcomman
         playerExecutorSuspend { player, args ->
             val member = args.resolveClanMember("member")
             val clan = Clan.byPlayer(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (player.uuid == member.uuid) {
-                CommandAPI.failWithString(CANNOT_KICK_SELF)
+                failCommand(CANNOT_KICK_SELF)
             }
 
             if (!clan.hasMemberPermission(player.uuid, ClanPermission.KICK)) {
-                CommandAPI.failWithString(NO_KICK_PERMISSION)
+                failCommand(NO_KICK_PERMISSION)
             }
 
             val executorMember = clan.getMember(player.uuid)
-                ?: CommandAPI.failWithString(Messages.NOT_IN_CLAN)
+                ?: failCommand(Messages.NOT_IN_CLAN)
 
             if (member.role >= executorMember.role) {
-                CommandAPI.failWithString(CANNOT_KICK_SAME_OR_HIGHER_ROLE)
+                failCommand(CANNOT_KICK_SAME_OR_HIGHER_ROLE)
             }
 
             val removed = clan.removeMember(member)
 
             if (!removed) {
-                CommandAPI.failWithString(KICK_FAILED)
+                failCommand(KICK_FAILED)
             }
 
             val memberName = PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
