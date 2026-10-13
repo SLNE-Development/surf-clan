@@ -3,9 +3,9 @@ package dev.slne.clan.minestom.command.subcommands.member
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.minestom.command.arguments.clanByClanTagArgument
 import dev.slne.clan.minestom.command.resolveClanArgumentOrOwn
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.command.clanMembersPagination
 import dev.slne.surf.clan.core.client.command.collectClanMemberData

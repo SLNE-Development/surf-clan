@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 
 buildscript {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         maven("https://reposilite.slne.dev/releases")
     }

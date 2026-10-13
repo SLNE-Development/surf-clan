@@ -1,9 +1,9 @@
 package dev.slne.clan.minestom.command.subcommands
 
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.anyExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
-import dev.slne.minestom.lobby.api.coroutine.minestomAsyncScope
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.anyExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
+import dev.slne.surf.api.minestom.coroutine.minestomAsyncScope
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.clan.core.clan.CoreClanService
 import dev.slne.surf.clan.core.client.command.clanListPagination

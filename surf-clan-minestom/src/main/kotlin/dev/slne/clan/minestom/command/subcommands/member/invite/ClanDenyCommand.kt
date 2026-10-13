@@ -3,9 +3,9 @@ package dev.slne.clan.minestom.command.subcommands.member.invite
 import dev.slne.clan.minestom.command.arguments.clanInviteArgument
 import dev.slne.clan.minestom.command.failCommand
 import dev.slne.clan.minestom.command.resolveClanInvite
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.client.command.INVITE_ALREADY_DENIED
 import dev.slne.surf.clan.core.client.command.inviteDeniedMessage
 import dev.slne.surf.clan.core.client.command.inviteDeniedNotification

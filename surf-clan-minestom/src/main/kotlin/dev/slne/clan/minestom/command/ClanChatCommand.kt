@@ -1,9 +1,9 @@
 package dev.slne.clan.minestom.command
 
 import dev.slne.clan.api.clan.Clan
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.signedMessageArgument
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.signedMessageArgument
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.chat.api.SurfChatApi
 import dev.slne.surf.chat.api.message.MessageData

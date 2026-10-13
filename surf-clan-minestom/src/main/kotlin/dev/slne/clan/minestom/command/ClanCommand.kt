@@ -10,7 +10,7 @@ import dev.slne.clan.minestom.command.subcommands.member.invite.clanInviteComman
 import dev.slne.clan.minestom.command.subcommands.member.role.clanDemoteMemberCommand
 import dev.slne.clan.minestom.command.subcommands.member.role.clanPromoteMemberCommand
 import dev.slne.clan.minestom.command.subcommands.player.clanPlayerCommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.commandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.commandAPICommand
 import dev.slne.surf.clan.core.client.permission.ClanPermissions
 
 fun clanCommand() = commandAPICommand("clan") {
