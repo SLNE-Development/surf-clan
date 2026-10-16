@@ -7,5 +7,5 @@ import java.nio.file.Path
 
 @AutoService(ClanInstance::class)
 class MinestomClanInstance : ClientClanInstance() {
-    override val dataPath: Path get() = ClanMinestomEntrypoint.dataPath
+    override val dataPath: Path get() = ClanMinestomPlugin.dataDirectory
 }

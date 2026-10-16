@@ -3,7 +3,7 @@ package dev.slne.clan.minestom.command
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.invite.ClanInvite
 import dev.slne.clan.api.member.ClanMember
-import dev.slne.minestom.lobby.api.command.commandapi.executor.CommandArguments
+import dev.slne.surf.api.minestom.command.executor.CommandArguments
 import dev.slne.surf.clan.core.client.Messages
 import kotlinx.coroutines.Deferred
 import java.util.*

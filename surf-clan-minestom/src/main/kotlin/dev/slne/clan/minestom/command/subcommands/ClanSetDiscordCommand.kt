@@ -3,11 +3,11 @@ package dev.slne.clan.minestom.command.subcommands
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.permission.ClanPermission
 import dev.slne.clan.minestom.command.failCommand
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.greedyStringArgument
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.includeSuggestions
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.greedyStringArgument
+import dev.slne.surf.api.minestom.command.dsl.includeSuggestions
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.client.Messages
 import dev.slne.surf.clan.core.client.command.*
 import dev.slne.surf.clan.core.client.permission.ClanPermissions

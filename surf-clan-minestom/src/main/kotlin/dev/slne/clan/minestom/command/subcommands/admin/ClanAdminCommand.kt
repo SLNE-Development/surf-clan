@@ -2,10 +2,10 @@ package dev.slne.clan.minestom.command.subcommands.admin
 
 import dev.slne.clan.minestom.command.arguments.clanByClanTagArgument
 import dev.slne.clan.minestom.command.resolveClanArgument
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.anyExecutor
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.anyExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.anyExecutor
+import dev.slne.surf.api.minestom.command.dsl.anyExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.command.clanConfigReloadedMessage
 import dev.slne.surf.clan.core.client.command.clanDeletedMessage

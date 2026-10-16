@@ -2,10 +2,10 @@ package dev.slne.clan.minestom.command.subcommands.player
 
 import dev.slne.clan.api.player.ClanPlayer
 import dev.slne.clan.minestom.command.failCommand
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.booleanArgument
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.booleanArgument
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.client.command.NOTHING_CHANGED
 import dev.slne.surf.clan.core.client.command.clanInvitesToggledMessage
 import dev.slne.surf.clan.core.client.permission.ClanPermissions

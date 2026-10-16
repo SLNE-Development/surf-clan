@@ -2,10 +2,10 @@ package dev.slne.clan.minestom.command.subcommands
 
 import dev.slne.clan.api.clan.Clan
 import dev.slne.clan.api.clan.ClanCreationResult
-import dev.slne.minestom.lobby.api.command.commandapi.CommandAPICommand
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.playerExecutorSuspend
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.stringArgument
-import dev.slne.minestom.lobby.api.command.commandapi.dsl.subcommand
+import dev.slne.surf.api.minestom.command.CommandAPICommand
+import dev.slne.surf.api.minestom.command.dsl.playerExecutorSuspend
+import dev.slne.surf.api.minestom.command.dsl.stringArgument
+import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.clan.core.clan.ClanImpl
 import dev.slne.surf.clan.core.client.command.clanCreatedMessage
 import dev.slne.surf.clan.core.client.command.clanCreationFailedMessage

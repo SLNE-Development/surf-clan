@@ -11,6 +11,17 @@ surfMinestomApi {
     withSurfRedis()
 }
 
+minestomPluginFile {
+    main = "dev.slne.clan.minestom.ClanMinestomPlugin"
+    authors = listOf("twisti")
+
+    pluginDependencies {
+        register("surf-rabbitmq-minestom")
+        register("surf-redis-minestom")
+        register("surf-chat-minestom")
+    }
+}
+
 surfMicroservice {
     withRabbitModule(RabbitModule.CLIENT_API)
 }
