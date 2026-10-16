@@ -9,10 +9,10 @@ import dev.slne.surf.clan.core.ClanInstance
 object ClanMinestomPlugin : SurfMinestomPlugin() {
     override suspend fun onLoad() {
         ClanInstance.load()
-        ClanInstance.enable()
     }
 
     override suspend fun onEnable() {
+        ClanInstance.enable()
         clanCommand()
 
         clanChatCommand("clanchat").register()
