@@ -1,6 +1,7 @@
 package dev.slne.surf.clan.core.client.command
 
 import dev.slne.clan.api.clan.Clan
+import dev.slne.clan.api.member.ClanMemberRole
 import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.clan.core.clan.ClanImpl
@@ -13,6 +14,15 @@ import java.util.*
 
 const val CLAN_OWNER_CANNOT_LEAVE =
     "Du bist der Besitzer des Clans und kannst ihn nicht verlassen. Nutze /clan disband um den Clan aufzulösen."
+
+/**
+ * The reason [playerUuid] may not leave this clan, or `null` when they may.
+ *
+ * Owners are held back by their role, not by having created the clan, so ownership handed on by the
+ * server team moves the restriction with it.
+ */
+fun Clan.cannotLeaveReason(playerUuid: UUID): String? =
+    if (getMember(playerUuid)?.role == ClanMemberRole.OWNER) CLAN_OWNER_CANNOT_LEAVE else null
 
 /**
  * Asks for confirmation before the clan is left, with [click] carrying out the leave.
@@ -58,6 +68,13 @@ suspend fun handleLeaveClick(
     if (clan.uuid != originalClanUuid) return clicked.sendText {
         appendErrorPrefix()
         error("Der Clan, den du verlassen wolltest, hat sich geändert. Bitte versuche es erneut.")
+    }
+
+    clan.cannotLeaveReason(clicker)?.let { reason ->
+        return clicked.sendText {
+            appendErrorPrefix()
+            error(reason)
+        }
     }
 
     val removed = clan.removeMember(clicker)
