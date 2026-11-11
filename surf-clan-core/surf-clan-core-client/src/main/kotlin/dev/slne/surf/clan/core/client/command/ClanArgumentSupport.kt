@@ -49,21 +49,26 @@ suspend fun invitedClanNames(player: UUID): Set<String> {
 suspend fun clanMemberNames(player: UUID): Set<String> {
     val clan = Clan.byPlayer(player) ?: return emptySet()
 
-    val memberNames = ConcurrentHashMap.newKeySet<String>()
+    return playerNames(clan.members.map { it.uuid })
+}
+
+/**
+ * The names of [players], falling back to a player's uuid where their name is unknown.
+ */
+suspend fun playerNames(players: Collection<UUID>): Set<String> {
+    val names = ConcurrentHashMap.newKeySet<String>()
     val semaphore = Semaphore(LOOKUP_CONCURRENCY)
     supervisorScope {
-        for (member in clan.members) {
+        for (player in players) {
             launch {
                 semaphore.withPermit {
-                    memberNames.add(
-                        PlayerLookupService.getUsername(member.uuid) ?: member.uuid.toString()
-                    )
+                    names.add(PlayerLookupService.getUsername(player) ?: player.toString())
                 }
             }
         }
     }
 
-    return memberNames
+    return names
 }
 
 /**

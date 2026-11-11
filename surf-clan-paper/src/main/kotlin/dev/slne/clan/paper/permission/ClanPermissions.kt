@@ -39,6 +39,17 @@ object ClanPermissions : PermissionRegistry() {
     val CLAN_ADMIN_INVALIDATE_CACHE_COMMAND =
         create(SharedClanPermissions.CLAN_ADMIN_INVALIDATE_CACHE_COMMAND)
     val CLAN_ADMIN_DELETE_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_DELETE_COMMAND)
+    val CLAN_ADMIN_SET_ROLE_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_SET_ROLE_COMMAND)
+    val CLAN_ADMIN_TRANSFER_OWNER_COMMAND =
+        create(SharedClanPermissions.CLAN_ADMIN_TRANSFER_OWNER_COMMAND)
+    val CLAN_ADMIN_KICK_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_KICK_COMMAND)
+    val CLAN_ADMIN_ADD_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_ADD_COMMAND)
+    val CLAN_ADMIN_DESCRIPTION_COMMAND =
+        create(SharedClanPermissions.CLAN_ADMIN_DESCRIPTION_COMMAND)
+    val CLAN_ADMIN_DISCORD_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_DISCORD_COMMAND)
+    val CLAN_ADMIN_INVITES_COMMAND = create(SharedClanPermissions.CLAN_ADMIN_INVITES_COMMAND)
+    val CLAN_ADMIN_REVOKE_INVITE_COMMAND =
+        create(SharedClanPermissions.CLAN_ADMIN_REVOKE_INVITE_COMMAND)
 
     val CLAN_LIST_COMMAND = create(SharedClanPermissions.CLAN_LIST_COMMAND)
     val CLAN_CHAT_COMMAND = create(SharedClanPermissions.CLAN_CHAT_COMMAND)

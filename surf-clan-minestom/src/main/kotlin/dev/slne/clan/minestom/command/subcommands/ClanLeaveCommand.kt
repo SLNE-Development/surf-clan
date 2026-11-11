@@ -8,7 +8,7 @@ import dev.slne.surf.api.minestom.command.dsl.subcommand
 import dev.slne.surf.api.minestom.coroutine.minestomAsyncScope
 import dev.slne.surf.api.core.messages.adventure.lifetime
 import dev.slne.surf.clan.core.client.Messages
-import dev.slne.surf.clan.core.client.command.CLAN_OWNER_CANNOT_LEAVE
+import dev.slne.surf.clan.core.client.command.cannotLeaveReason
 import dev.slne.surf.clan.core.client.command.handleLeaveClick
 import dev.slne.surf.clan.core.client.command.leaveConfirmationMessage
 import dev.slne.surf.clan.core.client.permission.ClanPermissions
@@ -27,9 +27,7 @@ fun CommandAPICommand.clanLeaveCommand(): CommandAPICommand = withSubcommand(
             val clan = Clan.byPlayer(player.uuid)
                 ?: failCommand(Messages.NOT_IN_CLAN)
 
-            if (clan.createdByUuid == player.uuid) {
-                failCommand(CLAN_OWNER_CANNOT_LEAVE)
-            }
+            clan.cannotLeaveReason(player.uuid)?.let { failCommand(it) }
 
             player.sendMessage(leaveConfirmationMessage(clan, createConfirmCallback(clan.uuid)))
         }

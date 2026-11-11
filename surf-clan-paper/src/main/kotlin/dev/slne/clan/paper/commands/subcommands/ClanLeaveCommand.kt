@@ -9,7 +9,7 @@ import dev.slne.clan.paper.permission.ClanPermissions
 import dev.slne.clan.paper.plugin
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.clan.core.client.Messages
-import dev.slne.surf.clan.core.client.command.CLAN_OWNER_CANNOT_LEAVE
+import dev.slne.surf.clan.core.client.command.cannotLeaveReason
 import dev.slne.surf.clan.core.client.command.handleLeaveClick
 import dev.slne.surf.clan.core.client.command.leaveConfirmationMessage
 import net.kyori.adventure.text.event.ClickCallback
@@ -26,9 +26,7 @@ fun CommandAPICommand.clanLeaveCommand() = subcommand("leave") {
         val clan = Clan.byPlayer(player.uniqueId)
             ?: failCommand(Messages.NOT_IN_CLAN)
 
-        if (clan.createdByUuid == player.uniqueId) {
-            failCommand(CLAN_OWNER_CANNOT_LEAVE)
-        }
+        clan.cannotLeaveReason(player.uniqueId)?.let { failCommand(it) }
 
         player.sendMessage(leaveConfirmationMessage(clan, createConfirmCallback(clan.uuid)))
     }
